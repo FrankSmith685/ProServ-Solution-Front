@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { api } from "../api/apiConfig";
 import { handleApiError } from "../api/apiError";
 import { useAppState } from "./useAppState";
@@ -13,6 +14,7 @@ import type {
 
 export const useAuth = (): UseAuth => {
   const { setRefreshtoken, setAccessToken, setUser } = useAppState();
+  const navigate = useNavigate();
 
   const loginUser = async ( credentials: LoginCredentials, callback?: (response: LoginCallbackResponse) => void ): Promise<void> => {
     try {
@@ -172,6 +174,7 @@ export const useAuth = (): UseAuth => {
     setAccessToken(null);
     setRefreshtoken(null);
     setUser(null);
+    navigate("/");
   };
 
 

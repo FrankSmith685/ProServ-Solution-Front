@@ -138,12 +138,13 @@ import ProtectedRoute from "./ProtectedRoute";
 import { PanelPage } from "@/page/panel/PanelPage";
 // import { MiCuentaPage } from "@/page/panel/menu/mi-cuenta/MiCuentaPage";
 import { MisDatosPage } from "@/page/panel/menu/mi-cuenta/datos/MisDatosPage";
-import { PreferenciasPage } from "@/page/panel/menu/mi-cuenta/preferencia/PreferenciasPage";
+// import { PreferenciasPage } from "@/page/panel/menu/mi-cuenta/preferencia/PreferenciasPage";
 import { PasswordPage } from "@/page/panel/menu/mi-cuenta/seguridad/password/PasswordPage";
 import { CuentasVinculadasPage } from "@/page/panel/menu/mi-cuenta/seguridad/cuentas-vinculadas/CuentasVinculadasPage";
 import { EliminarCuentaPage } from "@/page/panel/menu/mi-cuenta/seguridad/eliminar-cuenta/EliminarCuentaPage";
 import { CorreoPage } from "@/page/panel/menu/mi-cuenta/seguridad/correo/CorreoPage";
 import ProviderRoute from "./ProviderRoute";
+import { NotificacionesPage } from "@/page/panel/menu/mi-cuenta/preferencia/notificaciones/NotificacionesPage";
 // import { AuthLoader } from "@/components/loader/authLoader";
 
 // Páginas
@@ -324,9 +325,19 @@ const AppRouter = () => {
               <Route path="eliminar" element={<EliminarCuentaPage />} />
               <Route index element={<Navigate to="cuentas" replace />} />
             </Route>
+            <Route path="preferencias">
+              <Route
+                index
+                element={<Navigate to="notificaciones" replace />}
+              />
 
-            <Route path="preferencias" element={<PreferenciasPage />} />
+              <Route
+                path="notificaciones"
+                element={<NotificacionesPage />}
+              />
+            </Route>
           </Route>
+          
 
           <Route path="*" element={<Navigate to="/panel/mi-cuenta/datos" replace />} />
         </Route>

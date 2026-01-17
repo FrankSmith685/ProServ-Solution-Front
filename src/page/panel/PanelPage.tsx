@@ -9,8 +9,9 @@ import { sidebarMenus } from "./data/sidebarMenu";
 import type {
   SidebarSubMenuLink,
 } from "@/interfaces/ui/navigation/ICustomSidebarSubMenu";
-import { getSecurityMenu } from "@/helpers/getSecurityMenu";
+import { getSecurityMenu } from "@/helpers/panel/mi-cuenta/getSecurityMenu";
 import type { FindActiveItemFn, PanelMenu } from "@/interfaces/panel/IMiPanel";
+import { getPreferencesMenu } from "@/helpers/panel/mi-cuenta/getPreferencesMenu";
 
 const MOBILE_BREAKPOINT = 768;
 const HEADER_HEIGHT = 65;
@@ -27,14 +28,26 @@ export const PanelPage: React.FC = () => {
 
     return {
       ...baseMenu,
-      menuData: baseMenu.menuData.map(item =>
-        item.type === "group" && item.label === "Seguridad"
-          ? {
-              ...item,
-              children: getSecurityMenu(user.metodosLogin),
-            }
-          : item
-      ),
+      menuData: baseMenu.menuData.map(item => {
+      if (item.type !== "group") return item;
+
+      if (item.label === "Seguridad") {
+        return {
+          ...item,
+          children: getSecurityMenu(user.metodosLogin),
+        };
+      }
+
+      if (item.label === "Preferencias") {
+        return {
+          ...item,
+          children: getPreferencesMenu(),
+        };
+      }
+
+      return item;
+    }),
+
     };
   }, [user, baseMenu]);
 

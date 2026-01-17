@@ -24,10 +24,10 @@ export const sidebarMenus: Record<string, SidebarSubMenuSection> = {
         children: [],
       },
       {
-        type: "link",
+        type: "group",
         label: "Preferencias",
-        path: "/panel/mi-cuenta/preferencias",
         icon: FaSlidersH,
+        children: [],
       },
     ],
   },

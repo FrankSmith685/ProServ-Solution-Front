@@ -8,8 +8,10 @@ import {
 import { UserPanelItem } from "../UserPanelItem";
 import { UserPanelDivider } from "../UserPanelDivider";
 import type { JSX } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export const ComensalPanel = (): JSX.Element => {
+  const {logout} = useAuth();
   return (
     <>
       <UserPanelItem
@@ -42,8 +44,8 @@ export const ComensalPanel = (): JSX.Element => {
         icon={<FaSignOutAlt />}
         label="Cerrar sesión"
         danger
-        onClick={() => {
-          console.log("logout");
+        onClick={async() => {
+          await logout()
         }}
       />
     </>
