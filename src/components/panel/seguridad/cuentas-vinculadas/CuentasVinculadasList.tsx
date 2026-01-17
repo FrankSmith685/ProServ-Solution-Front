@@ -1,4 +1,4 @@
-import type { CuentaVinculada } from "@/hooks/panel/mis-datos/seguridad/useCuentasVinculadas";
+import type { CuentaVinculada } from "@/interfaces/panel/mis-datos/ISeguridad";
 import { CuentaVinculadaItem } from "./CuentaVinculadaItem";
 
 interface Props {

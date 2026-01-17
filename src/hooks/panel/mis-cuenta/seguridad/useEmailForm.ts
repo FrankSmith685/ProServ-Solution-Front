@@ -4,15 +4,15 @@ import {
   FaExclamationTriangle,
   FaInfoCircle,
 } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 import { useUser } from "@/hooks/useUser";
 import { useAppState } from "@/hooks/useAppState";
-import type { EmailForm, PasswordStatus } from "@/interfaces/panel/mis-datos/ISeguridad";
 import { useNotification } from "@/hooks/useNotificationHooks/useNotification";
 import { useAuth } from "@/hooks/useAuth";
-import { useNavigate } from "react-router-dom";
+import type { EmailForm, PasswordStatus, UseEmailFormReturn } from "@/interfaces/panel/mis-datos/ISeguridad";
 
-export const useEmailForm = () => {
+export const useEmailForm = (): UseEmailFormReturn => {
   const { changeEmail } = useUser();
   const { logout } = useAuth();
   const { user } = useAppState();
@@ -23,7 +23,7 @@ export const useEmailForm = () => {
     nuevo: "",
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const dirty = Boolean(form.nuevo);
 
@@ -34,11 +34,11 @@ export const useEmailForm = () => {
   const update = <K extends keyof EmailForm>(
     key: K,
     value: EmailForm[K]
-  ) => {
+  ): void => {
     setForm(prev => ({ ...prev, [key]: value }));
   };
 
-  const save = async () => {
+  const save = async (): Promise<void> => {
     if (!isValid || loading || !user?.correo) return;
 
     setLoading(true);
@@ -54,18 +54,15 @@ export const useEmailForm = () => {
             response.message ?? "Correo actualizado correctamente",
             "success"
           );
-
           setForm({ nuevo: "" });
           logout();
           navigate("/");
-        }
-        else {
+        } else {
           showMessage(
             response.message ?? "No se pudo actualizar el correo",
             "error"
           );
         }
-
         setLoading(false);
       }
     );

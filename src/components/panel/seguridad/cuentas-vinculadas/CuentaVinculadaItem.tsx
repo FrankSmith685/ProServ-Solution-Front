@@ -1,5 +1,5 @@
+import type { CuentaVinculada } from "@/interfaces/panel/mis-datos/ISeguridad";
 import { FaGoogle, FaEnvelope, FaLink, FaUnlink } from "react-icons/fa";
-import type { CuentaVinculada } from "@/hooks/panel/mis-datos/seguridad/useCuentasVinculadas";
 
 interface Props {
   cuenta: CuentaVinculada;
@@ -39,7 +39,6 @@ export const CuentaVinculadaItem = ({
     >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-        {/* LEFT */}
         <div className="flex items-center gap-3">
           <div
             className={`
@@ -75,7 +74,6 @@ export const CuentaVinculadaItem = ({
           </div>
         </div>
 
-        {/* RIGHT */}
         <button
           disabled={isLoading}
           onClick={() => onToggle(cuenta.proveedor)}

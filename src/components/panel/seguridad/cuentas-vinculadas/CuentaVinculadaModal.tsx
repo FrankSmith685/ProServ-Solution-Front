@@ -5,13 +5,9 @@ import { CustomButton } from "@/components/ui/kit/CustomButton";
 import { useUser } from "@/hooks/useUser";
 import { FaEnvelope } from "react-icons/fa";
 import { useNotification } from "@/hooks/useNotificationHooks/useNotification";
+import type { PropsCuentaVinculada } from "@/interfaces/panel/mis-datos/ISeguridad";
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-}
-
-export const VincularCorreoModal = ({ open, onClose }: Props) => {
+export const VincularCorreoModal = ({ open, onClose }: PropsCuentaVinculada) => {
   const { linkAccount } = useUser();
   const [email, setEmail] = useState("");
   const [clave, setClave] = useState("");
@@ -78,13 +74,9 @@ const submit = async () => {
       }
     >
       <div className="flex flex-col gap-6 py-2">
-
-        {/* Icono */}
         <div className="w-14 h-14 rounded-2xl bg-primary-soft text-primary flex items-center justify-center mx-auto">
           <FaEnvelope size={22} />
         </div>
-
-        {/* Título */}
         <div className="text-center space-y-1">
           <h2 className="text-lg font-semibold text-secondary">
             Vincular correo electrónico
@@ -93,8 +85,6 @@ const submit = async () => {
             Agrega un correo y contraseña para acceder también con email.
           </p>
         </div>
-
-        {/* Inputs */}
         <div className="space-y-4">
           <CustomInput
             label="Correo electrónico"

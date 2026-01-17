@@ -1,7 +1,7 @@
 import { SeguridadHeader } from "../SeguridadHeader";
 import { FaLink } from "react-icons/fa";
 import { CuentasVinculadasList } from "./CuentasVinculadasList";
-import { useCuentasVinculadas } from "@/hooks/panel/mis-datos/seguridad/useCuentasVinculadas";
+import { useCuentasVinculadas } from "@/hooks/panel/mis-cuenta/seguridad/useCuentasVinculadas";
 import { CuentaVinculadaInfo } from "./CuentasVinculadasInfo";
 import { VincularCorreoModal } from "./CuentaVinculadaModal";
 

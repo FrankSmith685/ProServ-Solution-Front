@@ -1,7 +1,7 @@
 import { ActionBar } from "@/components/panel/ActionBar";
 import { PasswordForm } from "./PasswordForm";
 import { PasswordSecurityTips } from "./PasswordSecurityTips";
-import { usePasswordForm } from "@/hooks/panel/mis-datos/seguridad/usePasswordForm";
+import { usePasswordForm } from "@/hooks/panel/mis-cuenta/seguridad/usePasswordForm";
 import { SeguridadHeader } from "../SeguridadHeader";
 import { FaLock } from "react-icons/fa";
 

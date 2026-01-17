@@ -1,5 +1,63 @@
 import type { ElementType } from "react";
 
+export interface PropsCuentaVinculada {
+  open: boolean;
+  onClose: () => void;
+}
+
+export type Proveedor = "correo" | "google";
+
+export interface CuentaVinculada {
+  proveedor: Proveedor;
+  vinculada: boolean;
+}
+
+export const PROVEEDORES: readonly Proveedor[] = [
+  "correo",
+  "google",
+];
+
+export interface UseEliminarCuentaReturn {
+  password: string;
+  setPassword: (value: string) => void;
+  confirm: boolean;
+  setConfirm: (value: boolean) => void;
+  loading: boolean;
+  submitPassword: () => Promise<void>;
+  submitGoogle: () => Promise<void>;
+  canUsePassword: boolean;
+  canUseGoogle: boolean;
+}
+
+export interface UseEmailFormReturn {
+  form: EmailForm;
+  loading: boolean;
+  dirty: boolean;
+  isValid: boolean;
+  update: <K extends keyof EmailForm>(
+    key: K,
+    value: EmailForm[K]
+  ) => void;
+  save: () => Promise<void>;
+  status: PasswordStatus;
+}
+
+
+export interface UsePasswordFormReturn {
+  form: PasswordForm;
+  loading: boolean;
+  dirty: boolean;
+  isValid: boolean;
+  update: <K extends keyof PasswordForm>(
+    key: K,
+    value: PasswordForm[K]
+  ) => void;
+  save: () => Promise<void>;
+  status: PasswordStatus;
+}
+
+
+
 // HEADER 
 export interface SeguridadHeaderProps {
   icon: ElementType;

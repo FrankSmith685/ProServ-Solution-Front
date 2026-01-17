@@ -3,6 +3,8 @@ import type { UserInfo } from "@/interfaces/hook/IUseUser";
 
 export type MisDatosTab = "general" | "perfil" | "documentos" | "ubicacion";
 
+
+
 export interface MisDatosFormState {
   fotoPerfil: string;
   nombre: string;

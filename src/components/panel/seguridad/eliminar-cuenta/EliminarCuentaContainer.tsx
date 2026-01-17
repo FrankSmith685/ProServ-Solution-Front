@@ -9,7 +9,7 @@ import {
 import { CustomInput } from "@/components/ui/kit/CustomInput";
 import { CustomButton } from "@/components/ui/kit/CustomButton";
 import { CustomCheckbox } from "@/components/ui/kit/CustomCheckbox";
-import { useEliminarCuenta } from "@/hooks/panel/mis-datos/seguridad/useEliminarCuenta";
+import { useEliminarCuenta } from "@/hooks/panel/mis-cuenta/seguridad/useEliminarCuenta";
 import { EliminarCuentaInfo } from "./EliminarCuentaInfo";
 
 type Metodo = "password" | "google" | null;
@@ -57,21 +57,14 @@ const handleConfirmChange = (checked: boolean) => {
       />
 
       <EliminarCuentaInfo />
-
-      {/* 🔴 ZONA DE PELIGRO */}
       <section className="bg-red-50 border border-red-200 rounded-3xl p-6 max-w-md flex gap-6 flex-col">
-
-        {/* Paso 1 */}
         <CustomCheckbox
-            label="Entiendo que perderé el acceso y los datos asociados"
-            checked={confirm}
-            onChange={e => handleConfirmChange(e.target.checked)}
-            variant="warning"
-            fontSize="14px"
-            />
-
-
-        {/* Paso 2 */}
+          label="Entiendo que perderé el acceso y los datos asociados"
+          checked={confirm}
+          onChange={e => handleConfirmChange(e.target.checked)}
+          variant="warning"
+          fontSize="14px"
+        />
         {confirm && (
           <div className="flex flex-col gap-3">
             {canUsePassword && (
@@ -100,7 +93,6 @@ const handleConfirmChange = (checked: boolean) => {
           </div>
         )}
 
-        {/* Paso 3 */}
         {metodo && (
           <div className="flex flex-col gap-3">
             <CustomInput

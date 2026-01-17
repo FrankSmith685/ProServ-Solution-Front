@@ -1,6 +1,6 @@
 import { ActionBar } from "@/components/panel/ActionBar";
 import { EmailForm } from "./EmailForm";
-import { useEmailForm } from "@/hooks/panel/mis-datos/seguridad/useEmailForm";
+import { useEmailForm } from "@/hooks/panel/mis-cuenta/seguridad/useEmailForm";
 import { SeguridadHeader } from "../SeguridadHeader";
 import { FaEnvelope } from "react-icons/fa";
 
