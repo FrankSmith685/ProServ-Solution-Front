@@ -145,6 +145,15 @@ import { EliminarCuentaPage } from "@/page/panel/menu/mi-cuenta/seguridad/elimin
 import { CorreoPage } from "@/page/panel/menu/mi-cuenta/seguridad/correo/CorreoPage";
 import ProviderRoute from "./ProviderRoute";
 import { NotificacionesPage } from "@/page/panel/menu/mi-cuenta/preferencia/notificaciones/NotificacionesPage";
+import { HuariqueInfoPage } from "@/page/panel/menu/mi-huarique/info/HuariqueInfoPage";
+import { HuariqueImagenesPage } from "@/page/panel/menu/mi-huarique/imagenes/HuariqueImagenes";
+import { HuariqueMenuPage } from "@/page/panel/menu/mi-huarique/menu/HuariqueMenuPage";
+import { HuariquePromocionesPage } from "@/page/panel/menu/mi-huarique/promociones/HuariquePromocionesPage ";
+import { HuariquePublicacionPage } from "@/page/panel/menu/mi-huarique/publicacion/HuariquePublicacionPage";
+import { HuariqueConfigPage } from "@/page/panel/menu/mi-huarique/configuracion/HuariqueConfigPage";
+import { HuariqueWizardGuard } from "./HuariqueWizardGuard";
+import { useCategoria } from "@/hooks/useCategoria";
+import { HuariqueEmpresaPage } from "@/page/panel/menu/mi-huarique/empresa/HuariqueEmpresa";
 // import { AuthLoader } from "@/components/loader/authLoader";
 
 // Páginas
@@ -170,8 +179,9 @@ const TermsAndConditionsPage = lazy(() => import(/* webpackPrefetch: true */"../
 const AppRouter = () => {
   const { changePasswordToken, accessToken } = useAppState();
   const {getUserInfo} = useUser(); 
+  const {getCategorias} = useCategoria();
   useEffect(() => {
-    console.log(accessToken);
+    getCategorias();
     if (accessToken) {
       getUserInfo();
     }
@@ -272,80 +282,54 @@ const AppRouter = () => {
           />
         </Route>
 
-        {/* PRIVATE ROUTES */}
-        {/* <Route element={<ProtectedRoute />}> */}
-          {/* REGISTRO */}
-
-          {/* <Route path="mi-huarique" element={<MiHuariquePage />} /> */}
-        {/* </Route> */}
-
-        {/* <Route path="/panel" element={<PanelPage />}>
-          <Route index element={<Navigate to="mi-cuenta/datos" replace />} />
-          <Route path="mi-cuenta">
-            <Route index element={<Navigate to="datos" replace />} />
-            <Route path="datos" element={<MisDatosPage />} />
-
-            <Route path="seguridad">
-              <Route index element={<Navigate to="password" replace />} />
-              <Route path="password" element={<PasswordPage />} />
-              <Route path="correo" element={<CorreoPage />} />
-              <Route path="cuentas" element={<CuentasVinculadasPage />} />
-              <Route path="eliminar" element={<EliminarCuentaPage />} />
-            </Route>
-
-            <Route path="preferencias" element={<PreferenciasPage />} />
-          </Route>
-          <Route path="*" element={<Navigate to="/panel/mi-cuenta/datos" replace />} />
-        </Route> */}
         {/* ===============================
-         PANEL (PRIVATE)
-      =============================== */}
-      <Route element={<ProtectedRoute />}>
-        <Route path="/panel" element={<PanelPage />}>
-          <Route index element={<Navigate to="mi-cuenta/datos" replace />} />
+          PANEL (PRIVATE)
+        =============================== */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/panel" element={<PanelPage />}>
 
-          <Route path="mi-cuenta">
-            <Route index element={<Navigate to="datos" replace />} />
-            <Route path="datos" element={<MisDatosPage />} />
-            <Route path="seguridad">
-              <Route element={<ProviderRoute required={["correo"]} />}>
-                <Route path="password" element={<PasswordPage />} />
-                <Route path="correo" element={<CorreoPage />} />
+            <Route index element={<Navigate to="mi-cuenta/datos" replace />} />
+            
+            <Route path="mi-cuenta">
+              <Route index element={<Navigate to="datos" replace />} />
+              <Route path="datos" element={<MisDatosPage />} />
+              <Route path="seguridad">
+                <Route element={ <ProviderRoute required={["correo"]} />}>
+                  <Route path="password" element={<PasswordPage />} />
+                  <Route path="correo" element={<CorreoPage />} />
+                </Route>
+                <Route element={ <ProviderRoute required={["google"]} redirectTo="/panel/mi-cuenta/seguridad/password" /> } />
+                <Route path="cuentas" element={<CuentasVinculadasPage />} />
+                <Route path="eliminar" element={<EliminarCuentaPage />} />
+                <Route index element={<Navigate to="cuentas" replace />} />
               </Route>
-              <Route
-                element={
-                  <ProviderRoute
-                    required={["google"]}
-                    redirectTo="/panel/mi-cuenta/seguridad/password"
-                  />
-                }
-              >
+              <Route path="preferencias">
+                <Route index element={<Navigate to="notificaciones" replace />}/>
+                <Route path="notificaciones" element={<NotificacionesPage />} />
               </Route>
-              <Route path="cuentas" element={<CuentasVinculadasPage />} />
-              <Route path="eliminar" element={<EliminarCuentaPage />} />
-              <Route index element={<Navigate to="cuentas" replace />} />
             </Route>
-            <Route path="preferencias">
-              <Route
-                index
-                element={<Navigate to="notificaciones" replace />}
-              />
 
-              <Route
-                path="notificaciones"
-                element={<NotificacionesPage />}
-              />
+            <Route path="mi-huarique">
+              <Route index element={<Navigate to="info" replace />} />
+
+              <Route element={<HuariqueWizardGuard />}>
+                <Route path="empresa" element={<HuariqueEmpresaPage />} />
+                <Route path="info" element={<HuariqueInfoPage />} />
+                <Route path="imagenes" element={<HuariqueImagenesPage />} />
+                <Route path="menu" element={<HuariqueMenuPage />} />
+                <Route path="promociones" element={<HuariquePromocionesPage />} />
+                <Route path="publicacion" element={<HuariquePublicacionPage />} />
+              </Route>
+
+              <Route path="configuracion" element={<HuariqueConfigPage />} />
             </Route>
+
+
+            <Route path="*" element={<Navigate to="/panel/mi-cuenta/datos" replace />} />
           </Route>
-          
-
-          <Route path="*" element={<Navigate to="/panel/mi-cuenta/datos" replace />} />
         </Route>
-      </Route>
-
 
       </Routes>
-
     </div>
   );
 };

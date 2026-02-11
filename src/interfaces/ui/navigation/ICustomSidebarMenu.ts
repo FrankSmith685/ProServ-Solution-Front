@@ -5,6 +5,7 @@ export interface SidebarMenuItems {
   path: string;
   icon?: IconType;
   isActive?: boolean;
+  disabled?: boolean;
 }
 
 export interface CustomSidebarMenuProps {

@@ -235,11 +235,6 @@ export const useUser = (): UseUser => {
     }
   };
 
-
-
-
-
-
   const getUserActivity = useCallback(
     async (): Promise<UserActivity | null> => {
       if (!user) return null;
@@ -258,6 +253,46 @@ export const useUser = (): UseUser => {
     [user]
   );
 
+  const setProfileType = async (
+    profileType: "empresa" | "independiente",
+    callback?: UserInfoCallback
+  ): Promise<void> => {
+    try {
+      const response = await apiWithAuth.patch<UpdateUserApiResponse>(
+        "/user/profile-type",
+        { profileType }
+      );
+
+      if (response.data.success && user) {
+        const updatedUser: UserInfo = {
+          ...user,
+          profileType,
+        };
+
+        setUser(updatedUser);
+
+        callback?.({
+          success: true,
+          message: response.data.message,
+          user: updatedUser,
+        });
+
+        return;
+      }
+
+      callback?.({
+        success: response.data.success,
+        message: response.data.message,
+      });
+
+    } catch (error) {
+      const handled = handleApiError(error);
+      callback?.({
+        success: false,
+        message: handled.message,
+      });
+    }
+  };
 
 
   return {
@@ -269,6 +304,7 @@ export const useUser = (): UseUser => {
     linkAccount,
     unlinkAccount,
     deleteAccount,
-    deleteAccountGoogle
+    deleteAccountGoogle,
+    setProfileType
   };
 };

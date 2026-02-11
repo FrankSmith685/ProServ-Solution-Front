@@ -108,7 +108,7 @@ export const HeaderUserPanel: FC<Props> = ({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full pt-4">
+        <div className="absolute right-0 top-full pt-4 ">
           <div
             className="
               w-80
@@ -118,7 +118,7 @@ export const HeaderUserPanel: FC<Props> = ({
               border border-terciary-alpha-12
               overflow-hidden
               animate-fade-in-up
-              z-50
+              z-99999!
             "
           >
             <div

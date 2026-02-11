@@ -8,6 +8,7 @@ import { SET_LOGOUT } from "../types/actionTypes";
 import { ImagePreloaderProvider } from "@/hooks/useImageHooks/imagePreloaderProvider";
 import { NotificationProvider } from "@/hooks/useNotificationHooks/notificationProvider";
 import { getAccessToken, getRefreshToken } from "@/helpers/authStorage";
+import { LocationProvider } from "@/hooks/useLocationHooks/locationProvider";
 // import { setLogoutFunction } from "../helpers/logoutHelper";
 // import { LocationProvider } from "../hooks/useLocationHooks/locationProvider";
 // import { VideoPreloaderProvider } from "../hooks/useVideoHooks/videoPreloaderProvider";
@@ -22,8 +23,17 @@ const initialState: AppState = {
   changePasswordToken: null,
   typeUserAuth: null,
   user: null,
-
+  categories: [],
   registerUser: null,
+  service: null,
+  serviceSteep: 0,
+  serviceLoading: false,
+  serviceSteepInfo: 0,
+  activeInfoTab: 'info',
+  company: null,
+  serviceSteepEmpresa: 0,
+  activeEmpresaTab: 'info',
+  wizardStack:[]
 }
 
 
@@ -38,19 +48,21 @@ export const AppProvider = ({ children }: Props) => {
 
   return (
     <AppContext.Provider value={{ appState, dispatch, logout }}>
-      <NotificationProvider>
-      <ImagePreloaderProvider> 
-      {/* <LocationProvider>
+      <LocationProvider>
         <NotificationProvider>
-        */}
-          {/* <VideoPreloaderProvider> */}
-            {children}
-          {/* </VideoPreloaderProvider> */}
-          {/* 
-          </NotificationProvider>
-         </LocationProvider> */}
-         </ImagePreloaderProvider>
-         </NotificationProvider>
+          <ImagePreloaderProvider> 
+        {/* <LocationProvider>
+          <NotificationProvider>
+          */}
+            {/* <VideoPreloaderProvider> */}
+              {children}
+            {/* </VideoPreloaderProvider> */}
+            {/* 
+            </NotificationProvider>
+          </LocationProvider> */}
+          </ImagePreloaderProvider>
+        </NotificationProvider>
+      </LocationProvider>
     </AppContext.Provider>
   );
 };

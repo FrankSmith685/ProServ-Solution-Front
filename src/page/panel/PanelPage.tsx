@@ -1,4 +1,4 @@
-import { useLocation, Outlet } from "react-router-dom";
+import { useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/layouts/header/Header";
 import { CustomSidebarSubMenu } from "@/components/ui/navigation/CustomSidebarSubMenu";
@@ -12,44 +12,92 @@ import type {
 import { getSecurityMenu } from "@/helpers/panel/mi-cuenta/getSecurityMenu";
 import type { FindActiveItemFn, PanelMenu } from "@/interfaces/panel/IMiPanel";
 import { getPreferencesMenu } from "@/helpers/panel/mi-cuenta/getPreferencesMenu";
+import { PanelStartSelector } from "@/components/panel/mis-huariques/components/PanelStartSelector";
+import { Navigate } from "react-router-dom";
+import { useUser } from "@/hooks/useUser";
+
 
 const MOBILE_BREAKPOINT = 768;
 const HEADER_HEIGHT = 65;
 
 export const PanelPage: React.FC = () => {
-  const { user } = useAppState();
+  const { user, serviceSteep } = useAppState();
   const { pathname } = useLocation();
+  const { setProfileType } = useUser();
+  const navigate = useNavigate();
 
   const section = pathname.split("/")[2];
   const baseMenu: PanelMenu | undefined = sidebarMenus[section];
 
   const currentMenu: PanelMenu | null = useMemo(() => {
     if (!user || !baseMenu) return null;
+    const STEP_ORDER = [
+      "/panel/mi-huarique/empresa",
+      "/panel/mi-huarique/info",
+      "/panel/mi-huarique/imagenes",
+      "/panel/mi-huarique/menu",
+      "/panel/mi-huarique/promociones",
+      "/panel/mi-huarique/publicacion",
+    ];
+    const getStepIndex = (path: string) =>
+      STEP_ORDER.findIndex(p => path.startsWith(p));
 
     return {
       ...baseMenu,
-      menuData: baseMenu.menuData.map(item => {
-      if (item.type !== "group") return item;
+      menuData: baseMenu.menuData
+      .filter(item => {
+        if (
+          !user.tieneEmpresa &&
+          item.type === "link" &&
+          item.path === "/panel/mi-huarique/empresa"
+        ) {
+          return false;
+        }
+        return true;
+      })
+      .map(item => {
+        if (item.type === "link") {
+          let stepIndex = getStepIndex(item.path);
+          if (!user.tieneEmpresa) {
+            const STEP_ORDER_NO_EMPRESA = [
+              "/panel/mi-huarique/info",
+              "/panel/mi-huarique/imagenes",
+              "/panel/mi-huarique/menu",
+              "/panel/mi-huarique/promociones",
+              "/panel/mi-huarique/publicacion",
+            ];
 
-      if (item.label === "Seguridad") {
-        return {
-          ...item,
-          children: getSecurityMenu(user.metodosLogin),
-        };
-      }
+            stepIndex = STEP_ORDER_NO_EMPRESA.findIndex(p =>
+              item.path.startsWith(p)
+            );
+          }
 
-      if (item.label === "Preferencias") {
-        return {
-          ...item,
-          children: getPreferencesMenu(),
-        };
-      }
+          return {
+            ...item,
+            disabled: stepIndex > serviceSteep,
+          };
+        }
 
-      return item;
-    }),
+        if (item.type === "group") {
+          if (item.label === "Seguridad") {
+            return {
+              ...item,
+              children: getSecurityMenu(user.metodosLogin),
+            };
+          }
+          if (item.label === "Preferencias") {
+            return {
+              ...item,
+              children: getPreferencesMenu(),
+            };
+          }
+        }
+
+        return item;
+      }),
 
     };
-  }, [user, baseMenu]);
+  }, [user, baseMenu, serviceSteep]);
 
   const findActiveItem: FindActiveItemFn = (menuData, pathname) => {
     for (const item of menuData) {
@@ -65,10 +113,20 @@ export const PanelPage: React.FC = () => {
     }
     return null;
   };
+  
+  let activeItem: SidebarSubMenuLink | null = currentMenu
+  ? findActiveItem(currentMenu.menuData, pathname)
+  : null;
 
-  const activeItem: SidebarSubMenuLink | null = currentMenu
-    ? findActiveItem(currentMenu.menuData, pathname)
-    : null;
+  if (user && !user.tieneEmpresa && currentMenu) {
+    const infoItem = currentMenu.menuData.find(
+      i => i.type === "link" && i.path === "/panel/mi-huarique/info"
+    ) as SidebarSubMenuLink | undefined;
+
+    if (infoItem) {
+      activeItem = infoItem;
+    }
+  }
 
   const [isMobile, setIsMobile] = useState<boolean>(
     window.innerWidth < MOBILE_BREAKPOINT
@@ -86,8 +144,39 @@ export const PanelPage: React.FC = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  const isMiHuariqueRoute = pathname.startsWith("/panel/mi-huarique");
+
+  const mustSelectStartType =
+    isMiHuariqueRoute &&
+    user &&
+    !user.profileType
+
+
+  const [selectLoading, setSelectLoading] = useState(false);
+  
+  const handleSelectStartType = async (
+    tipo: "independiente" | "empresa"
+  ) => {
+    setSelectLoading(true);
+
+    await setProfileType(tipo, ({ success }) => {
+      setSelectLoading(false);
+      if (!success) return;
+      if (tipo === "empresa") {
+        navigate("/panel/mi-huarique/empresa", { replace: true });
+      } else {
+        navigate("/panel/mi-huarique/info", { replace: true });
+      }
+    });
+  };
+
+  const isRootPanel = pathname === "/panel";
+  if (isRootPanel) {
+    return <Navigate to="/panel/mi-cuenta/datos" replace />;
+  }
+
   if (!user || !currentMenu) {
-    return <CustomLoader message="Preparando tu panel…" />;
+    return <CustomLoader message="Preparando tu panel" />;
   }
 
   return (
@@ -155,6 +244,13 @@ export const PanelPage: React.FC = () => {
           </main>
         </div>
       </div>
+      {mustSelectStartType && (
+          <PanelStartSelector
+            open
+            loading={selectLoading}
+            onSelect={handleSelectStartType}
+          />
+        )}
     </>
   );
 };

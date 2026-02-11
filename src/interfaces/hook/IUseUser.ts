@@ -39,6 +39,8 @@ export interface UserActivity {
   ultimaActividadFoto: UsuarioActividadInfo | null;
 }
 
+export type UserTypeProfile =  "empresa" | "independiente" | null;
+
 /* ================== USER ================== */
 
 export interface UserInfo {
@@ -52,6 +54,7 @@ export interface UserInfo {
   estado: boolean;
   fechaRegistro: string;
   ultimaSesion: string;
+  profileType: UserTypeProfile;
   tipo_usuario: UserTipo[];
  metodosLogin: LoginProvider[];
   tieneEmpresa: boolean;
@@ -180,4 +183,8 @@ export interface UseUser {
 
 
   getUserActivity: () => Promise<UserActivity | null>;
+  setProfileType: (
+    profileType: "empresa" | "independiente",
+    callback?: UserInfoCallback
+  ) => Promise<void>;
 }

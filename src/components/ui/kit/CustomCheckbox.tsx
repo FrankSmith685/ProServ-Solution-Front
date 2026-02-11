@@ -18,7 +18,7 @@ export const CustomCheckboxComponent: FC<CustomCheckboxProps> = ({
     <FormControlLabel
       control={
         <Checkbox
-          checked={checked}
+          checked={Boolean(checked)}
           onChange={onChange}
           disabled={disabled}
           sx={{
@@ -27,18 +27,16 @@ export const CustomCheckboxComponent: FC<CustomCheckboxProps> = ({
               md: "scale(0.9)",
               lg: "scale(0.85)",
             },
-
             color: styles.color,
-
             "&.Mui-checked": {
               color: styles.checked,
             },
-
             "&.Mui-disabled": {
               opacity: 0.5,
             },
           }}
         />
+
       }
       label={label}
       sx={{
@@ -51,6 +49,10 @@ export const CustomCheckboxComponent: FC<CustomCheckboxProps> = ({
         },
 
         "& .MuiFormControlLabel-label": {
+
+          "@media (max-width:600px)": {
+            fontSize: '13px',
+          },
           fontFamily,
           fontSize: {
             xs: fontSize ?? "15px",

@@ -65,7 +65,7 @@ export const CustomSelectedComponent = <T extends string | number>({
         )}
 
         <Select
-          value={value}
+          value={value ?? ""}
           onChange={onChange}
           displayEmpty
           onOpen={() => setOpen(true)}
@@ -86,7 +86,7 @@ export const CustomSelectedComponent = <T extends string | number>({
             />
           }
           renderValue={(selected) => {
-            if (!selected) {
+            if (selected === "" || selected === undefined || selected === null) {
               return (
                 <span style={{ color: neutralInput.placeholder }}>
                   {placeholder}
@@ -95,6 +95,7 @@ export const CustomSelectedComponent = <T extends string | number>({
             }
             return options.find((o) => o.value === selected)?.label;
           }}
+
           MenuProps={{
             disableScrollLock: true,
             disableRestoreFocus: true,
@@ -172,9 +173,17 @@ export const CustomSelectedComponent = <T extends string | number>({
         </Select>
 
         {helperText && (
-          <FormHelperText sx={{ backgroundColor: "#fff", px: 2, m: 0 }}>
+          <FormHelperText
+            sx={{
+              backgroundColor: "transparent",
+              px: 0,
+              mt: 0.5,
+              fontSize: "12px",
+            }}
+          >
             {helperText}
           </FormHelperText>
+
         )}
       </FormControl>
     </div>

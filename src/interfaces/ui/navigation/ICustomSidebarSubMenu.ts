@@ -22,6 +22,7 @@ export interface SidebarSubMenuBase {
 export interface SidebarSubMenuLink extends SidebarSubMenuBase {
   type: "link";
   path: string;
+  disabled?: boolean;
 }
 
 export interface SidebarSubMenuGroup extends SidebarSubMenuBase {

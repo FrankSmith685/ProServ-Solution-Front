@@ -14,6 +14,7 @@ import type {
 } from "@/interfaces/hook/IUseUbigeo";
 
 export const useUbigeo = (): UseUbigeo => {
+
   const getDepartamentos = useCallback(async (): Promise<Departamento[]> => {
     try {
       const res = await api.get("/ubigeos/departamentos");
@@ -151,7 +152,7 @@ export const useUbigeo = (): UseUbigeo => {
         console.error(handleApiError(error).message);
         return null;
     }
-    };
+  };
 
 
   return {

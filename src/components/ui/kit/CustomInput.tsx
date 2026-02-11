@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { memo, useCallback, useMemo, useState } from "react";
 import {
   TextField,
@@ -36,6 +37,7 @@ const CustomInputComponent: FC<CustomInputProps> = ({
   autoComplete = "off",
   onFocus,
   onBlur,
+  onKeyDown
 }) => {
   const isPassword = type === "password";
   const isSearch = type === "search";
@@ -71,9 +73,13 @@ const sxStyles = useMemo(() => ({
     boxSizing: "border-box",
     height: multiline ? "auto" : height,
     padding: 0,
-    "@media (max-width:600px)": {
-      height: size === "lg" ? 44 : 40,
-    },
+    ...(multiline
+      ? {}
+      : {
+          "@media (max-width:600px)": {
+            height: size === "lg" ? 44 : 40,
+          },
+        }),
 
     "& fieldset": {
       borderColor: neutralInput.border,
@@ -118,8 +124,8 @@ const sxStyles = useMemo(() => ({
 
   "& .MuiInputLabel-outlined:not(.MuiInputLabel-shrink)": {
     // top: error ?"35%" : "50%",
-    top: error ?"35%" : helperText ? "35%":"50%",
-    transform: "translate(14px, -50%) scale(1)",
+    top: error ?"35%" : helperText ? "35%": multiline ?'0%' :"50%",
+    transform: multiline  ? "translate(14px, -100%) scale(1)" : "translate(14px, -50%) scale(1)",
   },
   "& .MuiOutlinedInput-root:has(input:placeholder-shown) .MuiInputLabel-root": {
     padding: icon ? "0 16px" : undefined,
@@ -181,6 +187,7 @@ const sxStyles = useMemo(() => ({
           setFocused(false);
           onBlur?.(e);
         }}
+        onKeyDown={onKeyDown}
         InputLabelProps={{
           shrink: shouldShrink,
         }}

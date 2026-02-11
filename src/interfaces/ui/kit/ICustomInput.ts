@@ -2,6 +2,7 @@ import type { BaseVariant } from "@/shared/design/types";
 import type {
   ChangeEvent,
   FocusEvent,
+  KeyboardEvent,
   ReactNode,
   Ref,
 } from "react";
@@ -15,7 +16,8 @@ export type CustomInputType =
   | "number"
   | "email"
   | "tel"
-  | "url";
+  | "url"
+  | "time";
 
 export interface CustomInputProps {
   name?: string;
@@ -54,4 +56,6 @@ export interface CustomInputProps {
   onBlur?: (
     e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
+
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }

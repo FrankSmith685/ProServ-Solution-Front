@@ -100,7 +100,6 @@ export const CustomSidebarSubMenu: FC<Props> = ({
                   ))}
                 </div>
 
-                <hr className="border-terciary-alpha-12 my-2" />
               </div>
             );
           }
@@ -109,25 +108,42 @@ export const CustomSidebarSubMenu: FC<Props> = ({
             <NavLink
               key={item.path}
               to={item.path}
-              onClick={() => {
+              onClick={(e) => {
+                if (item.disabled) {
+                  e.preventDefault();
+                  return;
+                }
+
                 onItemClick?.();
                 onClose?.();
               }}
-              className={({ isActive }) =>
-                `
-                flex items-center gap-3 px-4 py-3 rounded-xl text-sm
-                border-l-4
-                ${
-                  isActive
-                    ? "border-primary bg-primary-alpha-16 text-on-dark"
-                    : "border-transparent bg-secondary-alpha-8 text-on-dark-muted hover:bg-secondary-alpha-12"
-                }
-              `
-              }
+              className={({ isActive }) => {
+                const blocked = item.disabled && !isActive;
+
+                return `
+                  flex items-center gap-3 px-4 py-3 rounded-xl text-sm border-l-4 transition-all
+
+                  ${
+                    blocked
+                      ? "opacity-40 cursor-not-allowed border-transparent bg-secondary-alpha-8 text-on-dark-muted"
+                      : isActive
+                        ? "border-primary bg-primary-alpha-16 text-on-dark"
+                        : "border-transparent bg-secondary-alpha-8 text-on-dark-muted hover:bg-secondary-alpha-12"
+                  }
+                `;
+              }}
             >
               <item.icon className="text-base" />
-              <span>{item.label}</span>
+
+              <span className="flex-1">{item.label}</span>
+
+              {item.disabled && !pathname.startsWith(item.path) && (
+                <span className="text-[10px] px-2 py-0.5 rounded bg-danger/20 text-danger">
+                  BLOQ
+                </span>
+              )}
             </NavLink>
+
           );
         })}
       </nav>

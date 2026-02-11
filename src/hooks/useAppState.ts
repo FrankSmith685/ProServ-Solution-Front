@@ -7,11 +7,25 @@ import {
   setChangePasswordToken,
   setTypeUserAuth,
   setUser,
-  
+  setCategories,
+  setService,
   setRegisterUser,
+  setServiceSteep,
+  setServiceLoading,
+  setServiceSteepInfo,
+  setActiveInfoTab,
+  setCompany,
+  setServiceSteepEmpresa,
+  setActiveEmpresaTab,
+  setWizardStack
 } from "../context/actions/actions";
 import type { TypeUserAuth } from "@/interfaces/auth/IRegister";
 import type { UserInfo } from "@/interfaces/hook/IUseUser";
+import type { Categoria } from "@/interfaces/hook/IUseCategoria";
+import type { Service } from "@/interfaces/hook/IUseService";
+import type { EmpresaTab, HuariqueTab } from "@/interfaces/panel/mis-huariques/IHuarique";
+import type { Company } from "@/interfaces/hook/IUseCompany";
+import type { WizardView } from "./panel/mis-huariques/useHuariqueWizard";
 
 export const useAppState = () => {
   const context = useContext(AppContext);
@@ -28,8 +42,18 @@ export const useAppState = () => {
     setChangePasswordToken: (changePasswordToken: string | null) => dispatch(setChangePasswordToken(changePasswordToken)),
     setTypeUserAuth: (typeUserAuth: TypeUserAuth) => dispatch(setTypeUserAuth(typeUserAuth)),
     setUser: (user: UserInfo | null) => dispatch(setUser(user)),
-
-    
+    setCategories: (categories: Categoria[]) => dispatch(setCategories(categories)),
+    setService: (service: Service) => dispatch(setService(service)),
+    setServiceSteep: (serviceSteep: number) => dispatch(setServiceSteep(serviceSteep)),
     setRegisterUser: (registerUser: string | null) => dispatch(setRegisterUser(registerUser)),
+    setServiceLoading: (serviceLoading: boolean) => dispatch(setServiceLoading(serviceLoading)),
+    setServiceSteepInfo: (serviceSteepInfo: number) => dispatch(setServiceSteepInfo(serviceSteepInfo)),
+    setActiveInfoTab: (activeInfoTab: HuariqueTab) => dispatch(setActiveInfoTab(activeInfoTab)),
+    setCompany: (company: Company | null) => dispatch(setCompany(company)),
+    setServiceSteepEmpresa: (serviceSteepEmpresa: number) => dispatch(setServiceSteepEmpresa(serviceSteepEmpresa)),
+    setActiveEmpresaTab: (activeEmpresaTab: EmpresaTab) => dispatch(setActiveEmpresaTab(activeEmpresaTab)),
+    setWizardStack: (wizardStack: WizardView[]) => dispatch(setWizardStack(wizardStack)),
+
   };
 };
+
