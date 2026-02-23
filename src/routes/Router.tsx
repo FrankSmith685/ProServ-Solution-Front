@@ -146,7 +146,7 @@ import { CorreoPage } from "@/page/panel/menu/mi-cuenta/seguridad/correo/CorreoP
 import ProviderRoute from "./ProviderRoute";
 import { NotificacionesPage } from "@/page/panel/menu/mi-cuenta/preferencia/notificaciones/NotificacionesPage";
 import { HuariqueInfoPage } from "@/page/panel/menu/mi-huarique/info/HuariqueInfoPage";
-import { HuariqueImagenesPage } from "@/page/panel/menu/mi-huarique/imagenes/HuariqueImagenes";
+import { HuariqueMultimediaPage } from "@/page/panel/menu/mi-huarique/multimedia/HuariqueMultimedia";
 import { HuariqueMenuPage } from "@/page/panel/menu/mi-huarique/menu/HuariqueMenuPage";
 import { HuariquePromocionesPage } from "@/page/panel/menu/mi-huarique/promociones/HuariquePromocionesPage ";
 import { HuariquePublicacionPage } from "@/page/panel/menu/mi-huarique/publicacion/HuariquePublicacionPage";
@@ -154,6 +154,7 @@ import { HuariqueConfigPage } from "@/page/panel/menu/mi-huarique/configuracion/
 import { HuariqueWizardGuard } from "./HuariqueWizardGuard";
 import { useCategoria } from "@/hooks/useCategoria";
 import { HuariqueEmpresaPage } from "@/page/panel/menu/mi-huarique/empresa/HuariqueEmpresa";
+import { HuariqueStartRedirect } from "@/page/panel/menu/mi-huarique/HuariqueStartRedirect";
 // import { AuthLoader } from "@/components/loader/authLoader";
 
 // Páginas
@@ -310,12 +311,14 @@ const AppRouter = () => {
             </Route>
 
             <Route path="mi-huarique">
-              <Route index element={<Navigate to="info" replace />} />
+              {/* <Route index element={<Navigate to="info" replace />} /> */}
+              <Route index element={<HuariqueStartRedirect />} />
+
 
               <Route element={<HuariqueWizardGuard />}>
                 <Route path="empresa" element={<HuariqueEmpresaPage />} />
                 <Route path="info" element={<HuariqueInfoPage />} />
-                <Route path="imagenes" element={<HuariqueImagenesPage />} />
+                <Route path="multimedia" element={<HuariqueMultimediaPage />} />
                 <Route path="menu" element={<HuariqueMenuPage />} />
                 <Route path="promociones" element={<HuariquePromocionesPage />} />
                 <Route path="publicacion" element={<HuariquePublicacionPage />} />

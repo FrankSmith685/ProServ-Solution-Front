@@ -1,15 +1,27 @@
-import { validateHuariqueStep } from "./validateHuariqueStep";
-const STEPS = ["info", "imagenes", "menu", "promociones", "publicacion"];
+import type { UserTypeProfile } from "@/interfaces/hook/IUseUser";
 
-export const getHuariqueProgress = (serviceSteep: number): number => {
+export const getHuariqueSteps = (profileType: UserTypeProfile) => {
+  return profileType === "independiente"
+    ? ["info", "multimedia", "menu", "promociones", "publicacion"]
+    : ["empresa", "info", "multimedia", "menu", "promociones", "publicacion"];
+};
+
+import { validateHuariqueStep } from "./validateHuariqueStep";
+
+export const getHuariqueProgress = (
+  serviceSteep: number,
+  profileType: UserTypeProfile
+): number => {
+
+  const steps = getHuariqueSteps(profileType);
 
   let completed = 0;
 
-  for (const step of STEPS) {
-    if (validateHuariqueStep(step, serviceSteep)) {
+  for (const step of steps) {
+    if (validateHuariqueStep(step, serviceSteep, profileType)) {
       completed++;
     }
   }
 
-  return Math.round((completed / STEPS.length) * 100);
+  return Math.round((completed / steps.length) * 100);
 };

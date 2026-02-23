@@ -3,7 +3,7 @@ import type { EmpresaTab, HuariqueTab } from "@/interfaces/panel/mis-huariques/I
 export type HuariqueStep =
   | "empresa"
   | "info"
-  | "imagenes"
+  | "multimedia"
   | "menu"
   | "promociones"
   | "publicacion";
@@ -11,7 +11,7 @@ export type HuariqueStep =
 const STEPS: HuariqueStep[] = [
   "empresa",
   "info",
-  "imagenes",
+  "multimedia",
   "menu",
   "promociones",
   "publicacion",
@@ -38,6 +38,7 @@ export const useHuariqueWizard = () => {
 export type WizardView =
   | { view: "empresa"; tab: EmpresaTab }
   | { view: "info"; tab: HuariqueTab }
-  | { view: "imagenes" }
+  | { view: "multimedia" }
+  | { view: "menu" }
   // | { view: "promociones" }
   // | { view: "imagenes" };

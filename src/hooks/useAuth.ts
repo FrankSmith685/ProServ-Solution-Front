@@ -13,7 +13,20 @@ import type {
 } from "@/interfaces/hook/IUseAuth";
 
 export const useAuth = (): UseAuth => {
-  const { setRefreshtoken, setAccessToken, setUser } = useAppState();
+  const { 
+    setRefreshtoken, 
+    setAccessToken, 
+    setUser , 
+    setServiceSteep,
+    setVisitedServiceSteep,
+    setActiveServiceSteep, 
+    setService, 
+    setCompany, 
+    setServiceSteepInfo, 
+    setServiceSteepEmpresa, 
+    setActiveInfoTab, 
+    setActiveEmpresaTab 
+  } = useAppState();
   const navigate = useNavigate();
 
   const loginUser = async ( credentials: LoginCredentials, callback?: (response: LoginCallbackResponse) => void ): Promise<void> => {
@@ -174,6 +187,15 @@ export const useAuth = (): UseAuth => {
     setAccessToken(null);
     setRefreshtoken(null);
     setUser(null);
+    setServiceSteep(0);
+    setVisitedServiceSteep([]);
+    setActiveServiceSteep('info');
+    setService(null);
+    setCompany(null);
+    setServiceSteepInfo(0);
+    setServiceSteepEmpresa(0);
+    setActiveInfoTab("info");
+    setActiveEmpresaTab('info');
     navigate("/");
   };
 

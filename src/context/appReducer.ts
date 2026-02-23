@@ -46,6 +46,7 @@ import {
   SET_ACCESSTOKEN, 
   SET_ACTIVE_EMPRESA_TAB, 
   SET_ACTIVE_INFO_TAB, 
+  SET_ACTIVE_SERVICE_STEEP, 
   SET_CATEGORIES, 
   SET_CHANGEPASSWORDTOKEN, 
   SET_COMPANY, 
@@ -59,6 +60,7 @@ import {
   SET_SERVICE_STEEP_INFO, 
   SET_TYPE_USER_AUTH, 
   SET_USER, 
+  SET_VISITED_SERVICE_STEEP, 
   SET_WIZARD_STACK, 
   type ActionTypes 
 } from "../types/actionTypes";
@@ -190,6 +192,16 @@ export const appReducer = (state: AppState, action: ActionTypes): AppState => {
       return { 
         ...state, 
         wizardStack: action.payload 
+      };
+    case SET_ACTIVE_SERVICE_STEEP:
+      return { 
+        ...state, 
+        activeServiceSteep: action.payload 
+      };
+    case SET_VISITED_SERVICE_STEEP:
+      return { 
+        ...state, 
+        visitedServiceSteep: action.payload 
       };
 
     default:

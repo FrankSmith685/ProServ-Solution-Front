@@ -33,7 +33,9 @@ const initialState: AppState = {
   company: null,
   serviceSteepEmpresa: 0,
   activeEmpresaTab: 'info',
-  wizardStack:[]
+  wizardStack:[],
+  activeServiceSteep:'empresa',
+  visitedServiceSteep:[],
 }
 
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useLocation, Outlet, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import Header from "@/components/layouts/header/Header";
@@ -15,13 +16,15 @@ import { getPreferencesMenu } from "@/helpers/panel/mi-cuenta/getPreferencesMenu
 import { PanelStartSelector } from "@/components/panel/mis-huariques/components/PanelStartSelector";
 import { Navigate } from "react-router-dom";
 import { useUser } from "@/hooks/useUser";
+import type { UserTypeProfile } from "@/interfaces/hook/IUseUser";
+import type { ServiceSteeps } from "@/interfaces/panel/mis-huariques/IHuarique";
 
 
 const MOBILE_BREAKPOINT = 768;
 const HEADER_HEIGHT = 65;
 
 export const PanelPage: React.FC = () => {
-  const { user, serviceSteep } = useAppState();
+  const { user, serviceSteep, setActiveServiceSteep, activeServiceSteep,visitedServiceSteep, setVisitedServiceSteep,  } = useAppState();
   const { pathname } = useLocation();
   const { setProfileType } = useUser();
   const navigate = useNavigate();
@@ -29,75 +32,119 @@ export const PanelPage: React.FC = () => {
   const section = pathname.split("/")[2];
   const baseMenu: PanelMenu | undefined = sidebarMenus[section];
 
+  const getHuariqueStepPaths = (profileType: UserTypeProfile) => {
+    return profileType === "independiente"
+      ? [
+          "/panel/mi-huarique/info",
+          "/panel/mi-huarique/multimedia",
+          "/panel/mi-huarique/menu",
+          "/panel/mi-huarique/promociones",
+          "/panel/mi-huarique/publicacion",
+        ]
+      : [
+          "/panel/mi-huarique/empresa",
+          "/panel/mi-huarique/info",
+          "/panel/mi-huarique/multimedia",
+          "/panel/mi-huarique/menu",
+          "/panel/mi-huarique/promociones",
+          "/panel/mi-huarique/publicacion",
+        ];
+  };
+
+  useEffect(() => {
+    if (!user?.profileType) return;
+
+    if (user.profileType === "empresa") {
+      setActiveServiceSteep("empresa");
+
+      if (visitedServiceSteep.length === 0) {
+        setVisitedServiceSteep(["empresa"]);
+      }
+
+    } else {
+      setActiveServiceSteep("info");
+
+      if (visitedServiceSteep.length === 0) {
+        setVisitedServiceSteep(["info"]);
+      }
+    }
+
+  }, [user?.profileType]);
+
+  useEffect(() => {
+    if (!user?.profileType) return;
+    if (!pathname.startsWith("/panel/mi-huarique")) return;
+
+    const step = pathname.split("/").at(-1) as ServiceSteeps;
+    if (!step) return;
+
+    if (visitedServiceSteep.includes(step)) return;
+
+    const nextVisited = [...visitedServiceSteep, step];
+    setVisitedServiceSteep(nextVisited);
+
+  }, [pathname]);
+
+
+
+
   const currentMenu: PanelMenu | null = useMemo(() => {
     if (!user || !baseMenu) return null;
-    const STEP_ORDER = [
-      "/panel/mi-huarique/empresa",
-      "/panel/mi-huarique/info",
-      "/panel/mi-huarique/imagenes",
-      "/panel/mi-huarique/menu",
-      "/panel/mi-huarique/promociones",
-      "/panel/mi-huarique/publicacion",
-    ];
+
+    const STEP_ORDER = getHuariqueStepPaths(user.profileType);
+
     const getStepIndex = (path: string) =>
       STEP_ORDER.findIndex(p => path.startsWith(p));
 
     return {
       ...baseMenu,
       menuData: baseMenu.menuData
-      .filter(item => {
-        if (
-          !user.tieneEmpresa &&
-          item.type === "link" &&
-          item.path === "/panel/mi-huarique/empresa"
-        ) {
-          return false;
-        }
-        return true;
-      })
-      .map(item => {
-        if (item.type === "link") {
-          let stepIndex = getStepIndex(item.path);
-          if (!user.tieneEmpresa) {
-            const STEP_ORDER_NO_EMPRESA = [
-              "/panel/mi-huarique/info",
-              "/panel/mi-huarique/imagenes",
-              "/panel/mi-huarique/menu",
-              "/panel/mi-huarique/promociones",
-              "/panel/mi-huarique/publicacion",
-            ];
-
-            stepIndex = STEP_ORDER_NO_EMPRESA.findIndex(p =>
-              item.path.startsWith(p)
-            );
+        .filter(item => {
+          if (
+            user.profileType === "independiente" &&
+            item.type === "link" &&
+            item.path === "/panel/mi-huarique/empresa"
+          ) {
+            return false;
           }
+          return true;
+        })
+        .map(item => {
+          if (item.type === "link") {
+            const stepIndex = getStepIndex(item.path);
 
-          return {
-            ...item,
-            disabled: stepIndex > serviceSteep,
-          };
-        }
-
-        if (item.type === "group") {
-          if (item.label === "Seguridad") {
             return {
               ...item,
-              children: getSecurityMenu(user.metodosLogin),
+              disabled:
+                stepIndex === -1
+                  ? false
+                  : stepIndex > serviceSteep &&
+                    !visitedServiceSteep.includes(
+                      item.path.split("/").at(-1) as ServiceSteeps
+                    )
             };
           }
-          if (item.label === "Preferencias") {
-            return {
-              ...item,
-              children: getPreferencesMenu(),
-            };
+
+          if (item.type === "group") {
+            if (item.label === "Seguridad") {
+              return {
+                ...item,
+                children: getSecurityMenu(user.metodosLogin),
+              };
+            }
+            if (item.label === "Preferencias") {
+              return {
+                ...item,
+                children: getPreferencesMenu(),
+              };
+            }
           }
-        }
 
-        return item;
-      }),
-
+          return item;
+        }),
     };
-  }, [user, baseMenu, serviceSteep]);
+  }, [user, baseMenu, serviceSteep, visitedServiceSteep, activeServiceSteep]);
+
 
   const findActiveItem: FindActiveItemFn = (menuData, pathname) => {
     for (const item of menuData) {
@@ -114,19 +161,9 @@ export const PanelPage: React.FC = () => {
     return null;
   };
   
-  let activeItem: SidebarSubMenuLink | null = currentMenu
+  const activeItem: SidebarSubMenuLink | null = currentMenu
   ? findActiveItem(currentMenu.menuData, pathname)
   : null;
-
-  if (user && !user.tieneEmpresa && currentMenu) {
-    const infoItem = currentMenu.menuData.find(
-      i => i.type === "link" && i.path === "/panel/mi-huarique/info"
-    ) as SidebarSubMenuLink | undefined;
-
-    if (infoItem) {
-      activeItem = infoItem;
-    }
-  }
 
   const [isMobile, setIsMobile] = useState<boolean>(
     window.innerWidth < MOBILE_BREAKPOINT
@@ -164,8 +201,10 @@ export const PanelPage: React.FC = () => {
       if (!success) return;
       if (tipo === "empresa") {
         navigate("/panel/mi-huarique/empresa", { replace: true });
+        setActiveServiceSteep("empresa")
       } else {
         navigate("/panel/mi-huarique/info", { replace: true });
+        setActiveServiceSteep("info")
       }
     });
   };

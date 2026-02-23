@@ -13,7 +13,6 @@ export const HuariqueUbicacionTab = ({
   onChange,
 }: HuariqueInfoFormProps) => {
   const { lat, lng } = useLocation();
-  // console.log(lat, lng);
   const { getUbigeoByCoords, getDepartamentos, getProvincias, getDistritos, getCoordsByUbigeo, getAddressByCoords, searchAddress} = useUbigeo();
   const [departamentos, setDepartamentos] = useState<string[]>([]);
   const [provincias, setProvincias] = useState<string[]>([]);
@@ -53,7 +52,6 @@ export const HuariqueUbicacionTab = ({
         try {
           const ubigeo = await getUbigeoByCoords(lat, lng);
           if (!ubigeo) return;
-          console.log("uigeo",ubigeo);
           onChange("departamento", ubigeo.dep);
           onChange("provincia", ubigeo.prov);
           onChange("distrito", ubigeo.dist);

@@ -50,7 +50,21 @@ export type HuariqueStep = Parameters<WizardReturn["getNextStep"]>[0];
 // Props de acciones del wizard (guardar, validar, etc)
 export interface HuariqueWizardActionsProps {
   loading?: boolean;
-  isValidByTab: Record<HuariqueTab, boolean>;
+  isValidByTab?: Record<HuariqueTab, boolean>;
   save?: () => Promise<void>;
   quickSave?: () => Promise<void>;
 }
+
+export interface SimpleWizardActionsProps {
+  loading?: boolean;
+  isValid?: boolean;
+  save?: () => Promise<void>;
+}
+
+export type ServiceSteeps =
+  | "empresa"
+  | "info"
+  | "multimedia"
+  | "menu"
+  | "promociones"
+  | "publicacion";

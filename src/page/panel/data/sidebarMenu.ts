@@ -57,8 +57,8 @@ export const sidebarMenus: Record<string, SidebarSubMenuSection> = {
       },
       {
         type: "link",
-        label: "Imágenes",
-        path: "/panel/mi-huarique/imagenes",
+        label: "Multimedia",
+        path: "/panel/mi-huarique/multimedia",
         icon: FaImages,
         disabled: true
       },
@@ -71,7 +71,7 @@ export const sidebarMenus: Record<string, SidebarSubMenuSection> = {
       },
       {
         type: "link",
-        label: "Promociones",
+        label: "Proociones",
         path: "/panel/mi-huarique/promociones",
         icon: FaTags,
         disabled: true

@@ -1,4 +1,8 @@
+import { useAppState } from "@/hooks/useAppState";
+
 export const HuariqueMenuPage = () => {
+  const {service} = useAppState();
+  console.log("service",service)
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">

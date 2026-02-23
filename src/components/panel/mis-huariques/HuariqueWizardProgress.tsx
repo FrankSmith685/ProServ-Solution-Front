@@ -2,9 +2,8 @@
   import { useAppState } from "@/hooks/useAppState";
   // Barra de progreso del wizard de Huarique
   export const HuariqueWizardProgress = () => {
-    const { serviceSteep } = useAppState();
-    const progress = getHuariqueProgress(serviceSteep);
-
+    const { serviceSteep, user } = useAppState();
+    const progress = getHuariqueProgress(serviceSteep, user?.profileType ?? 'independiente');
     return (
       <div className="mb-6">
         <div className="flex justify-between mb-1">

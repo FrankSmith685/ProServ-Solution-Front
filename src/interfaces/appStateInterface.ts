@@ -4,7 +4,7 @@ import type { Categoria } from "./hook/IUseCategoria";
 import type { Company } from "./hook/IUseCompany";
 import type { Service } from "./hook/IUseService";
 import type { UserInfo } from "./hook/IUseUser";
-import type { EmpresaTab, HuariqueTab } from "./panel/mis-huariques/IHuarique";
+import type { EmpresaTab, HuariqueTab, ServiceSteeps } from "./panel/mis-huariques/IHuarique";
 
 export interface AppState {
   accessToken: string | null;
@@ -23,4 +23,6 @@ export interface AppState {
   serviceSteepEmpresa: number;
   activeEmpresaTab: EmpresaTab;
   wizardStack: WizardView[];
+  activeServiceSteep: ServiceSteeps;
+  visitedServiceSteep: ServiceSteeps[];
 }

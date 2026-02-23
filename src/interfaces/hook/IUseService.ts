@@ -118,4 +118,7 @@ export interface Service {
   delivery: boolean;
   ubicacionInicializada?: boolean;
   ubicacionEditada?: boolean;
+  logo?: File | string | null;
+  portada?: File | string | null;
+  galeria?: (File | string)[];
 }

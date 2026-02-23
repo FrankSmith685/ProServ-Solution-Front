@@ -24,8 +24,8 @@ export const miHuariqueMenuData: readonly SidebarSubMenuItem[] = [
   },
   {
     type: "link",
-    label: "Imágenes",
-    path: "/panel/mi-huarique/imagenes",
+    label: "Multimedia",
+    path: "/panel/mi-huarique/multimedia",
     icon: FaImages,
   },
   {

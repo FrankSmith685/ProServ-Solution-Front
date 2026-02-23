@@ -29,7 +29,6 @@ export const UserPanelItem: FC<Props> = ({
   const handleClick = (): void => {
     if (onClick) {
       onClick();
-      return;
     }
 
     if (to) {

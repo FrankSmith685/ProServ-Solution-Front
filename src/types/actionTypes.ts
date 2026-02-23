@@ -4,7 +4,7 @@ import type { Categoria } from "@/interfaces/hook/IUseCategoria";
 import type { Company } from "@/interfaces/hook/IUseCompany";
 import type { Service } from "@/interfaces/hook/IUseService";
 import type { UserInfo } from "@/interfaces/hook/IUseUser";
-import type { EmpresaTab, HuariqueTab } from "@/interfaces/panel/mis-huariques/IHuarique";
+import type { EmpresaTab, HuariqueTab, ServiceSteeps } from "@/interfaces/panel/mis-huariques/IHuarique";
 
 export const SET_ACCESSTOKEN = "SET_ACCESSTOKEN" as const;
 export const SET_REFRESHTOKEN = "SET_REFRESHTOKEN" as const;
@@ -23,6 +23,8 @@ export const SET_COMPANY = "SET_COMPANY" as const;
 export const SET_SERVICE_STEEP_EMPRESA = "SET_SERVICE_STEEP_EMPRESA" as const;
 export const SET_ACTIVE_EMPRESA_TAB = "SET_ACTIVE_EMPRESA_TAB" as const;
 export const SET_WIZARD_STACK = "SET_WIZARD_STACK" as const;
+export const SET_ACTIVE_SERVICE_STEEP = "SET_ACTIVE_SERVICE_STEEP" as const;
+export const SET_VISITED_SERVICE_STEEP = "SET_VISITED_SERVICE_STEEP" as const;
 
 export type ActionTypes =
   | { type: typeof SET_ACCESSTOKEN; payload: string | null }
@@ -37,6 +39,8 @@ export type ActionTypes =
   | { type: typeof SET_CATEGORIES; payload: Categoria[]}
   | { type: typeof SET_SERVICE; payload: Service | null }
   | { type: typeof SET_SERVICE_STEEP; payload: number}
+  | { type: typeof SET_ACTIVE_SERVICE_STEEP; payload: ServiceSteeps}
+  | { type: typeof SET_VISITED_SERVICE_STEEP; payload: ServiceSteeps[]}
   | { type: typeof SET_SERVICE_LOADING; payload: boolean}
   | { type: typeof SET_SERVICE_STEEP_INFO; payload: number}
   | { type: typeof SET_ACTIVE_INFO_TAB; payload: HuariqueTab}

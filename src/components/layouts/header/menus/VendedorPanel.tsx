@@ -10,9 +10,21 @@ import { UserPanelItem } from "../UserPanelItem";
 import { UserPanelDivider } from "../UserPanelDivider";
 import type { JSX } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useAppState } from "@/hooks/useAppState";
 
 export const VendedorPanel = (): JSX.Element => {
   const {logout} = useAuth();
+  const {
+    setServiceSteep, 
+    setVisitedServiceSteep,
+    setActiveServiceSteep, 
+    setService, 
+    setCompany, 
+    setServiceSteepInfo, 
+    setServiceSteepEmpresa, 
+    setActiveInfoTab, 
+    setActiveEmpresaTab 
+  } = useAppState();
   return (
     <>
       <UserPanelItem
@@ -25,6 +37,17 @@ export const VendedorPanel = (): JSX.Element => {
         icon={<FaStore />}
         label="Mi huarique"
         to="/panel/mi-huarique"
+        onClick={() => {
+          setServiceSteep(0);
+          setVisitedServiceSteep([]);
+          setActiveServiceSteep('info');
+          setService(null);
+          setCompany(null);
+          setServiceSteepInfo(0);
+          setServiceSteepEmpresa(0);
+          setActiveInfoTab("info");
+          setActiveEmpresaTab('info');
+        }}
       />
 
       <UserPanelItem

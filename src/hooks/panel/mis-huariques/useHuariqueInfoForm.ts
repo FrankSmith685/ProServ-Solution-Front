@@ -57,7 +57,7 @@ const mapFormToService = (form: HuariqueInfoForm): Service => ({
 // Hook que maneja el formulario de información del huarique  
 export const useHuariqueInfoForm = () => {
   // Estado global de la app
-  const {service, setService, setServiceSteep,  company, serviceSteepInfo } = useAppState();
+  const {service, setService, setServiceSteep,  company, serviceSteepInfo, user, serviceSteep } = useAppState();
   // Estado local del formulario    
   const [form, setForm] = useState<HuariqueInfoForm>(initialForm);
   // Estado de carga al guardar 
@@ -215,7 +215,16 @@ export const useHuariqueInfoForm = () => {
       const serviceData = mapFormToService(form);
       setService(serviceData);
       setSaved(true);
-      setServiceSteep(2);
+      if(user?.profileType == "empresa"){
+        if (serviceSteep < 2) {
+          setServiceSteep(2);
+        }
+            } else{
+              if (serviceSteep < 1) {
+          setServiceSteep(1);
+        }
+      }
+      
     } finally {
       setLoading(false);
     }

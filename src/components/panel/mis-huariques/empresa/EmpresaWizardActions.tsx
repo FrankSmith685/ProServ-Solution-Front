@@ -13,7 +13,7 @@ type HuariqueStep = Parameters<WizardReturn["getNextStep"]>[0];
 const HUARIQUE_STEPS = [
   "empresa",
   "info",
-  "imagenes",
+  "multimedia",
   "menu",
   "promociones",
   "publicacion",
@@ -44,6 +44,7 @@ export const EmpresaWizardActions = ({
     setActiveEmpresaTab,
     setWizardStack,
     wizardStack,
+    user
   } = useAppState();
   // Paso actual desde la URL
   let rawStep = pathname.split("/").at(-1);
@@ -57,7 +58,7 @@ export const EmpresaWizardActions = ({
 
   // Valida si se puede continuar
   const canContinue =
-    isInfoStep ? true : validateHuariqueStep(step, serviceSteep);
+    isInfoStep ? true : validateHuariqueStep(step, serviceSteep, user?.profileType ?? 'empresa');
   // Pasos anterior y siguiente
   const prevStep = wizard.getPrevStep(step);
   const nextStep = wizard.getNextStep(step);

@@ -1,5 +1,5 @@
 import { HuariqueWizardProgress } from "@/components/panel/mis-huariques/HuariqueWizardProgress";
-import { HuariqueWizardActions } from "@/components/panel/mis-huariques/HuariqueWizardActions";
+import { HuariqueWizardActions } from "@/components/panel/mis-huariques/info/HuariqueWizardActions";
 import { useHuariqueInfoForm } from "@/hooks/panel/mis-huariques/useHuariqueInfoForm";
 import { HuariqueHeader } from "../HuariqueHeader";
 import { HuariqueTabs } from "./HuariqueTabs";

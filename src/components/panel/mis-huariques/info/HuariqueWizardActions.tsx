@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 // Pasos del wizard principal
 const HUARIQUE_STEPS: readonly HuariqueStep[] = [
   "info",
-  "imagenes",
+  "multimedia",
   "menu",
   "promociones",
   "publicacion"
@@ -47,7 +47,7 @@ export const HuariqueWizardActions = ({ loading, isValidByTab, save,quickSave}: 
   const canContinue =
     step === "info"
       ? true
-      : validateHuariqueStep(step, serviceSteep);
+      : validateHuariqueStep(step, serviceSteep, user?.profileType ?? 'independiente');
 
 
   const prevStep = wizard.getPrevStep(step);
@@ -66,8 +66,8 @@ export const HuariqueWizardActions = ({ loading, isValidByTab, save,quickSave}: 
   const currentIndex = TAB_ORDER.indexOf(activeInfoTab);
 
   const isCurrentTabValid = isInfoStep
-    ? isValidByTab[activeInfoTab]
-    : canContinue;
+  ? isValidByTab?.[activeInfoTab] ?? false
+  : canContinue;
 
   const isLastInfoTab =
     isInfoStep && currentIndex === TAB_ORDER.length - 1;
@@ -98,6 +98,7 @@ export const HuariqueWizardActions = ({ loading, isValidByTab, save,quickSave}: 
     }
   };
 
+  const isEmpresaProfile = user?.profileType === "empresa";
 
   return (
     <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-between">
@@ -107,7 +108,7 @@ export const HuariqueWizardActions = ({ loading, isValidByTab, save,quickSave}: 
         onClick={onBack}
         disabled={
           isInfoStep
-            ? currentIndex === 0 && !user?.tieneEmpresa
+            ? currentIndex === 0 && !isEmpresaProfile
             : !prevStep
         }
         fullWidth
@@ -135,11 +136,7 @@ export const HuariqueWizardActions = ({ loading, isValidByTab, save,quickSave}: 
 
             const nextIndex = currentIndex + 1;
 
-            console.log(nextIndex);
-            console.log(TAB_ORDER.length);
-
             if (nextIndex < TAB_ORDER.length) {
-              console.log(TAB_ORDER[nextIndex]);
               setActiveInfoTab(TAB_ORDER[nextIndex]);
 
               if (serviceSteepInfo < nextIndex) {
@@ -155,8 +152,9 @@ export const HuariqueWizardActions = ({ loading, isValidByTab, save,quickSave}: 
             if (save) {
               await save();
             }
-
-            navigate("/panel/mi-huarique/imagenes");
+            if (nextStep) {
+              navigate(`/panel/mi-huarique/${nextStep}`);
+            }
             return;
           }
           if (nextStep) {

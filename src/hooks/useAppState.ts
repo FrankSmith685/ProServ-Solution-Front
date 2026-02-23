@@ -17,13 +17,15 @@ import {
   setCompany,
   setServiceSteepEmpresa,
   setActiveEmpresaTab,
-  setWizardStack
+  setWizardStack,
+  setActiveServiceSteep,
+  setVisitedServiceSteep
 } from "../context/actions/actions";
 import type { TypeUserAuth } from "@/interfaces/auth/IRegister";
 import type { UserInfo } from "@/interfaces/hook/IUseUser";
 import type { Categoria } from "@/interfaces/hook/IUseCategoria";
 import type { Service } from "@/interfaces/hook/IUseService";
-import type { EmpresaTab, HuariqueTab } from "@/interfaces/panel/mis-huariques/IHuarique";
+import type { EmpresaTab, HuariqueTab, ServiceSteeps } from "@/interfaces/panel/mis-huariques/IHuarique";
 import type { Company } from "@/interfaces/hook/IUseCompany";
 import type { WizardView } from "./panel/mis-huariques/useHuariqueWizard";
 
@@ -43,7 +45,7 @@ export const useAppState = () => {
     setTypeUserAuth: (typeUserAuth: TypeUserAuth) => dispatch(setTypeUserAuth(typeUserAuth)),
     setUser: (user: UserInfo | null) => dispatch(setUser(user)),
     setCategories: (categories: Categoria[]) => dispatch(setCategories(categories)),
-    setService: (service: Service) => dispatch(setService(service)),
+    setService: (service: Service | null) => dispatch(setService(service)),
     setServiceSteep: (serviceSteep: number) => dispatch(setServiceSteep(serviceSteep)),
     setRegisterUser: (registerUser: string | null) => dispatch(setRegisterUser(registerUser)),
     setServiceLoading: (serviceLoading: boolean) => dispatch(setServiceLoading(serviceLoading)),
@@ -53,6 +55,8 @@ export const useAppState = () => {
     setServiceSteepEmpresa: (serviceSteepEmpresa: number) => dispatch(setServiceSteepEmpresa(serviceSteepEmpresa)),
     setActiveEmpresaTab: (activeEmpresaTab: EmpresaTab) => dispatch(setActiveEmpresaTab(activeEmpresaTab)),
     setWizardStack: (wizardStack: WizardView[]) => dispatch(setWizardStack(wizardStack)),
+    setActiveServiceSteep: (activeServiceSteep: ServiceSteeps) => dispatch(setActiveServiceSteep(activeServiceSteep)),
+    setVisitedServiceSteep: (visitedServiceSteep: ServiceSteeps[]) => dispatch(setVisitedServiceSteep(visitedServiceSteep)),
 
   };
 };

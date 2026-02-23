@@ -53,7 +53,16 @@ const CustomButtonComponent: FC<CustomButtonProps> = ({
       disableRipple
       className={`
         transition-all flex items-center justify-center
-        ${iconOnly ? "rounded-full min-w-0! p-0! h-9! w-9! gap-0" : "rounded-md gap-2"}
+        ${iconOnly ? `
+          rounded-full min-w-0! p-0! h-9! w-9! gap-0
+          shadow-sm
+          backdrop-blur-md
+          border border-white/40
+          transition-all duration-200
+          hover:scale-105
+          hover:shadow-md
+        ` : "rounded-md gap-2"
+      }
         ${className || ""}
       `}
       sx={{
