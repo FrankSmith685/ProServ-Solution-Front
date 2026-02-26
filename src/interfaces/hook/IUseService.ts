@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type {
+  // MenuItem,
+  MenuCategoria,
+} from "@/interfaces/panel/mis-huariques/IHuariqueMenu";
 /* ================== MODELOS ================== */
 
 export interface Subcategoria {
@@ -99,6 +103,21 @@ export interface UseService {
 
 type TipoHorario = "normal" | "24h";
 
+// export interface MenuItem {
+//   id: string;
+//   nombre: string;
+//   descripcion?: string;
+//   precio: number;
+//   imagen?: string | File | null;
+//   disponible?: boolean;
+// }
+
+// export interface MenuCategoria {
+//   id: string;
+//   nombre: string;
+//   items: MenuItem[];
+// }
+
 export interface Service {
   nombre: string;
   descripcion: string;
@@ -121,4 +140,5 @@ export interface Service {
   logo?: File | string | null;
   portada?: File | string | null;
   galeria?: (File | string)[];
+  menu?: MenuCategoria[];
 }
