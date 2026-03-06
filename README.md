@@ -72,3 +72,4 @@ export default defineConfig([
 ])
 ```
 "# mappi-front-2026" 
+"# ProServ-Solution-Front" 
