@@ -1,14 +1,5 @@
-export const HuariquePromocionesPage = () => {
-  return (
-    <div className="space-y-6">
-      <header className="flex justify-between">
-        <h1 className="text-xl font-semibold">Promociones</h1>
-        <button className="btn-primary">+ Nueva promoción</button>
-      </header>
+import { HuariquePromocionesContainer } from "@/components/panel/mis-huariques/promociones/HuariquePromocionesContainer";
 
-      <p className="text-sm text-terciary">
-        Las promociones son opcionales
-      </p>
-    </div>
-  );
+export const HuariquePromocionesPage = () => {
+  return <HuariquePromocionesContainer />;
 };

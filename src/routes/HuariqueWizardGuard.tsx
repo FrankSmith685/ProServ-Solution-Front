@@ -3,21 +3,35 @@ import { validateHuariqueStep } from "@/helpers/panel/mi-huarique/validateHuariq
 import { useAppState } from "@/hooks/useAppState";
 import type { ServiceSteeps } from "@/interfaces/panel/mis-huariques/IHuarique";
 
-export const HuariqueWizardGuard = () => {
-  const { serviceSteep, serviceLoading, user, visitedServiceSteep } = useAppState();
+export const HuariqueWizardGuard = () => { 
+  const { serviceSteep, serviceLoading, user, visitedServiceSteep, service } = useAppState();
   const { pathname } = useLocation();
-
   if (!user) return null;
   if (serviceLoading || serviceSteep === null) return null;
 
-  const WIZARD_STEPS =
+  const hasMenu = (service?.menu?.length ?? 0) > 0;
+
+  const BASE_STEPS =
     user.profileType === "empresa"
-      ? ["empresa","info","multimedia","menu","promociones","publicacion"]
-      : ["info","multimedia","menu","promociones","publicacion"];
+      ? ["empresa","info","multimedia","menu"]
+      : ["info","multimedia","menu"];
+
+  const WIZARD_STEPS = hasMenu
+    ? [...BASE_STEPS, "promociones", "publicacion"]
+    : [...BASE_STEPS, "publicacion"];
 
   const currentStep = pathname.split("/").at(-1);
 
   if (!currentStep) return null;
+
+  if (currentStep === "promociones" && !hasMenu) {
+    return (
+      <Navigate
+        to="/panel/mi-huarique/menu"
+        replace
+      />
+    );
+  }
 
   const FIRST_STEP =
     user.profileType === "empresa"

@@ -71,7 +71,7 @@ export const sidebarMenus: Record<string, SidebarSubMenuSection> = {
       },
       {
         type: "link",
-        label: "Proociones",
+        label: "Promociones",
         path: "/panel/mi-huarique/promociones",
         icon: FaTags,
         disabled: true

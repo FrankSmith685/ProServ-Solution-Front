@@ -2,12 +2,13 @@ export type BaseVariant =
   | "primary"
   | "secondary"
   | "terciary"
-  | "warning";
+  | "warning"
 
 export type OutlineVariant = `${BaseVariant}-outline`;
 
 export type SpecialVariant =
-  | "primary-outline-white";
+  | "neutral-outline"
+  | "primary-outline";
 
 export type Variant =
   | BaseVariant

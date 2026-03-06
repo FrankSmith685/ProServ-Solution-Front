@@ -54,4 +54,10 @@ export const chipVariantStyles: Record<Variant, ChipVariantStyle> = {
     hoverBg: "var(--color-warning-soft)",
     border: "1px solid var(--color-warning)",
   },
+  "neutral-outline": {
+  bg: "transparent",
+  color: "var(--color-neutral)",
+  border: "1px solid var(--color-neutral-border)",
+  hoverBg: "var(--color-neutral-soft)"
+}
 };

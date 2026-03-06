@@ -1,4 +1,5 @@
 import type { BaseVariant } from "@/shared/design/types";
+import type { InputBaseComponentProps } from "@mui/material";
 import type {
   ChangeEvent,
   FocusEvent,
@@ -17,7 +18,8 @@ export type CustomInputType =
   | "email"
   | "tel"
   | "url"
-  | "time";
+  | "time"
+  | "date";
 
 export interface CustomInputProps {
   name?: string;
@@ -58,4 +60,6 @@ export interface CustomInputProps {
   ) => void;
 
   onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
+
+  inputProps?: InputBaseComponentProps;
 }

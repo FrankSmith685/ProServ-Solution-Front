@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { memo, useCallback, useMemo, useState } from "react";
 import {
   TextField,
@@ -37,110 +36,141 @@ const CustomInputComponent: FC<CustomInputProps> = ({
   autoComplete = "off",
   onFocus,
   onBlur,
-  onKeyDown
+  onKeyDown,
+  inputProps
 }) => {
+
   const isPassword = type === "password";
   const isSearch = type === "search";
   const isNumber = type === "number";
+  const isDate = type === "date";
+
   const hasStartAdornment = isSearch || icon;
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
- const handleChange = useCallback(
-  (e: ChangeEvent<HTMLInputElement>) => {
-    if (isNumber && !/^\d*$/.test(e.target.value)) return;
-    onChange(e);
-  },
-  [onChange, isNumber]
-);
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      if (isNumber && !/^\d*$/.test(e.target.value)) return;
+      onChange(e);
+    },
+    [onChange, isNumber]
+  );
 
-const sizeConfig = {
-  lg: {
-    height: 52,
-    padding: 0,
-  },
-  md: {
-    height: 44,
-    padding: 0,
-  },
-};
+  const sizeConfig = {
+    lg: {
+      height: 52,
+      padding: 0,
+    },
+    md: {
+      height: 44,
+      padding: 0,
+    },
+  };
 
-const { height, padding } = sizeConfig[size];
+  const { height, padding } = sizeConfig[size];
 
-const sxStyles = useMemo(() => ({
-  backgroundColor: "#fff",
+  const sxStyles = useMemo(() => ({
 
-  "& .MuiOutlinedInput-root": {
-    boxSizing: "border-box",
-    height: multiline ? "auto" : height,
-    padding: 0,
-    ...(multiline
-      ? {}
-      : {
-          "@media (max-width:600px)": {
-            height: size === "lg" ? 44 : 40,
-          },
-        }),
+    backgroundColor: "#fff",
 
-    "& fieldset": {
-      borderColor: neutralInput.border,
-      borderWidth: "1px",
+    "& .MuiOutlinedInput-root": {
+
+      boxSizing: "border-box",
+      height: multiline ? "auto" : height,
+      padding: 0,
+
+      ...(multiline
+        ? {}
+        : {
+            "@media (max-width:600px)": {
+              height: size === "lg" ? 44 : 40,
+            },
+          }),
+
+      "& fieldset": {
+        borderColor: neutralInput.border,
+        borderWidth: "1px",
+      },
+
+      "&:hover fieldset": {
+        borderColor: inputVariantStyles[variant].focusBorder,
+        borderWidth: "1px",
+      },
+
+      "&.Mui-focused fieldset": {
+        borderColor: inputVariantStyles[variant].focusBorder,
+        borderWidth: "1px",
+      },
     },
 
-    "&:hover fieldset": {
-      borderColor: inputVariantStyles[variant].focusBorder,
-      borderWidth: "1px",
+    "& .MuiOutlinedInput-input": {
+
+      ...(multiline
+        ? { padding: "12px 14px" }
+        : {
+            height: height,
+            padding: isDate
+              ? "0 14px"
+              : !icon
+              ? `${isSearch ? "0px" : padding} 16px`
+              : `${isSearch ? "0px" : padding} 16px ${padding} 0px`,
+            lineHeight: "1.2",
+          }),
+
+      fontSize: fontSize ?? "15px",
+      fontFamily: fontFamily ?? "Arial",
+      color: neutralInput.label,
     },
 
-    "&.Mui-focused fieldset": {
-      borderColor: inputVariantStyles[variant].focusBorder,
-      borderWidth: "1px",
+    "& .MuiInputLabel-root": {
+      fontFamily: fontFamily ?? "Arial",
+      transition: "color 0.2s ease, transform 0.2s ease",
+      padding: icon ? "0 16px" : 0,
     },
-  },
-  "& .MuiOutlinedInput-input": {
-    ...(multiline
-      ? { padding: "12px 14px" }
-      : {
-          height: height,
-          padding: !icon
-          ? `${isSearch} ? "0px" :${padding} 16px`
-          : `${isSearch} ? "0px" : ${padding} 16px ${padding} 0px`,
-          lineHeight: "1.2",
-        }),
-    fontSize: fontSize ?? "15px",
-    fontFamily: fontFamily ?? "Arial",
-    color: neutralInput.label,
-  },
-  "& .MuiInputLabel-root": {
-    fontFamily: fontFamily ?? "Arial",
-    transition: "color 0.2s ease, transform 0.2s ease",
-    padding: icon ? "0 16px" : 0,
-  },
 
-  "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-    padding: 0,
-    top: 0,
-    transform: "translate(14px, -6px) scale(0.75)",
-  },
+    "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+      padding: 0,
+      top: 0,
+      transform: "translate(14px, -6px) scale(0.75)",
+    },
 
-  "& .MuiInputLabel-outlined:not(.MuiInputLabel-shrink)": {
-    // top: error ?"35%" : "50%",
-    top: error ?"35%" : helperText ? "35%": multiline ?'0%' :"50%",
-    transform: multiline  ? "translate(14px, -100%) scale(1)" : "translate(14px, -50%) scale(1)",
-  },
-  "& .MuiOutlinedInput-root:has(input:placeholder-shown) .MuiInputLabel-root": {
-    padding: icon ? "0 16px" : undefined,
-  },
+    "& .MuiInputLabel-outlined:not(.MuiInputLabel-shrink)": {
+      top: error ? "35%" : helperText ? "35%" : multiline ? "0%" : "50%",
+      transform: multiline
+        ? "translate(14px, -100%) scale(1)"
+        : "translate(14px, -50%) scale(1)",
+    },
 
-  "& .MuiOutlinedInput-root:not(:has(input:placeholder-shown)) .MuiInputLabel-root": {
-    padding: 0,
-  },
+    "& .MuiOutlinedInput-root:has(input:placeholder-shown) .MuiInputLabel-root": {
+      padding: icon ? "0 16px" : undefined,
+    },
 
-  "& .MuiInputLabel-root.Mui-focused": {
-    color: inputVariantStyles[variant].focusBorder,
-  },
-}), [height, fontSize, fontFamily, multiline, variant,icon, padding,error,isSearch, size]);
+    "& .MuiOutlinedInput-root:not(:has(input:placeholder-shown)) .MuiInputLabel-root": {
+      padding: 0,
+    },
+
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: inputVariantStyles[variant].focusBorder,
+    },
+
+  }), [
+    height,
+    fontSize,
+    fontFamily,
+    multiline,
+    variant,
+    icon,
+    padding,
+    error,
+    isSearch,
+    size,
+    helperText,
+    isDate
+  ]);
 
   const startAdornment = useMemo(() => {
+
     if (!hasStartAdornment) return undefined;
 
     return (
@@ -155,6 +185,7 @@ const sxStyles = useMemo(() => ({
           marginRight: 0,
         }}
       >
+
         {isSearch ? (
           <Search
             sx={{
@@ -165,33 +196,46 @@ const sxStyles = useMemo(() => ({
         ) : (
           icon
         )}
+
       </InputAdornment>
     );
+
   }, [hasStartAdornment, isSearch, icon]);
 
   const [focused, setFocused] = useState<boolean>(false);
-  const shouldShrink = focused || Boolean(value);
+
+  const shouldShrink = isDate || focused || Boolean(value);
 
   return (
+
     <div style={{ position: "relative", width: fullWidth ? "100%" : "auto" }}>
+
       <TextField
         name={name}
         inputRef={inputRef}
         value={value}
         onChange={handleChange}
+
+        inputProps={inputProps}
+
         onFocus={(e) => {
           setFocused(true);
           onFocus?.(e);
         }}
+
         onBlur={(e) => {
           setFocused(false);
           onBlur?.(e);
         }}
+
         onKeyDown={onKeyDown}
+
         InputLabelProps={{
           shrink: shouldShrink,
         }}
-        placeholder={placeholder}
+
+        placeholder={isDate ? undefined : placeholder}
+
         type={
           isPassword
             ? showPassword
@@ -201,30 +245,47 @@ const sxStyles = useMemo(() => ({
             ? "text"
             : type
         }
+
         disabled={disabled}
         fullWidth={fullWidth}
         aria-label={ariaLabel}
         error={error}
         helperText={helperText}
+
         multiline={multiline}
         minRows={multiline ? rows ?? 3 : undefined}
+
         autoComplete={autoComplete}
+
         label={isSearch ? undefined : label}
         required={isSearch ? false : required}
+
         InputProps={{
+
           startAdornment: startAdornment,
+
           endAdornment: isPassword ? (
+
             <InputAdornment position="end">
+
               <IconButton onClick={() => setShowPassword((p) => !p)}>
                 {showPassword ? <VisibilityOff /> : <Visibility />}
               </IconButton>
+
             </InputAdornment>
+
           ) : null,
+
         }}
+
         sx={sxStyles}
+
       />
+
     </div>
+
   );
+
 };
 
 export const CustomInput = memo(CustomInputComponent);

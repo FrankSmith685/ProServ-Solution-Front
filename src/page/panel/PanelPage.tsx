@@ -24,7 +24,10 @@ const MOBILE_BREAKPOINT = 768;
 const HEADER_HEIGHT = 65;
 
 export const PanelPage: React.FC = () => {
-  const { user, serviceSteep, setActiveServiceSteep, activeServiceSteep,visitedServiceSteep, setVisitedServiceSteep,  } = useAppState();
+  const { user, serviceSteep, setActiveServiceSteep, activeServiceSteep,visitedServiceSteep, setVisitedServiceSteep, service } = useAppState();
+
+  const hasMenu = (service?.menu?.length ?? 0) > 0;
+
   const { pathname } = useLocation();
   const { setProfileType } = useUser();
   const navigate = useNavigate();
@@ -32,23 +35,30 @@ export const PanelPage: React.FC = () => {
   const section = pathname.split("/")[2];
   const baseMenu: PanelMenu | undefined = sidebarMenus[section];
 
-  const getHuariqueStepPaths = (profileType: UserTypeProfile) => {
-    return profileType === "independiente"
-      ? [
-          "/panel/mi-huarique/info",
-          "/panel/mi-huarique/multimedia",
-          "/panel/mi-huarique/menu",
-          "/panel/mi-huarique/promociones",
-          "/panel/mi-huarique/publicacion",
-        ]
-      : [
-          "/panel/mi-huarique/empresa",
-          "/panel/mi-huarique/info",
-          "/panel/mi-huarique/multimedia",
-          "/panel/mi-huarique/menu",
-          "/panel/mi-huarique/promociones",
-          "/panel/mi-huarique/publicacion",
-        ];
+  const getHuariqueStepPaths = (
+    profileType: UserTypeProfile,
+    hasMenu: boolean
+  ) => {
+
+    const base =
+      profileType === "independiente"
+        ? [
+            "/panel/mi-huarique/info",
+            "/panel/mi-huarique/multimedia",
+            "/panel/mi-huarique/menu",
+          ]
+        : [
+            "/panel/mi-huarique/empresa",
+            "/panel/mi-huarique/info",
+            "/panel/mi-huarique/multimedia",
+            "/panel/mi-huarique/menu",
+          ];
+
+    if (hasMenu) {
+      return [...base, "/panel/mi-huarique/promociones", "/panel/mi-huarique/publicacion"];
+    }
+
+    return [...base, "/panel/mi-huarique/publicacion"];
   };
 
   useEffect(() => {
@@ -91,7 +101,7 @@ export const PanelPage: React.FC = () => {
   const currentMenu: PanelMenu | null = useMemo(() => {
     if (!user || !baseMenu) return null;
 
-    const STEP_ORDER = getHuariqueStepPaths(user.profileType);
+    const STEP_ORDER = getHuariqueStepPaths(user.profileType, hasMenu);
 
     const getStepIndex = (path: string) =>
       STEP_ORDER.findIndex(p => path.startsWith(p));
@@ -100,6 +110,7 @@ export const PanelPage: React.FC = () => {
       ...baseMenu,
       menuData: baseMenu.menuData
         .filter(item => {
+
           if (
             user.profileType === "independiente" &&
             item.type === "link" &&
@@ -107,7 +118,17 @@ export const PanelPage: React.FC = () => {
           ) {
             return false;
           }
+
+          if (
+            !hasMenu &&
+            item.type === "link" &&
+            item.path === "/panel/mi-huarique/promociones"
+          ) {
+            return false;
+          }
+
           return true;
+
         })
         .map(item => {
           if (item.type === "link") {
@@ -143,7 +164,7 @@ export const PanelPage: React.FC = () => {
           return item;
         }),
     };
-  }, [user, baseMenu, serviceSteep, visitedServiceSteep, activeServiceSteep]);
+  }, [user, baseMenu, serviceSteep, visitedServiceSteep, activeServiceSteep,hasMenu]);
 
 
   const findActiveItem: FindActiveItemFn = (menuData, pathname) => {
