@@ -1,43 +1,87 @@
-export const tableStyles = {
+import type { SxProps, Theme } from "@mui/material/styles";
+
+interface TableStyles {
+  container: SxProps<Theme>;
+  table: SxProps<Theme>;
+  headRow: SxProps<Theme>;
+  headCell: SxProps<Theme>;
+  bodyRow: SxProps<Theme>;
+  bodyCell: SxProps<Theme>;
+  emptyCell: SxProps<Theme>;
+  skeletonCell: SxProps<Theme>;
+}
+
+export const tableStyles: TableStyles = {
   container: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: "12px",
-    border: "1px solid #E5E7EB",
-    boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
+    width: "100%",
+    maxWidth: "100%",
+    overflowX: "auto",
+    overflowY: "auto",
+    borderRadius: "16px",
+    border: "1px solid hsl(var(--color-border))",
+    backgroundColor: "var(--color-surface)",
+    boxShadow: "0 8px 24px rgba(0,0,0,0.06)",
+  },
+
+  table: {
+    width: "100%",
+    minWidth: 700,
+    borderCollapse: "separate",
+    borderSpacing: 0,
+    backgroundColor: "transparent",
   },
 
   headRow: {
-    backgroundColor: "#F0F7F4",
+    backgroundColor: "hsl(var(--color-primary) / 0.08)",
   },
 
   headCell: {
-    fontWeight: 600,
-    fontSize: "0.9rem",
-    color: "#374151",
-    textTransform: "uppercase",
-    letterSpacing: "0.03em",
-    paddingY: "12px",
-    paddingX: "16px",
-    borderBottom: "2px solid #E5E7EB",
+    position: "sticky",
+    top: 0,
+    zIndex: 2,
+    fontWeight: 700,
+    fontSize: "0.875rem",
+    color: "var(--color-text)",
+    backgroundColor: "var(--color-surface-soft-light)",
+    borderBottom: "1px solid hsl(var(--color-border))",
     whiteSpace: "nowrap",
+    px: 2,
+    py: 1.75,
+  },
+
+  bodyRow: {
+    transition: "background-color 0.2s ease",
+    "&:hover": {
+      backgroundColor: "hsl(var(--color-primary) / 0.06)",
+    },
+    "&:last-child td": {
+      borderBottom: "none",
+    },
   },
 
   bodyCell: {
-    color: "#374151",
-    fontSize: "0.9rem",
-    paddingY: "12px",
-    paddingX: "16px",
-    borderBottom: "1px solid #F0F0F0",
+    fontSize: "0.9375rem",
+    color: "var(--color-text)",
+    borderBottom: "1px solid hsl(var(--color-border) / 0.7)",
+    backgroundColor: "transparent",
     verticalAlign: "middle",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
+    px: 2,
+    py: 1.5,
+    wordBreak: "break-word",
   },
 
   emptyCell: {
     textAlign: "center",
-    color: "#6B7280",
-    fontStyle: "italic",
-    paddingY: "24px",
+    py: 5,
+    px: 2,
+    color: "var(--color-text-muted)",
+    fontSize: "0.95rem",
+    borderBottom: "none",
+  },
+
+  skeletonCell: {
+    borderBottom: "1px solid hsl(var(--color-border) / 0.7)",
+    px: 2,
+    py: 1.5,
   },
 };

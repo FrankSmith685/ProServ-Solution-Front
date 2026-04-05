@@ -1,67 +1,26 @@
-// import type { AppState } from "../interfaces/appStateInterface";
-// import { SET_ACCESSTOKEN, SET_LOGOUT, SET_REFRESHTOKEN, SET_REGISTERUSER, type ActionTypes } from "../types/actionTypes";
-
-// export const appReducer = (state: AppState, action: ActionTypes): AppState => {
-//   switch (action.type) {
-//     case SET_ACCESSTOKEN:
-//       return { ...state, registerUser: action.payload };
-//       case SET_REFRESHTOKEN:
-//       return { ...state, registerUser: action.payload };
-//       case SET_REGISTERUSER:
-//       return { ...state, registerUser: action.payload };
-//     case SET_LOGOUT:
-//       localStorage.removeItem("accessToken");
-//       localStorage.removeItem("refreshToken");
-//       return {
-//         ...state,
-//         // accessToken: null,
-//         // refreshToken: null,
-//         // user: null,
-//         // modal: true,
-//         // modeLogin: "login_one",
-//         // mode: 'login',
-//         // authLoginForm: {
-//         //   correo: '',
-//         //   contraseña: '',
-//         // },
-//         // authRegisterForm: {
-//         //   tipoUsuario: 0,
-//         //   correo: '',
-//         //   contraseña: '',
-//         //   nombre: '',
-//         //   apellido: '',
-//         //   razon_social: null,
-//         //   tipoDocumento: 0,
-//         //   nroDocumento: '',
-//         //   telefono: '',
-//         //   telefono_movil: '',
-//         // }
-//       }
-//     default:
-//       return state;
-//   }
-// };
 import type { AppState } from "../interfaces/appStateInterface";
 import { 
-  SET_ACCESSTOKEN, 
-  SET_ACTIVE_EMPRESA_TAB, 
-  SET_ACTIVE_INFO_TAB, 
-  SET_ACTIVE_SERVICE_STEEP, 
+  SET_ACCESSTOKEN,
   SET_CATEGORIES, 
   SET_CHANGEPASSWORDTOKEN, 
   SET_COMPANY, 
+  SET_CONFIG_HOME, 
+  SET_CONFIG_NOSOTROS, 
+  SET_CONTACTS, 
+  SET_HERO_SLIDE, 
+  SET_LOG, 
   SET_LOGOUT, 
+  SET_PROJECTS, 
+  SET_QUOTES, 
   SET_REFRESHTOKEN, 
-  SET_REGISTERUSER, 
-  SET_SERVICE, 
-  SET_SERVICE_LOADING, 
-  SET_SERVICE_STEEP, 
-  SET_SERVICE_STEEP_EMPRESA, 
-  SET_SERVICE_STEEP_INFO, 
+  SET_REGISTERUSER,
+  SET_REQUESTS,
+  SET_SERVICES, 
+  SET_SITE_CONFIG, 
+  SET_TAGS, 
+  SET_TESTIMONIALS, 
   SET_TYPE_USER_AUTH, 
   SET_USER, 
-  SET_VISITED_SERVICE_STEEP, 
-  SET_WIZARD_STACK, 
   type ActionTypes 
 } from "../types/actionTypes";
 
@@ -143,65 +102,85 @@ export const appReducer = (state: AppState, action: ActionTypes): AppState => {
         registerUser: null,
         changePasswordToken: null
       };
+    
+
+    case SET_HERO_SLIDE:
+      return { 
+        ...state, 
+        heroSlide: action.payload 
+      };
+
+    case SET_CONFIG_HOME:
+      return { 
+        ...state, 
+        configHome: action.payload 
+      };
+
+    case SET_CONFIG_NOSOTROS:
+      return { 
+        ...state, 
+        configNosotros: action.payload 
+      };
+
+    case SET_SERVICES:
+      return { 
+        ...state, 
+        services: action.payload 
+      };
+
+    case SET_PROJECTS:
+      return { 
+        ...state, 
+        projects: action.payload 
+      };
+    
     case SET_CATEGORIES:
       return { 
         ...state, 
         categories: action.payload 
       };
-    case SET_SERVICE:
+    
+    case SET_TAGS:
       return { 
         ...state, 
-        service: action.payload 
+        tags: action.payload 
       };
-    case SET_SERVICE_STEEP:
+     case SET_CONTACTS:
       return { 
         ...state, 
-        serviceSteep: action.payload 
+        contacts: action.payload 
       };
-    case SET_SERVICE_LOADING:
+    case SET_TESTIMONIALS:
       return { 
         ...state, 
-        serviceLoading: action.payload 
+        testimonials: action.payload 
       };
-    case SET_SERVICE_STEEP_INFO:
+    case SET_QUOTES:
       return { 
         ...state, 
-        serviceSteepInfo: action.payload 
+        quotes: action.payload 
       };
-    case SET_ACTIVE_INFO_TAB:
+
+      case SET_REQUESTS:
       return { 
         ...state, 
-        activeInfoTab: action.payload 
+        requests: action.payload 
       };
-    case SET_COMPANY:
+
+      case SET_COMPANY:
       return { 
         ...state, 
         company: action.payload 
       };
-    case SET_SERVICE_STEEP_EMPRESA:
+      case SET_SITE_CONFIG:
       return { 
         ...state, 
-        serviceSteepEmpresa: action.payload 
+        siteConfig: action.payload 
       };
-    case SET_ACTIVE_EMPRESA_TAB:
+      case SET_LOG:
       return { 
         ...state, 
-        activeEmpresaTab: action.payload 
-      };
-    case SET_WIZARD_STACK:
-      return { 
-        ...state, 
-        wizardStack: action.payload 
-      };
-    case SET_ACTIVE_SERVICE_STEEP:
-      return { 
-        ...state, 
-        activeServiceSteep: action.payload 
-      };
-    case SET_VISITED_SERVICE_STEEP:
-      return { 
-        ...state, 
-        visitedServiceSteep: action.payload 
+        logs: action.payload 
       };
 
     default:

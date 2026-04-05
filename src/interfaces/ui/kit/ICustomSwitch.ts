@@ -1,6 +1,6 @@
 import type { ChangeEvent } from "react";
 
-export type SwitchSize = "lg" | "md";
+export type SwitchSize = "sm" | "lg" | "md";
 
 export type SwitchVariant = keyof typeof import(
   "@/shared/design/inputVariants"

@@ -4,12 +4,14 @@ import { Navigate, Outlet } from "react-router-dom";
 
 const PublicRoute = () => {
   const token = localStorage.getItem("accessToken");
-  const rol = localStorage.getItem("rol");
+
+  // const rol = localStorage.getItem("rol");
+  // console.log("rol", rol)
 
   if (token) {
     // Si está logueado y es admin, redirigir al panel de administrador
-    if (rol === "admin") return <Navigate to="/panel-admin/dashboard" replace />;
-    return <Navigate to="/" replace />;
+    return <Navigate to="/panel" replace />;
+    // return <Navigate to="/" replace />;
   }
 
   return <Outlet />;

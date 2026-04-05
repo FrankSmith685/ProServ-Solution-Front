@@ -7,24 +7,34 @@ import {
   SET_REGISTERUSER, 
   SET_TYPE_USER_AUTH, 
   SET_USER,
-  SET_SERVICE,
-  SET_SERVICE_STEEP,
-  SET_SERVICE_LOADING,
-  SET_SERVICE_STEEP_INFO,
-  SET_ACTIVE_INFO_TAB,
+  SET_HERO_SLIDE,
+  SET_CONFIG_HOME,
+  SET_CONFIG_NOSOTROS,
+  SET_SERVICES,
+  SET_PROJECTS,
+  SET_TAGS,
+  SET_CONTACTS,
+  SET_TESTIMONIALS,
+  SET_QUOTES,
+  SET_REQUESTS,
   SET_COMPANY,
-  SET_SERVICE_STEEP_EMPRESA,
-  SET_ACTIVE_EMPRESA_TAB,
-  SET_WIZARD_STACK,
-  SET_ACTIVE_SERVICE_STEEP,
-  SET_VISITED_SERVICE_STEEP
+  SET_SITE_CONFIG,
+  SET_LOG
 } from "../../types/actionTypes";
-import type { UserInfo } from "@/interfaces/hook/IUseUser";
-import type { Categoria } from "@/interfaces/hook/IUseCategoria";
-import type { Service } from "@/interfaces/hook/IUseService";
-import type { EmpresaTab, HuariqueTab, ServiceSteeps } from "@/interfaces/panel/mis-huariques/IHuarique";
-import type { Company } from "@/interfaces/hook/IUseCompany";
-import type { WizardView } from "@/hooks/panel/mis-huariques/useHuariqueWizard";
+import type { ConfigNosotros } from "@/interfaces/hook/IUseConfigNosotros";
+import type { AuthUser } from "@/interfaces/hook/IUseAuth";
+import type { HeroSlide } from "@/interfaces/hook/IUseHeroSlides";
+import type { ConfigHome } from "@/interfaces/hook/IUseConfigHome";
+import type { Service } from "@/interfaces/hook/IUseServices";
+import type { Project } from "@/interfaces/hook/IUseProjects";
+import type { Category } from "@/interfaces/hook/IUseCategories";
+import type { Tag } from "@/interfaces/hook/IUseTags";
+import type { Contact } from "@/interfaces/hook/IUseContacts";
+import type { Testimonial } from "@/interfaces/hook/IUseTestimonials";
+import type { Quote } from "@/interfaces/hook/IUseQuotes";
+import type { RequestItem } from "@/interfaces/hook/IUseRequests";
+import type { Company, SiteConfigMap } from "@/interfaces/hook/IUseConfigSite";
+import type { AdminLog } from "@/interfaces/hook/IUseAdminLogs";
 
 export const setAccessToken = (accessToken: string | null) => ({
   type: SET_ACCESSTOKEN,
@@ -46,44 +56,71 @@ export const setTypeUserAuth = (typeUserAuth: TypeUserAuth) => ({
   payload: typeUserAuth,
 });
 
-export const setUser = (user: UserInfo | null) => ({
+export const setUser = (user: AuthUser | null) => ({
   type: SET_USER,
   payload: user,
 });
 
-export const setCategories = (categories: Categoria[]) => ({
-  type: SET_CATEGORIES,
-  payload: categories,
-});
-
-export const setService = (service: Service | null) => ({
-  type: SET_SERVICE,
-  payload: service,
-});
 
 export const setRegisterUser = (registerUser: string | null) => ({
   type: SET_REGISTERUSER,
   payload: registerUser,
 });
 
-export const setServiceSteep = (serviceSteep: number) => ({
-  type: SET_SERVICE_STEEP,
-  payload: serviceSteep,
+
+export const setHeroSlide = (heroSlide: HeroSlide[]) => ({
+  type: SET_HERO_SLIDE,
+  payload: heroSlide,
 });
 
-export const setServiceLoading = (serviceLoading: boolean) => ({
-  type: SET_SERVICE_LOADING,
-  payload: serviceLoading,
+export const setConfigHome = (configHome: ConfigHome) => ({
+  type: SET_CONFIG_HOME,
+  payload: configHome,
 });
 
-export const setServiceSteepInfo = (serviceSteepInfo: number) => ({
-  type: SET_SERVICE_STEEP_INFO,
-  payload: serviceSteepInfo,
+export const setConfigNosotros = (configNosotros: ConfigNosotros) => ({
+  type: SET_CONFIG_NOSOTROS,
+  payload: configNosotros,
 });
 
-export const setActiveInfoTab = (activeInfoTab: HuariqueTab) => ({
-  type: SET_ACTIVE_INFO_TAB,
-  payload: activeInfoTab,
+export const setServices = (services: Service[]) => ({
+  type: SET_SERVICES,
+  payload: services,
+});
+
+export const setProjects = (projects: Project[]) => ({
+  type: SET_PROJECTS,
+  payload: projects,
+});
+
+export const setCategories = (categories: Category[]) => ({
+  type: SET_CATEGORIES,
+  payload: categories,
+});
+
+export const setTags = (tags: Tag[]) => ({
+  type: SET_TAGS,
+  payload: tags,
+});
+
+export const setContacts = (contacts: Contact[]) => ({
+  type: SET_CONTACTS,
+  payload: contacts,
+});
+
+export const setTestimonials = (testimonials: Testimonial[]) => ({
+  type: SET_TESTIMONIALS,
+  payload: testimonials,
+});
+
+export const setQuotes = (quotes: Quote[]) => ({
+  type: SET_QUOTES,
+  payload: quotes,
+});
+
+export const setRequests = (requests: RequestItem[]) => ({
+  type: SET_REQUESTS,
+  payload: requests,
 });
 
 export const setCompany = (company: Company | null) => ({
@@ -91,27 +128,12 @@ export const setCompany = (company: Company | null) => ({
   payload: company,
 });
 
-export const setServiceSteepEmpresa = (serviceSteepEmpresa: number) => ({
-  type: SET_SERVICE_STEEP_EMPRESA,
-  payload: serviceSteepEmpresa,
+export const setSiteConfig = (siteConfig: SiteConfigMap) => ({
+  type: SET_SITE_CONFIG,
+  payload: siteConfig,
 });
 
-export const setActiveEmpresaTab = (activeEmpresaTab: EmpresaTab) => ({
-  type: SET_ACTIVE_EMPRESA_TAB,
-  payload: activeEmpresaTab,
-});
-
-export const setWizardStack = (wizardStack: WizardView[]) => ({
-  type: SET_WIZARD_STACK,
-  payload: wizardStack,
-});
-
-export const setActiveServiceSteep = (activeServiceSteep: ServiceSteeps) => ({
-  type: SET_ACTIVE_SERVICE_STEEP,
-  payload: activeServiceSteep,
-});
-
-export const setVisitedServiceSteep = (visitedServiceSteep: ServiceSteeps[]) => ({
-  type: SET_VISITED_SERVICE_STEEP,
-  payload: visitedServiceSteep,
+export const setLogs = (logs: AdminLog[]) => ({
+  type: SET_LOG,
+  payload: logs,
 });

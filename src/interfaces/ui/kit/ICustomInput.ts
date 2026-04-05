@@ -8,7 +8,7 @@ import type {
   Ref,
 } from "react";
 
-export type InputSize = "md" | "lg";
+export type InputSize = "sm" | "md" | "lg";
 
 export type CustomInputType =
   | "text"

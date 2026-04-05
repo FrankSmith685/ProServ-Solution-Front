@@ -16,7 +16,8 @@ const CustomLinkComponent: FC<CustomLinkProps> = ({
   underline = "hover",
   target = "_self",
   onClick,
-  className
+  className,
+  sx
 }) => {
   const styles = linkVariantStyles[variant];
 
@@ -35,12 +36,12 @@ const CustomLinkComponent: FC<CustomLinkProps> = ({
     <MuiLink
       {...linkProps}
       underline={underline}
-      className={className}
+      className={`
+        inline-flex items-center gap-1
+        transition-colors duration-200 cursor-pointer
+        ${className ?? ""}
+      `}
       sx={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "0.35rem",
-
         fontSize: fontSize ?? {
           xs: "0.9rem",
           md: "1rem",
@@ -48,12 +49,10 @@ const CustomLinkComponent: FC<CustomLinkProps> = ({
         fontWeight,
         fontFamily,
         color: styles.color,
-        transition: "color 0.2s ease",
-        cursor: "pointer",
-
         "&:hover": {
           color: styles.hoverColor,
         },
+        ...sx,
       }}
     >
       {icon}

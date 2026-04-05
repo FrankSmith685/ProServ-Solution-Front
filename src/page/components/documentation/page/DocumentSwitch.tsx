@@ -29,7 +29,7 @@ const DocumentSwitch: FC = () => {
     { name: "label", description: "Texto del interruptor", type: "string", defaultValue: `"Activar notificaciones"` },
     { name: "checked", description: "Estado del switch", type: "boolean", defaultValue: "false" },
     { name: "variant", description: "Variante de color", type: "BaseVariant", defaultValue: `"primary"` },
-    { name: "size", description: "Tamaño del switch", type: `"md" | "lg"`, defaultValue: `"lg"` },
+    { name: "size", description: "Tamaño del switch", type: ` "sm" | "md" | "lg"`, defaultValue: `"lg"` },
     { name: "fontSize", description: "Tamaño del texto", type: "string", defaultValue: `"auto"` },
     { name: "fontFamily", description: "Fuente del label", type: "string", defaultValue: `"Arial"` },
     { name: "disabled", description: "Deshabilitar componente", type: "boolean", defaultValue: "false" },
@@ -78,10 +78,11 @@ const DocumentSwitch: FC = () => {
               onChange={(e) =>
                 setState(p => ({
                   ...p,
-                  size: e.target.value as "md" | "lg",
+                  size: e.target.value as "sm" | "md" | "lg",
                 }))
               }
               options={[
+                { value: "sm", label: "Small" },
                 { value: "md", label: "Medium" },
                 { value: "lg", label: "Large" },
               ]}

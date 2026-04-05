@@ -1,38 +1,40 @@
 import type { BaseVariant } from "./types";
 
-export const inputVariantStyles: Record<
-  BaseVariant,
-  {
-    border: string;
-    focusBorder: string;
-    label: string;
-  }
-> = {
-  primary: {
-    border: "var(--color-primary)",
-    focusBorder: "var(--color-primary)",
-    label: "var(--color-primary)",
-  },
-  secondary: {
-    border: "var(--color-secondary)",
-    focusBorder: "var(--color-secondary)",
-    label: "var(--color-secondary)",
-  },
-  terciary: {
-    border: "var(--color-terciary)",
-    focusBorder: "var(--color-terciary)",
-    label: "var(--color-terciary)",
-  },
-  warning: {
-    border: "var(--color-warning)",
-    focusBorder: "var(--color-warning)",
-    label: "var(--color-warning)",
-  },
+type InputVariantStyle = {
+  border: string;
+  focusBorder: string;
+  label: string;
+  placeholder?: string;
 };
 
-export const neutralInput = {
-  border: "#ccc",
-  focusBorder: "#999",
-  label: "#666",
-  placeholder: "#9CA3AF",
+export const inputVariantStyles: Record<BaseVariant, InputVariantStyle> = {
+  primary: {
+    border: "hsl(var(--color-border))",
+    focusBorder: "hsl(var(--color-primary))",
+    label: "hsl(var(--color-primary))",
+  },
+
+  secondary: {
+    border: "hsl(var(--color-border))",
+    focusBorder: "hsl(var(--color-secondary))",
+    label: "hsl(var(--color-secondary))",
+  },
+
+  terciary: {
+    border: "hsl(var(--color-border))",
+    focusBorder: "hsl(var(--color-terciary))",
+    label: "hsl(var(--color-terciary))",
+  },
+
+  warning: {
+    border: "hsl(var(--color-border))",
+    focusBorder: "hsl(var(--color-warning))",
+    label: "hsl(var(--color-warning))",
+  },
+
+  error: {
+    border: "hsl(var(--color-border))",
+    focusBorder: "hsl(var(--color-error))",
+    label: "hsl(var(--color-error))",
+  },
 };

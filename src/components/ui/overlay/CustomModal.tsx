@@ -28,7 +28,6 @@ const CustomModalComponent: FC<CustomModalProps> = ({
   mainClassName = "",
   containerClassName = "",
 }): JSX.Element => {
-
   const handleClose = (_: object, reason: string) => {
     if (!allowBackdropClose && reason === "backdropClick") return;
     onClose();
@@ -43,21 +42,22 @@ const CustomModalComponent: FC<CustomModalProps> = ({
       disableScrollLock={false}
       sx={{
         "& .MuiDialog-container": {
-          padding: 0,          // 🔥 CLAVE
+          padding: 0,
           margin: 0,
           width: "100%",
           height: "100%",
         },
       }}
       PaperProps={{
-        className: `
-          !overflow-hidden
-          bg-linear-to-br from-white/95 to-primary/5
-          border border-white/40
-          backdrop-blur-2xl
-          shadow-[0_40px_90px_rgba(0,0,0,.25)]
-          flex flex-col
-        `,
+        className: clsx(
+          "!overflow-hidden flex flex-col",
+          "bg-surface-soft",
+          "border border-border",
+          "backdrop-blur-2xl",
+          "text-[var(--color-text)]",
+          "shadow-[0_40px_90px_rgba(0,0,0,.25)]",
+          "dark:shadow-[0_40px_90px_rgba(0,0,0,.6)]"
+        ),
         sx: {
           width: width ?? "100%",
           maxWidth: "100%",
@@ -69,20 +69,27 @@ const CustomModalComponent: FC<CustomModalProps> = ({
       }}
       slotProps={{
         backdrop: {
-          className: "bg-black/60 backdrop-blur-xl",
+          className: "bg-black/50 backdrop-blur-md",
         },
       }}
     >
-      {/* HEADER */}
-      {header !== undefined && header !== null && (
-        <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-white/70 backdrop-blur-xl border-b border-white/40">
-          {header}
-        </header>
-      )}
-
-      {header === undefined && title && (
-        <header className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-white/70 backdrop-blur-xl border-b border-white/40">
-          <h2 className="text-lg font-bold">{title}</h2>
+      {/* ================= HEADER ================= */}
+      {(header !== undefined || title) && (
+        <header
+          className="
+            sticky top-0 z-20
+            flex items-center justify-between
+            px-6 py-4
+            bg-surface-soft
+            backdrop-blur-xl
+            border-b border-border
+          "
+        >
+          {header ?? (
+            <h2 className="text-lg font-bold text-(--color-text)">
+              {title}
+            </h2>
+          )}
 
           {closeButton && (
             <CustomButton
@@ -90,16 +97,19 @@ const CustomModalComponent: FC<CustomModalProps> = ({
               ariaLabel="Cerrar modal"
               onClick={onClose}
               variant="secondary-outline"
-              icon={<CloseIcon sx={{ fontSize: 20 }} />}
+              className="text-(--color-text)! hover:bg-muted!"
+              icon={<CloseIcon sx={{ fontSize: 20 }} className="text-inherit" />}
             />
           )}
         </header>
       )}
 
-      {/* BODY */}
+      {/* ================= BODY ================= */}
       <main
         className={clsx(
-          "flex-1 overflow-auto responsive-padding px-5.5!",
+          "flex-1 overflow-auto responsive-padding",
+          "bg-surface-soft-light",
+          "text-(--color-text)",
           mainClassName
         )}
       >
@@ -108,9 +118,17 @@ const CustomModalComponent: FC<CustomModalProps> = ({
         </div>
       </main>
 
-      {/* FOOTER */}
-      {footer !== undefined && footer !== null && (
-        <footer className="sticky bottom-0 z-20 bg-white/75 backdrop-blur-xl border-t border-white/40 p-5 flex justify-end gap-3">
+      {/* ================= FOOTER ================= */}
+      {footer && (
+        <footer
+          className="
+            sticky bottom-0 z-20
+            bg-surface-soft
+            backdrop-blur-xl
+            border-t border-border
+            p-5 flex justify-end gap-3
+          "
+        >
           {footer}
         </footer>
       )}

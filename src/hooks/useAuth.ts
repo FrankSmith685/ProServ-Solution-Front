@@ -1,212 +1,112 @@
 import { useNavigate } from "react-router-dom";
-import { api } from "../api/apiConfig";
+import { api, apiWithAuth } from "../api/apiConfig";
 import { handleApiError } from "../api/apiError";
 import { useAppState } from "./useAppState";
 
 import type {
-  ApiSuccessResponse,
   LoginCredentials,
+  LoginResponse,
   LoginCallbackResponse,
-  BasicCallback,
-  SocialLoginPayload,
-  UseAuth
+  UseAuth,
+  MeResponse
 } from "@/interfaces/hook/IUseAuth";
+import type { BasicCallback } from "@/interfaces/helpers/IBasicCallbacks";
 
 export const useAuth = (): UseAuth => {
-  const { 
-    setRefreshtoken, 
-    setAccessToken, 
-    setUser , 
-    setServiceSteep,
-    setVisitedServiceSteep,
-    setActiveServiceSteep, 
-    setService, 
-    setCompany, 
-    setServiceSteepInfo, 
-    setServiceSteepEmpresa, 
-    setActiveInfoTab, 
-    setActiveEmpresaTab 
-  } = useAppState();
+  const { setRefreshtoken, setAccessToken, setUser } = useAppState();
   const navigate = useNavigate();
 
-  const loginUser = async ( credentials: LoginCredentials, callback?: (response: LoginCallbackResponse) => void ): Promise<void> => {
+  const loginUser = async (
+    credentials: LoginCredentials,
+    callback?: (response: LoginCallbackResponse) => void
+  ): Promise<void> => {
     try {
-      const response = await api.post<ApiSuccessResponse>(
-        "/auth/login",
-        credentials
-      );
+      const { data } = await api.post<LoginResponse>("/auth/login", credentials);
+      const { success, message, data: payload } = data;
 
-      const { success, message, accessToken, refreshToken, field } =
-        response.data;
+      if (success && payload?.accessToken && payload?.refreshToken) {
+        console.log(payload.accessToken);
+        setAccessToken(payload.accessToken);
+        setRefreshtoken(payload.refreshToken);
 
-      if (success && accessToken && refreshToken) {
-        setAccessToken(accessToken);
-        setRefreshtoken(refreshToken);
-        callback?.({ success, message });
-      } else {
+        // await getCurrentUser();
+
         callback?.({
-          success: false,
-          message: message ?? "Credenciales incorrectas",
-          field,
+          success: true,
+          message
         });
+        return;
       }
-    } catch (error) {
-      const handled = handleApiError(error);
+
       callback?.({
         success: false,
-        message: handled.message,
+        message: message ?? "Credenciales incorrectas"
+      });
+    } catch (error) {
+      const handled = handleApiError(error);
+
+      callback?.({
+        success: false,
+        message: handled.message
       });
     }
   };
 
-  const sendResetEmail = async ( correo: string, callback?: BasicCallback ): Promise<void> => {
-    try {
-      const response = await api.post<ApiSuccessResponse>(
-        "/auth/send-reset-email",
-        { correo }
-      );
-
-      const { success, message } = response.data;
-
-      callback?.({
-        success,
-        message: message ?? "Correo de recuperación enviado",
-      });
-    } catch (error) {
-      const handled = handleApiError(error);
-      callback?.({
-        success: false,
-        message:
-          handled.message || "Error al enviar el correo de recuperación",
-      });
-    }
-  };
-
-  const validateResetToken = async ( token: string, callback?: BasicCallback ): Promise<void> => {
-    try {
-      const response = await api.post<ApiSuccessResponse>(
-        "/auth/validate-reset-token",
-        { token }
-      );
-      const { success, message } = response.data;
-      callback?.({ success, message });
-
-    } catch (error) {
-      const handled = handleApiError(error);
-      callback?.({
-        success: false,
-        message: handled.message || "Token inválido o expirado",
-      });
-    }
-  };
-
-  const resetPassword = async ( token: string, nuevaContraseña: string, callback?: BasicCallback ): Promise<void> => {
-    try {
-      const response = await api.post<ApiSuccessResponse>(
-        "/auth/reset-password",
-        { token, nuevaContraseña }
-      );
-      const { success, message } = response.data;
-      callback?.({
-        success,
-        message: message ?? "Contraseña cambiada correctamente",
-      });
-    } catch (error) {
-      const handled = handleApiError(error);
-      callback?.({
-        success: false,
-        message: handled.message || "Error al restablecer la contraseña",
-      });
-    }
-  };
-
-  const loginOrRegisterUser = async ( data: SocialLoginPayload, callback?: BasicCallback ): Promise<void> => {
-    try {
-      const response = await api.post<ApiSuccessResponse>("/auth", data);
-      const { success, message, accessToken, refreshToken } = response.data;
-      if (success && accessToken && refreshToken) {
-        setAccessToken(accessToken);
-        setRefreshtoken(refreshToken);
-        callback?.({ success, message });
-      } else {
-        callback?.({
-          success: false,
-          message: message ?? "Error desconocido",
-        });
-      }
-    } catch (error) {
-      const handled = handleApiError(error);
-      callback?.({
-        success: false,
-        message: handled.message || "Error en autenticación automática",
-      });
-    }
-  };
-
-  const registerUser = async (
-    data: {
-      nombre?: string;
-      apellido?: string;
-      correo: string;
-      telefono?: string;
-      dni?: string;
-      contrasena?: string;
-      proveedor: "correo" | "google";
-      type_user?: number;
-    },
+  const validateResetToken = async (
+    token: string,
     callback?: BasicCallback
   ): Promise<void> => {
     try {
-      const response = await api.post<ApiSuccessResponse>(
-        "/auth/register",
-        data
+      const { data } = await api.post<LoginResponse>(
+        "/auth/validate-reset-token",
+        { token }
       );
 
-      const { success, message, accessToken, refreshToken } = response.data;
-
-      if (success && accessToken && refreshToken) {
-        setAccessToken(accessToken);
-        setRefreshtoken(refreshToken);
-      }
+      const { success, message } = data;
 
       callback?.({
         success,
-        message: message ?? "Registro exitoso",
+        message
       });
-
     } catch (error) {
       const handled = handleApiError(error);
+
       callback?.({
         success: false,
-        message: handled.message || "Error al registrar usuario",
+        message: handled.message || "Token inválido o expirado"
       });
     }
   };
 
-  const logout = () => {
+  const logout = (): void => {
     setAccessToken(null);
     setRefreshtoken(null);
     setUser(null);
-    setServiceSteep(0);
-    setVisitedServiceSteep([]);
-    setActiveServiceSteep('info');
-    setService(null);
-    setCompany(null);
-    setServiceSteepInfo(0);
-    setServiceSteepEmpresa(0);
-    setActiveInfoTab("info");
-    setActiveEmpresaTab('info');
-    navigate("/");
+    navigate("/admin");
   };
 
+  const getCurrentUser = async (): Promise<void> => {
+    try {
+      const { data } = await apiWithAuth.get<MeResponse>("/auth/me");
+
+      if (data.success && data.data) {
+        setUser(data.data);
+      }
+    } catch (error) {
+      const handled = handleApiError(error);
+      console.error("Error obteniendo usuario:", handled.message);
+
+      // opcional: si falla, limpias sesión
+      setUser(null);
+      setAccessToken(null);
+      setRefreshtoken(null);
+    }
+  };
 
   return {
     loginUser,
-    sendResetEmail,
     validateResetToken,
-    resetPassword,
-    loginOrRegisterUser,
-    registerUser,
-    logout
+    logout,
+    getCurrentUser
   };
 };

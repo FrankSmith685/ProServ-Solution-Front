@@ -17,13 +17,20 @@ import AppRouter from './routes/Router.tsx';
 import { AppProvider } from './context/appProvider.tsx';
 // import HeaderNav from './components/HeaderNav/HeaderNav.tsx';
 import { BrowserRouter } from 'react-router-dom';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 // import AuthModal from './components/auth/AuthModal.tsx';
 // import { CustomNotificaciones } from './components/ui/CustomNotification.tsx';
 // import Footer from './components/footer/Footer.tsx';
 
 // const theme = createTheme();
 
+
+
 createRoot(document.getElementById('root')!).render(
+  <QueryClientProvider client={queryClient}>
   <BrowserRouter>
     <AppProvider>
       {/* <ThemeProvider theme={theme}>
@@ -34,4 +41,5 @@ createRoot(document.getElementById('root')!).render(
       </ThemeProvider> */}
   </AppProvider>
   </BrowserRouter>
+  </QueryClientProvider>
 );

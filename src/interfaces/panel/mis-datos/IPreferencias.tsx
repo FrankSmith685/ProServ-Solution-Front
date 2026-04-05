@@ -1,4 +1,4 @@
-import type { TipoNotificacion } from "@/interfaces/hook/IUseNotificaciones";
+import type { TipoNotificacion } from "@/interfaces/hook/IUseTags";
 import type { IconType } from "react-icons";
 
 export interface NotificacionesListProps {

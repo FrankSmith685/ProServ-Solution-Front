@@ -7,27 +7,40 @@ import {
   setChangePasswordToken,
   setTypeUserAuth,
   setUser,
-  setCategories,
-  setService,
+
   setRegisterUser,
-  setServiceSteep,
-  setServiceLoading,
-  setServiceSteepInfo,
-  setActiveInfoTab,
+
+  setHeroSlide,
+  setConfigHome,
+  setConfigNosotros,
+  setServices,
+  setProjects,
+  setCategories,
+  setTags,
+  setContacts,
+  setTestimonials,
+  setQuotes,
+  setRequests,
   setCompany,
-  setServiceSteepEmpresa,
-  setActiveEmpresaTab,
-  setWizardStack,
-  setActiveServiceSteep,
-  setVisitedServiceSteep
+  setSiteConfig,
+  setLogs
+
 } from "../context/actions/actions";
 import type { TypeUserAuth } from "@/interfaces/auth/IRegister";
-import type { UserInfo } from "@/interfaces/hook/IUseUser";
-import type { Categoria } from "@/interfaces/hook/IUseCategoria";
-import type { Service } from "@/interfaces/hook/IUseService";
-import type { EmpresaTab, HuariqueTab, ServiceSteeps } from "@/interfaces/panel/mis-huariques/IHuarique";
-import type { Company } from "@/interfaces/hook/IUseCompany";
-import type { WizardView } from "./panel/mis-huariques/useHuariqueWizard";
+import type { ConfigNosotros } from "@/interfaces/hook/IUseConfigNosotros";
+import type { AuthUser } from "@/interfaces/hook/IUseAuth";
+import type { HeroSlide } from "@/interfaces/hook/IUseHeroSlides";
+import type { ConfigHome } from "@/interfaces/hook/IUseConfigHome";
+import type { Service } from "@/interfaces/hook/IUseServices";
+import type { Project } from "@/interfaces/hook/IUseProjects";
+import type { Category } from "@/interfaces/hook/IUseCategories";
+import type { Tag } from "@/interfaces/hook/IUseTags";
+import type { Contact } from "@/interfaces/hook/IUseContacts";
+import type { Testimonial } from "@/interfaces/hook/IUseTestimonials";
+import type { RequestItem } from "@/interfaces/hook/IUseRequests";
+import type { Quote } from "@/interfaces/hook/IUseQuotes";
+import type { Company, SiteConfigMap } from "@/interfaces/hook/IUseConfigSite";
+import type { AdminLog } from "@/interfaces/hook/IUseAdminLogs";
 
 export const useAppState = () => {
   const context = useContext(AppContext);
@@ -43,20 +56,27 @@ export const useAppState = () => {
     setRefreshtoken: (refreshToken: string | null) => dispatch(setRefreshtoken(refreshToken)),
     setChangePasswordToken: (changePasswordToken: string | null) => dispatch(setChangePasswordToken(changePasswordToken)),
     setTypeUserAuth: (typeUserAuth: TypeUserAuth) => dispatch(setTypeUserAuth(typeUserAuth)),
-    setUser: (user: UserInfo | null) => dispatch(setUser(user)),
-    setCategories: (categories: Categoria[]) => dispatch(setCategories(categories)),
-    setService: (service: Service | null) => dispatch(setService(service)),
-    setServiceSteep: (serviceSteep: number) => dispatch(setServiceSteep(serviceSteep)),
+    setUser: (user: AuthUser | null) => dispatch(setUser(user)),
+    
     setRegisterUser: (registerUser: string | null) => dispatch(setRegisterUser(registerUser)),
-    setServiceLoading: (serviceLoading: boolean) => dispatch(setServiceLoading(serviceLoading)),
-    setServiceSteepInfo: (serviceSteepInfo: number) => dispatch(setServiceSteepInfo(serviceSteepInfo)),
-    setActiveInfoTab: (activeInfoTab: HuariqueTab) => dispatch(setActiveInfoTab(activeInfoTab)),
+
+    setHeroSlide: (heroSlide: HeroSlide[]) => dispatch(setHeroSlide(heroSlide)),
+    setConfigHome: (configHome: ConfigHome) => dispatch(setConfigHome(configHome)),
+    setConfigNosotros: (configNosotros: ConfigNosotros) => dispatch(setConfigNosotros(configNosotros)),
+    setServices: (services: Service[]) => dispatch(setServices(services)),
+    setProjects: (projects: Project[]) => dispatch(setProjects(projects)),
+    setCategories: (categories: Category[]) => dispatch(setCategories(categories)),
+    setTags: (tags: Tag[]) => dispatch(setTags(tags)),
+    setContacts: (contacts: Contact[]) => dispatch(setContacts(contacts)),
+    setTestimonials: (testimonials: Testimonial[]) => dispatch(setTestimonials(testimonials)),
+    setQuotes: (quotes: Quote[]) => dispatch(setQuotes(quotes)),
+    setRequests: (requests: RequestItem[]) => dispatch(setRequests(requests)),
     setCompany: (company: Company | null) => dispatch(setCompany(company)),
-    setServiceSteepEmpresa: (serviceSteepEmpresa: number) => dispatch(setServiceSteepEmpresa(serviceSteepEmpresa)),
-    setActiveEmpresaTab: (activeEmpresaTab: EmpresaTab) => dispatch(setActiveEmpresaTab(activeEmpresaTab)),
-    setWizardStack: (wizardStack: WizardView[]) => dispatch(setWizardStack(wizardStack)),
-    setActiveServiceSteep: (activeServiceSteep: ServiceSteeps) => dispatch(setActiveServiceSteep(activeServiceSteep)),
-    setVisitedServiceSteep: (visitedServiceSteep: ServiceSteeps[]) => dispatch(setVisitedServiceSteep(visitedServiceSteep)),
+    setSiteConfig: (siteConfig: SiteConfigMap) => dispatch(setSiteConfig(siteConfig)),
+    setLogs: (logs: AdminLog[]) => dispatch(setLogs(logs)),
+
+  
+    
 
   };
 };

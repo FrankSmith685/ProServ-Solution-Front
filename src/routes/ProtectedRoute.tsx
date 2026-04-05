@@ -1,12 +1,15 @@
+import { useAppState } from "@/hooks/useAppState";
 import { Navigate, Outlet } from "react-router-dom";
 
-const isAuthenticated = () => {
-  const token = localStorage.getItem("accessToken");
-  return token !== null;
-};
 
 const ProtectedRoute = () => {
-  return isAuthenticated() ? <Outlet /> : <Navigate to="/" replace />;
+  const { accessToken } = useAppState();
+
+  if (!accessToken) {
+    return <Navigate to="/admin/login" replace />;
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

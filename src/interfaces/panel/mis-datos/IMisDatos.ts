@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { UserInfo } from "@/interfaces/hook/IUseUser";
+import type { UserInfo } from "@/interfaces/hook/IUseRequests";
 
 export type MisDatosTab = "general" | "perfil" | "documentos" | "ubicacion";
 

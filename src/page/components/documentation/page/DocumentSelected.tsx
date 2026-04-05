@@ -6,7 +6,7 @@ import type { PropItem } from "@/interfaces/ui/documents/IDocumentComponents";
 import {
   DEFAULT_FONT_FAMILY,
   DEFAULT_FONT_SIZE,
-  FONT_FAMILIES
+  FONT_FAMILIES,
 } from "@/constant/font";
 
 import { CustomSelected } from "@/components/ui/kit/CustomSelected";
@@ -37,8 +37,8 @@ const DocumentSelected: FC = () => {
     { name: "value", description: "Valor seleccionado", type: "string", defaultValue: `""` },
     { name: "options", description: "Opciones disponibles", type: "CustomSelectOption[]", required: true },
     { name: "variant", description: "Variante de color", type: "BaseVariant", defaultValue: `"primary"` },
-    { name: "size", description: "Tamaño", type: `"md" | "lg"`, defaultValue: `"lg"` },
-    { name: "fontFamily", description: "Fuente", type: "string", defaultValue: `"Arial"` },
+    { name: "size", description: "Tamaño", type: `"sm" | "md" | "lg"`, defaultValue: `"lg"` },
+    { name: "fontFamily", description: "Fuente", type: "string", defaultValue: `"Inter"` },
     { name: "fontSize", description: "Tamaño de fuente", type: "string", defaultValue: `"auto"` },
     { name: "disabled", description: "Deshabilita", type: "boolean", defaultValue: "false" },
     { name: "fullWidth", description: "Ocupar ancho completo", type: "boolean", defaultValue: "false" },
@@ -47,18 +47,20 @@ const DocumentSelected: FC = () => {
   return (
     <DocumentComponent
       name="Select Personalizado"
-      description="Select estilizado con variantes, tamaños, tipografía y soporte full width."
+      description="Select estilizado con variantes modernas, tamaños, tipografía y soporte full width."
       props={props}
       controls={
-        <div className="
-          rounded-2xl
-          border border-white/60
-          bg-linear-to-br from-white/95 to-primary/5
-          backdrop-blur
-          shadow-[0_10px_30px_rgba(0,0,0,.06)]
-          p-6
-        ">
-          <p className="text-xs font-bold text-gray-500 mb-3">
+        <div
+          className="
+            rounded-2xl
+            border border-border
+            bg-surface-glass
+            backdrop-blur-xl
+            shadow-sm
+            p-6
+          "
+        >
+          <p className="text-xs font-semibold text-muted-foreground mb-4 uppercase tracking-wider">
             Controles
           </p>
 
@@ -68,7 +70,7 @@ const DocumentSelected: FC = () => {
               label="Texto del label"
               value={state.label}
               onChange={(e) =>
-                setState(p => ({ ...p, label: e.target.value }))
+                setState((p) => ({ ...p, label: e.target.value }))
               }
               fullWidth
             />
@@ -77,9 +79,9 @@ const DocumentSelected: FC = () => {
               label="Variante"
               value={state.variant}
               onChange={(e) =>
-                setState(p => ({
+                setState((p) => ({
                   ...p,
-                  variant: e.target.value as BaseVariant
+                  variant: e.target.value as BaseVariant,
                 }))
               }
               options={[
@@ -87,6 +89,7 @@ const DocumentSelected: FC = () => {
                 { value: "secondary", label: "Secondary" },
                 { value: "terciary", label: "Terciary" },
                 { value: "warning", label: "Warning" },
+                { value: "error", label: "Error" },
               ]}
               fullWidth
             />
@@ -95,12 +98,13 @@ const DocumentSelected: FC = () => {
               label="Tamaño"
               value={state.size}
               onChange={(e) =>
-                setState(p => ({
+                setState((p) => ({
                   ...p,
-                  size: e.target.value as "md" | "lg"
+                  size: e.target.value as "sm" | "md" | "lg",
                 }))
               }
               options={[
+                { value: "sm", label: "Small" },
                 { value: "md", label: "Medium" },
                 { value: "lg", label: "Large" },
               ]}
@@ -111,9 +115,9 @@ const DocumentSelected: FC = () => {
               label="Font size (ej: 14px)"
               value={state.fontSize === "default" ? "" : state.fontSize}
               onChange={(e) =>
-                setState(p => ({
+                setState((p) => ({
                   ...p,
-                  fontSize: e.target.value || "default"
+                  fontSize: e.target.value || "default",
                 }))
               }
               placeholder="Default"
@@ -124,9 +128,9 @@ const DocumentSelected: FC = () => {
               label="Font family"
               value={state.fontFamily}
               onChange={(e) =>
-                setState(p => ({
+                setState((p) => ({
                   ...p,
-                  fontFamily: String(e.target.value)
+                  fontFamily: String(e.target.value),
                 }))
               }
               options={FONT_FAMILIES}
@@ -137,9 +141,9 @@ const DocumentSelected: FC = () => {
               label="Valor"
               value={state.value}
               onChange={(e) =>
-                setState(p => ({
+                setState((p) => ({
                   ...p,
-                  value: String(e.target.value)
+                  value: String(e.target.value),
                 }))
               }
               options={OPTIONS}
@@ -150,7 +154,10 @@ const DocumentSelected: FC = () => {
               label="Full width"
               checked={state.fullWidth}
               onChange={(e) =>
-                setState(p => ({ ...p, fullWidth: e.target.checked }))
+                setState((p) => ({
+                  ...p,
+                  fullWidth: e.target.checked,
+                }))
               }
             />
 
@@ -158,27 +165,41 @@ const DocumentSelected: FC = () => {
               label="Disabled"
               checked={state.disabled}
               onChange={(e) =>
-                setState(p => ({ ...p, disabled: e.target.checked }))
+                setState((p) => ({
+                  ...p,
+                  disabled: e.target.checked,
+                }))
               }
             />
           </div>
         </div>
       }
       preview={
-        <CustomSelected
-          label={state.label}
-          value={state.value}
-          onChange={(e) =>
-            setState(p => ({ ...p, value: String(e.target.value) }))
-          }
-          options={OPTIONS}
-          variant={state.variant}
-          size={state.size}
-          fontSize={state.fontSize === "default" ? undefined : state.fontSize}
-          fontFamily={state.fontFamily}
-          disabled={state.disabled}
-          fullWidth={state.fullWidth}
-        />
+         <div className="flex items-center justify-center p-6 w-full">
+            <div className="w-full max-w-xl">
+              <CustomSelected
+                label={state.label}
+                value={state.value}
+                onChange={(e) =>
+                  setState((p) => ({
+                    ...p,
+                    value: String(e.target.value),
+                  }))
+                }
+                options={OPTIONS}
+                variant={state.variant}
+                size={state.size}
+                fontSize={
+                  state.fontSize === "default"
+                    ? undefined
+                    : state.fontSize
+                }
+                fontFamily={state.fontFamily}
+                disabled={state.disabled}
+                fullWidth={state.fullWidth}
+              />
+            </div>
+        </div>
       }
     />
   );

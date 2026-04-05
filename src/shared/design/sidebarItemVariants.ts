@@ -18,16 +18,6 @@ export const sidebarItemVariantStyles: Record<
     indicator: "bg-secondary",
     hover: "hover:text-secondary",
   },
-  terciary: {
-    text: "text-terciary",
-    indicator: "bg-terciary",
-    hover: "hover:text-terciary",
-  },
-  warning: {
-    text: "text-warning",
-    indicator: "bg-warning",
-    hover: "hover:text-warning",
-  },
 
   /* ---------- Outline ---------- */
   "primary-outline": {
@@ -40,14 +30,9 @@ export const sidebarItemVariantStyles: Record<
     indicator: "bg-secondary",
     hover: "hover:text-secondary",
   },
-  "terciary-outline": {
-    text: "text-terciary",
-    indicator: "bg-terciary",
-    hover: "hover:text-terciary",
-  },
-  "warning-outline": {
-    text: "text-warning",
-    indicator: "bg-warning",
-    hover: "hover:text-warning",
+  "primary-outline-white": {
+    text: "text-white",
+    indicator: "bg-white",
+    hover: "hover:text-white",
   },
 };

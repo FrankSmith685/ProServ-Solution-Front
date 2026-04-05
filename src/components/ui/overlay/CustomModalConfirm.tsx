@@ -17,7 +17,7 @@ export const CustomModalConfirm: FC<CustomModalConfirmProps> = ({
   loading = false,
   children,
 
-  width = "420px",
+  width = "min(420px, 95vw)", // ✅ responsive width
   allowBackdropClose = true,
 }) => {
   return (
@@ -27,14 +27,17 @@ export const CustomModalConfirm: FC<CustomModalConfirmProps> = ({
       title={title}
       width={width}
       allowBackdropClose={allowBackdropClose}
-      mainClassName="flex items-center justify-center"
-      containerClassName="!p-0 w-full text-center"
+      mainClassName="flex items-center justify-center px-3 sm:px-0"
+      containerClassName="!p-0 w-full text-center "
       footer={
-        <div className="flex justify-end gap-3 w-full">
+        // ✅ RESPONSIVE FOOTER
+        <div className="flex flex-col sm:flex-row gap-3 sm:justify-end w-full">
           <CustomButton
             text={cancelText}
             variant="secondary-outline"
             onClick={onClose}
+            className="w-full! sm:w-auto! px-4!"
+            fontSize="14px"
           />
 
           <CustomButton
@@ -42,12 +45,18 @@ export const CustomModalConfirm: FC<CustomModalConfirmProps> = ({
             variant="primary"
             onClick={onConfirm}
             loading={loading}
+            className="w-full! sm:w-auto! px-4!"
+            fontSize="14px"
           />
         </div>
       }
     >
-      <div className="flex flex-col gap-4 items-start w-full">
-        <p className="text-sm text-gray-700">{message}</p>
+      {/* ✅ CONTENT RESPONSIVE */}
+      <div className="flex flex-col gap-4 items-start w-full px-1 sm:px-0">
+        <p className="text-sm text-muted-foreground text-left">
+          {message}
+        </p>
+
         {children}
       </div>
     </CustomModal>

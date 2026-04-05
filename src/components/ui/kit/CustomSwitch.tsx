@@ -10,6 +10,7 @@ import type {
 const sizeScaleMap: Record<SwitchSize, number> = {
   lg: 1,
   md: 0.9,
+  sm: 0.8,
 };
 
 const CustomSwitchComponent: FC<CustomSwitchProps> = ({
@@ -36,7 +37,7 @@ const CustomSwitchComponent: FC<CustomSwitchProps> = ({
     transform: `scale(${baseScale})`,
     transition: "transform 0.2s ease",
     "@media (max-width:600px)": {
-      transform: `scale(${baseScale - 0.1})`,
+      transform: `scale(${Math.max(baseScale - 0.1, 0.7)})`,
     },
     "& .MuiSwitch-switchBase.Mui-checked": {
       color: current.focusBorder,
@@ -57,6 +58,11 @@ const CustomSwitchComponent: FC<CustomSwitchProps> = ({
     },
   }), [baseScale, current.focusBorder]);
 
+  const fontSizeBySize = {
+    sm: "13px",
+    md: "14px",
+    lg: "16px",
+  };
 
   return (
     <FormControlLabel
@@ -77,10 +83,16 @@ const CustomSwitchComponent: FC<CustomSwitchProps> = ({
 
         "& .MuiFormControlLabel-label": {
           fontFamily,
-          fontSize: fontSize ?? (size === "lg" ? "16px" : "15px"),
+          fontSize: fontSize ?? fontSizeBySize[size],
 
           "@media (max-width:600px)": {
-            fontSize: fontSize ?? (size === "lg" ? "15px" : "14px"),
+            fontSize:
+              fontSize ??
+              (size === "lg"
+                ? "15px"
+                : size === "md"
+                ? "14px"
+                : "13px"),
           },
 
           color: disabled ? "text.disabled" : "text.primary",

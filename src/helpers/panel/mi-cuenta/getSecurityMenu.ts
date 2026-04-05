@@ -5,7 +5,7 @@ import {
   FaLink,
 } from "react-icons/fa";
 import type { SidebarSubMenuLink } from "@/interfaces/ui/navigation/ICustomSidebarSubMenu";
-import type { LoginProvider } from "@/interfaces/hook/IUseUser";
+import type { LoginProvider } from "@/interfaces/hook/IUseRequests";
 
 export const getSecurityMenu = (
   metodosLogin: LoginProvider[]

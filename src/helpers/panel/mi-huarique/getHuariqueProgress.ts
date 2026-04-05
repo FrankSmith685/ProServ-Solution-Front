@@ -1,4 +1,4 @@
-import type { UserTypeProfile } from "@/interfaces/hook/IUseUser";
+import type { UserTypeProfile } from "@/interfaces/hook/IUseRequests";
 
 export const getHuariqueSteps = (profileType: UserTypeProfile) => {
   return profileType === "independiente"

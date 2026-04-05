@@ -5,7 +5,7 @@ export interface DocumentSelectedState {
   value: string;
   label: string;
   disabled: boolean;
-  size: "md" | "lg";
+  size: "sm" | "md" | "lg";
   fontFamily: string;
   fontSize: string;
   fullWidth: boolean;

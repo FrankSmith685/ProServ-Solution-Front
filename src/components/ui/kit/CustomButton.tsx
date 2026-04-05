@@ -21,23 +21,32 @@ const CustomButtonComponent: FC<CustomButtonProps> = ({
   fontWeight,
   className,
   iconOnly,
+  component,
+  to,
+  href,
 }) => {
-  const styles = buttonVariantStyles[variant];
-
-  const sizeConfig = {
-    lg: {
-      height: "clamp(48px, 6vw, 52px)",
-      fontSize: "clamp(1rem, 2.5vw, 1.1rem)",
-      padding: "0 clamp(16px, 4vw, 20px)",
-    },
-    md: {
-      height: "clamp(40px, 6vw, 44px)",
-      fontSize: "clamp(0.95rem, 2.5vw, 1rem)",
-      padding: "0 clamp(14px, 4vw, 18px)",
-    },
-  };
-
-  const currentSize = sizeConfig[size];
+  const sizeStyles = {
+  lg: `
+    h-[52px] text-base px-5
+    max-[600px]:h-[44px] max-[600px]:text-sm
+    max-[390px]:h-[40px] max-[390px]:text-xs
+  `,
+  md: `
+    h-[44px] text-sm px-4
+    max-[600px]:h-[40px] max-[600px]:text-xs
+    max-[390px]:h-[38px] max-[390px]:text-xs
+  `,
+  sm: `
+    h-[36px] text-xs px-3
+    max-[600px]:h-[34px]
+    max-[390px]:h-[32px]
+  `,
+};
+  const iconSize = {
+  sm: "w-7 h-7 max-[600px]:w-6 max-[600px]:h-6",
+  md: "w-8 h-8 max-[600px]:w-7 max-[600px]:h-7",
+  lg: "w-9 h-9 max-[600px]:w-8 max-[600px]:h-8",
+};
 
   return (
     <Button
@@ -51,48 +60,61 @@ const CustomButtonComponent: FC<CustomButtonProps> = ({
       color="inherit"
       disableElevation
       disableRipple
+      {...(component ? { component } : {})}
+      {...(to ? { to } : {})}
+      {...(href ? { href } : {})}
       className={`
-        transition-all flex items-center justify-center
-        ${iconOnly ? `
-          rounded-full min-w-0! p-0! h-9! w-9! gap-0
-          shadow-sm
-          backdrop-blur-md
-          border border-white/40
-          transition-all duration-200
-          hover:scale-105
-          hover:shadow-md
-        ` : "rounded-md gap-2"
-      }
+        flex items-center justify-center
+        font-medium
+        transition-all duration-200
+
+        ${fullWidth ? "w-full" : "w-auto"}
+
+        ${
+          iconOnly
+            ? `${iconSize[size]} rounded-full p-0`
+            : `rounded-lg gap-2 ${sizeStyles[size]}`
+        }
+
+        ${buttonVariantStyles[variant]}
+
+        ${uppercase ? "uppercase tracking-wide" : ""}
+        ${loading ? "opacity-80" : ""}
+        ${
+          disabled
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:scale-[1.02] active:scale-[0.98]"
+        }
+
         ${className || ""}
       `}
-      sx={{
-        height: iconOnly ? 36 : currentSize.height,
-        width: iconOnly ? 36 : undefined,
-        padding: iconOnly ? 0 : currentSize.padding,
-        minWidth: 0,
-
+      style={{
+        fontFamily: fontFamily ?? "var(--font-primary)",
+        fontSize: fontSize,
         fontWeight: fontWeight ?? 600,
-        fontSize: fontSize ?? currentSize.fontSize,
-        fontFamily: fontFamily ?? "arial",
-        textTransform: uppercase ? "uppercase" : "none",
-
-        backgroundColor: styles.bg,
-        color: styles.color,
-        border: styles.border,
-
-        "&:hover": { backgroundColor: styles.hover },
-        "&.Mui-disabled": {
-          backgroundColor: "#e0e0e0",
-          color: "#9e9e9e",
-        },
       }}
       startIcon={
         loading ? (
           <CircularProgress size={18} color="inherit" />
-        ) : (!iconOnly ? icon : null)
+        ) : !iconOnly && icon ? (
+          // 🔥 ICONOS HEREDAN COLOR DEL BOTÓN
+          typeof icon === "object"
+            ? (icon as React.ReactElement)
+            : icon
+        ) : null
       }
+    //   sx={{
+    //   all: "unset",
+    // }}
     >
-      {iconOnly ? icon : loading ? "Cargando..." : text}
+      {iconOnly
+        ? // 🔥 ICON ONLY también hereda color
+          typeof icon === "object"
+          ? (icon as React.ReactElement)
+          : icon
+        : loading
+        ? "Cargando..."
+        : text}
     </Button>
   );
 };

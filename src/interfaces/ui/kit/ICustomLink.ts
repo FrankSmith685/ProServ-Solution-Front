@@ -1,10 +1,11 @@
 import type { ReactNode, MouseEvent } from "react";
 import type { BaseVariant } from "@/shared/design/types";
+import type { SxProps, Theme } from "@mui/material";
 
 export type LinkUnderline = "always" | "hover" | "none";
 
 export interface CustomLinkProps {
-  text: string;
+  text: ReactNode;
   to?: string;
   href?: string;
   variant?: BaseVariant;
@@ -16,4 +17,5 @@ export interface CustomLinkProps {
   target?: "_blank" | "_self";
   onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
   className?: string;
+  sx?: SxProps<Theme>;
 };

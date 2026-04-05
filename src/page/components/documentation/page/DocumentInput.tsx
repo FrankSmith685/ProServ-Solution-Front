@@ -15,7 +15,10 @@ import {
 import { TfiEmail } from "react-icons/tfi";
 import type { DocumentInputState } from "@/interfaces/ui/documents/IDocumentInput";
 import type { BaseVariant } from "@/shared/design/types";
-import type { CustomInputType, InputSize } from "@/interfaces/ui/kit/ICustomInput";
+import type {
+  CustomInputType,
+  InputSize,
+} from "@/interfaces/ui/kit/ICustomInput";
 
 const DocumentInput: FC = () => {
   const [state, setState] = useState<DocumentInputState>({
@@ -41,8 +44,8 @@ const DocumentInput: FC = () => {
     { name: "label", description: "Texto del label", type: "string", defaultValue: `"Campo de texto"` },
     { name: "value", description: "Valor del input", type: "string", defaultValue: `""` },
     { name: "variant", description: "Variante de color", type: "BaseVariant", defaultValue: `"primary"` },
-    { name: "size", description: "Tamaño", type: `"md" | "lg"`, defaultValue: `"lg"` },
-    { name: "fontFamily", description: "Fuente", type: "string", defaultValue: `"Arial"` },
+    { name: "size", description: "Tamaño", type: `"sm" | "md" | "lg"`, defaultValue: `"lg"` },
+    { name: "fontFamily", description: "Fuente", type: "string", defaultValue: `"Inter"` },
     { name: "fontSize", description: "Tamaño del texto", type: "string", defaultValue: `"auto"` },
     { name: "disabled", description: "Deshabilita el componente", type: "boolean", defaultValue: "false" },
     { name: "fullWidth", description: "Ocupar ancho completo", type: "boolean", defaultValue: "false" },
@@ -51,7 +54,7 @@ const DocumentInput: FC = () => {
     { name: "helperText", description: "Texto de ayuda", type: "string", defaultValue: `""` },
     { name: "multiline", description: "Habilitar textarea", type: "boolean", defaultValue: "false" },
     { name: "rows", description: "Número de filas", type: "number", defaultValue: "3" },
-    { name: "type", description: "Tipo de input", type: `"text" | "number"`, defaultValue: `"text"` },
+    { name: "type", description: "Tipo de input", type: `"text" | "password" | "email" | "number" | "date" | "time"`, defaultValue: `"text"` },
     { name: "icon", description: "Ícono opcional", type: "ReactNode" },
   ];
 
@@ -61,26 +64,46 @@ const DocumentInput: FC = () => {
       description="Input estilizado con variantes, tamaños, tipografía, estados, multiline y soporte de ícono."
       props={props}
       controls={
-        <div className="rounded-2xl border border-white/60 bg-linear-to-br from-white/95 to-primary/5 backdrop-blur shadow-[0_10px_30px_rgba(0,0,0,.06)] p-6">
-          <p className="text-xs font-bold text-gray-500 mb-3">Controles</p>
+        <div
+          className="
+            rounded-2xl
+            border border-border
+            bg-surface-glass
+            backdrop-blur-xl
+            shadow-sm
+            p-6
+          "
+        >
+          <p className="text-xs font-semibold text-muted-foreground mb-4 uppercase tracking-wider">
+            Controles
+          </p>
 
           <div className="flex flex-col gap-4">
+
             <CustomInput
               label="Texto del label"
               value={state.label}
-              onChange={(e) => setState(p => ({ ...p, label: e.target.value }))}
+              onChange={(e) =>
+                setState((p) => ({ ...p, label: e.target.value }))
+              }
               fullWidth
             />
 
             <CustomSelected
               label="Variante"
               value={state.variant}
-              onChange={(e) => setState(p => ({ ...p, variant: e.target.value as BaseVariant }))}
+              onChange={(e) =>
+                setState((p) => ({
+                  ...p,
+                  variant: e.target.value as BaseVariant,
+                }))
+              }
               options={[
                 { value: "primary", label: "Primary" },
                 { value: "secondary", label: "Secondary" },
                 { value: "terciary", label: "Terciary" },
                 { value: "warning", label: "Warning" },
+                { value: "error", label: "Error" },
               ]}
               fullWidth
             />
@@ -88,8 +111,14 @@ const DocumentInput: FC = () => {
             <CustomSelected
               label="Tamaño"
               value={state.size}
-              onChange={(e) => setState(p => ({ ...p, size: e.target.value as InputSize }))}
+              onChange={(e) =>
+                setState((p) => ({
+                  ...p,
+                  size: e.target.value as InputSize,
+                }))
+              }
               options={[
+                { value: "sm", label: "Small" },
                 { value: "md", label: "Medium" },
                 { value: "lg", label: "Large" },
               ]}
@@ -100,7 +129,10 @@ const DocumentInput: FC = () => {
               label="Font size (ej: 14px)"
               value={state.fontSize === "default" ? "" : state.fontSize}
               onChange={(e) =>
-                setState(p => ({ ...p, fontSize: e.target.value || "default" }))
+                setState((p) => ({
+                  ...p,
+                  fontSize: e.target.value || "default",
+                }))
               }
               placeholder="Default"
               fullWidth
@@ -110,73 +142,165 @@ const DocumentInput: FC = () => {
               label="Font family"
               value={state.fontFamily}
               onChange={(e) =>
-                setState(p => ({ ...p, fontFamily: String(e.target.value) }))
+                setState((p) => ({
+                  ...p,
+                  fontFamily: String(e.target.value),
+                }))
               }
               options={FONT_FAMILIES}
               fullWidth
             />
 
-            <CustomSwitch label="Full width" checked={state.fullWidth} onChange={(e) => setState(p => ({ ...p, fullWidth: e.target.checked }))} />
-            <CustomSwitch label="Disabled" checked={state.disabled} onChange={(e) => setState(p => ({ ...p, disabled: e.target.checked }))} />
+            <CustomSwitch
+              label="Full width"
+              checked={state.fullWidth}
+              onChange={(e) =>
+                setState((p) => ({
+                  ...p,
+                  fullWidth: e.target.checked,
+                }))
+              }
+            />
 
-            <CustomInput label="Placeholder" value={state.placeholder} onChange={(e) => setState(p => ({ ...p, placeholder: e.target.value }))} />
+            <CustomSwitch
+              label="Disabled"
+              checked={state.disabled}
+              onChange={(e) =>
+                setState((p) => ({
+                  ...p,
+                  disabled: e.target.checked,
+                }))
+              }
+            />
 
-            <CustomInput label="Helper text" value={state.helperText} onChange={(e) => setState(p => ({ ...p, helperText: e.target.value }))} />
+            <CustomInput
+              label="Placeholder"
+              value={state.placeholder}
+              onChange={(e) =>
+                setState((p) => ({
+                  ...p,
+                  placeholder: e.target.value,
+                }))
+              }
+              fullWidth
+            />
+
+            <CustomInput
+              label="Helper text"
+              value={state.helperText}
+              onChange={(e) =>
+                setState((p) => ({
+                  ...p,
+                  helperText: e.target.value,
+                }))
+              }
+              fullWidth
+            />
 
             <CustomSelected
               label="Type"
               value={state.type}
               onChange={(e) =>
-                setState(p => ({ ...p, type: e.target.value as CustomInputType }))
+                setState((p) => ({
+                  ...p,
+                  type: e.target.value as CustomInputType,
+                }))
               }
               options={[
                 { value: "text", label: "Text" },
+                { value: "password", label: "Password" },
+                { value: "search", label: "Search" },
+                { value: "email", label: "Email" },
                 { value: "number", label: "Number" },
+                { value: "tel", label: "Tel" },
+                { value: "url", label: "URL" },
+                { value: "date", label: "Date" },
+                { value: "time", label: "Time" },
               ]}
               fullWidth
             />
 
-            <CustomSwitch label="Required" checked={state.required} onChange={(e) => setState(p => ({ ...p, required: e.target.checked }))} />
-            <CustomSwitch label="Error" checked={state.error} onChange={(e) => setState(p => ({ ...p, error: e.target.checked }))} />
-            <CustomSwitch label="Multiline" checked={state.multiline} onChange={(e) => setState(p => ({ ...p, multiline: e.target.checked }))} />
+            <CustomSwitch
+              label="Required"
+              checked={state.required}
+              onChange={(e) =>
+                setState((p) => ({ ...p, required: e.target.checked }))
+              }
+            />
+
+            <CustomSwitch
+              label="Error"
+              checked={state.error}
+              onChange={(e) =>
+                setState((p) => ({ ...p, error: e.target.checked }))
+              }
+            />
+
+            <CustomSwitch
+              label="Multiline"
+              checked={state.multiline}
+              onChange={(e) =>
+                setState((p) => ({ ...p, multiline: e.target.checked }))
+              }
+            />
 
             {state.multiline && (
               <CustomInput
                 label="Rows"
                 type="number"
                 value={String(state.rows)}
-                onChange={(e) => setState(p => ({ ...p, rows: Number(e.target.value) }))}
+                onChange={(e) =>
+                  setState((p) => ({
+                    ...p,
+                    rows: Number(e.target.value),
+                  }))
+                }
               />
             )}
 
             <CustomSwitch
               label="Ícono"
               checked={state.withIcon}
-              onChange={(e) => setState(p => ({ ...p, withIcon: e.target.checked }))}
+              onChange={(e) =>
+                setState((p) => ({ ...p, withIcon: e.target.checked }))
+              }
             />
           </div>
         </div>
       }
       preview={
-        <CustomInput
-          label={state.label}
-          value={state.value}
-          onChange={(e) => setState(p => ({ ...p, value: e.target.value }))}
-          placeholder={state.placeholder}
-          variant={state.variant}
-          size={state.size}
-          fontSize={state.fontSize === "default" ? undefined : state.fontSize}
-          fontFamily={state.fontFamily}
-          disabled={state.disabled}
-          fullWidth={state.fullWidth}
-          required={state.required}
-          error={state.error}
-          helperText={state.error ? state.helperText || " " : state.helperText}
-          multiline={state.multiline}
-          rows={state.multiline ? state.rows : undefined}
-          type={state.type}
-          icon={state.withIcon ? <TfiEmail size={16} /> : undefined}
-        />
+        <div className="flex items-center justify-center p-6 w-full">
+        <div className="w-full max-w-xl">
+          <CustomInput
+            label={state.label}
+            value={state.value}
+            onChange={(e) =>
+              setState((p) => ({ ...p, value: e.target.value }))
+            }
+            placeholder={state.placeholder}
+            variant={state.variant}
+            size={state.size}
+            fontSize={
+              state.fontSize === "default" ? undefined : state.fontSize
+            }
+            fontFamily={state.fontFamily}
+            disabled={state.disabled}
+            fullWidth={state.fullWidth}
+            required={state.required}
+            error={state.error}
+            helperText={
+              state.error
+                ? state.helperText || "Campo inválido"
+                : state.helperText
+            }
+            multiline={state.multiline}
+            rows={state.multiline ? state.rows : undefined}
+            type={state.type}
+            icon={state.withIcon ? <TfiEmail size={16} /> : undefined}
+          />
+        </div>
+          
+        </div>
       }
     />
   );

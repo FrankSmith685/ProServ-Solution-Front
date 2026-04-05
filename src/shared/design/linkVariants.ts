@@ -11,15 +11,7 @@ export const linkVariantStyles: Record<BaseVariant, LinkVariantStyle> = {
     hoverColor: "var(--color-primary-hover)",
   },
   secondary: {
-    color: "var(--color-secondary)",
-    hoverColor: "var(--color-secondary-hover)",
-  },
-  terciary: {
-    color: "var(--color-terciary)",
-    hoverColor: "var(--color-terciary-hover)",
-  },
-  warning: {
-    color: "var(--color-warning)",
-    hoverColor: "var(--color-warning-hover)",
+    color: "var(--color-text-muted)",
+    hoverColor: "var(--color-primary)",
   },
 };

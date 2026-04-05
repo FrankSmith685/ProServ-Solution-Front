@@ -1,13 +1,16 @@
 import type { ReactNode } from "react";
 
-export type TableCell = string | number | ReactNode;
+export type TableCellValue = string | number | ReactNode;
 
 export interface CustomTableProps {
   headers: string[];
-  data?: TableCell[][];
+  data?: TableCellValue[][];
   rows?: number;
   columns?: number;
   loading?: boolean;
-  columnWidths?: string[];
+  columnWidths?: Array<string | number>;
   emptyText?: string;
+  maxHeight?: number | string;
+  minWidth?: number | string;
+  stickyHeader?: boolean;
 }
