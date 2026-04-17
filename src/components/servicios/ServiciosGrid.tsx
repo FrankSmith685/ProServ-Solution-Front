@@ -1,5 +1,6 @@
 import {
   useMemo,
+  useState,
   type FC,
   cloneElement,
   isValidElement,
@@ -11,6 +12,7 @@ import { ArrowRight, Sparkles, Wrench } from "lucide-react";
 import { useAppState } from "@/hooks/useAppState";
 import { getServiceIconMeta } from "@/shared/design/serviceIcons";
 import { CustomButton } from "@/components/ui/kit/CustomButton";
+import { CustomInput } from "@/components/ui/kit/CustomInput";
 
 import type { Service } from "@/interfaces/hook/IUseServices";
 
@@ -174,6 +176,7 @@ const EmptyState: FC = () => {
 
 const ServiciosGrid: FC = () => {
   const { services } = useAppState();
+  const [search, setSearch] = useState<string>("");
 
   const items = useMemo<ServiceCardItem[]>(() => {
     return (Array.isArray(services) ? services : [])
@@ -186,6 +189,23 @@ const ServiciosGrid: FC = () => {
       });
   }, [services]);
 
+  const filteredItems = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+    if (!normalizedSearch) return items;
+
+    return items.filter((service) => {
+      const title = service.titulo.toLowerCase();
+      const description = service.descripcion.toLowerCase();
+      const detail = service.descripcion_larga.toLowerCase();
+
+      return (
+        title.includes(normalizedSearch) ||
+        description.includes(normalizedSearch) ||
+        detail.includes(normalizedSearch)
+      );
+    });
+  }, [items, search]);
+
   if (!Array.isArray(services)) {
     return <ServicesSectionSkeleton />;
   }
@@ -195,11 +215,40 @@ const ServiciosGrid: FC = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.08),transparent_38%)]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="mb-8 grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto]">
+          <CustomInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar servicios por nombre o descripción..."
+            fullWidth
+          />
+
+          <div className="flex items-center gap-2">
+            <span className="inline-flex rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-muted-foreground">
+              {filteredItems.length} resultados
+            </span>
+            <CustomButton
+              text="Limpiar"
+              variant="secondary"
+              size="sm"
+              fontSize="12px"
+              onClick={() => setSearch("")}
+            />
+          </div>
+        </div>
+
         {items.length === 0 ? (
           <EmptyState />
+        ) : filteredItems.length === 0 ? (
+          <div className="rounded-3xl border border-border bg-white px-6 py-12 text-center">
+            <h3 className="text-xl font-black text-dark">Sin resultados</h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              No encontramos servicios con ese criterio de búsqueda.
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {items.map((service, index) => {
+            {filteredItems.map((service, index) => {
               const iconMeta = getServiceIconMeta(service.icono);
               const iconElement = renderWhiteIcon(iconMeta?.icon);
 

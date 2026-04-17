@@ -7,6 +7,10 @@ import {
   User,
   BadgeDollarSign,
   MessageCircle,
+  CheckCircle2,
+  Clock3,
+  Send,
+  TrendingUp,
 } from "lucide-react";
 
 import { useQuotes } from "@/hooks/useQuotes";
@@ -15,6 +19,8 @@ import { useNotification } from "@/hooks/useNotificationHooks/useNotification";
 
 import { CustomTable } from "@/components/ui/kit/CustomTable";
 import { CustomButton } from "@/components/ui/kit/CustomButton";
+import { CustomInput } from "@/components/ui/kit/CustomInput";
+import { CustomSelected } from "@/components/ui/kit/CustomSelected";
 
 import type { Quote } from "@/interfaces/hook/IUseQuotes";
 import { ModalAdminQuote } from "../ModalAdminQuote";
@@ -61,6 +67,8 @@ const QuotesSection = () => {
   const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
   const [form, setForm] = useState<Partial<Quote>>({});
   const [saving, setSaving] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     getQuotes();
@@ -95,6 +103,10 @@ const QuotesSection = () => {
 
     window.open(url, "_blank", "noopener,noreferrer");
 
+    if (quote.estado === "pendiente") {
+      await updateQuote(quote.id, { estado: "enviada" });
+    }
+
     await updateContact(contact.id, {
       estado: "respondido",
       notas_admin: contact.notas_admin
@@ -122,8 +134,64 @@ const QuotesSection = () => {
     setSaving(false);
   };
 
+  const filteredQuotes = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return quotes.filter((quote) => {
+      const matchesStatus =
+        statusFilter === "all" ? true : quote.estado === statusFilter;
+
+      if (!matchesStatus) return false;
+      if (!normalizedSearch) return true;
+
+      const name = quote.contact?.nombre?.toLowerCase() || "";
+      const email = quote.contact?.email?.toLowerCase() || "";
+
+      return (
+        name.includes(normalizedSearch) ||
+        email.includes(normalizedSearch) ||
+        quote.estado.toLowerCase().includes(normalizedSearch)
+      );
+    });
+  }, [quotes, search, statusFilter]);
+
+  const summary = useMemo(() => {
+    const stats = {
+      totalRegistros: quotes.length,
+      totalMonto: 0,
+      pendientes: 0,
+      enviadas: 0,
+      aprobadas: 0,
+      rechazadas: 0,
+    };
+
+    quotes.forEach((quote) => {
+      if (quote.estado === "pendiente") stats.pendientes += 1;
+      if (quote.estado === "enviada") stats.enviadas += 1;
+      if (quote.estado === "aprobada") stats.aprobadas += 1;
+      if (quote.estado === "rechazada") stats.rechazadas += 1;
+
+      if (quote.total !== null && quote.total !== undefined && quote.total !== "") {
+        const amount = Number(quote.total);
+        if (Number.isFinite(amount)) {
+          stats.totalMonto += amount;
+        }
+      }
+    });
+
+    const conversion =
+      stats.enviadas + stats.aprobadas > 0
+        ? Math.round((stats.aprobadas / (stats.enviadas + stats.aprobadas)) * 100)
+        : 0;
+
+    return {
+      ...stats,
+      conversion,
+    };
+  }, [quotes]);
+
   const tableRows: ReactNode[][] = useMemo(() => {
-    return quotes.map((quote) => [
+    return filteredQuotes.map((quote) => [
       <div className="min-w-44 max-w-56" key={`${quote.id}-nombre`}>
         <div className="inline-flex items-center gap-2 text-sm text-(--color-text)">
           <User size={14} />
@@ -182,7 +250,7 @@ const QuotesSection = () => {
         </button>
       </div>,
     ]);
-  }, [quotes]);
+  }, [filteredQuotes]);
 
   return (
     <section className="space-y-6">
@@ -197,7 +265,7 @@ const QuotesSection = () => {
 
           <div className="w-full md:w-auto">
             <CustomButton
-              text={`${quotes.length} registros`}
+              text={`${filteredQuotes.length} registros`}
               size="md"
               fontSize="14px"
               variant="secondary"
@@ -205,6 +273,112 @@ const QuotesSection = () => {
               icon={<FileText size={16} />}
             />
           </div>
+        </div>
+
+        <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-[1fr_220px]">
+          <CustomInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por contacto, correo o estado..."
+            fullWidth
+          />
+
+          <CustomSelected
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(String(e.target.value || "all"))}
+            label="Filtrar por estado"
+            options={[
+              { value: "all", label: "Todos" },
+              { value: "pendiente", label: "Pendiente" },
+              { value: "enviada", label: "Enviada" },
+              { value: "aprobada", label: "Aprobada" },
+              { value: "rechazada", label: "Rechazada" },
+            ]}
+            fullWidth
+            variant="primary"
+            size="md"
+          />
+        </div>
+
+        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <article className="rounded-2xl border border-border bg-surface-soft p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Monto cotizado
+              </p>
+              <BadgeDollarSign size={16} className="text-primary" />
+            </div>
+            <p className="mt-2 text-xl font-black text-(--color-text)">
+              S/ {summary.totalMonto.toFixed(2)}
+            </p>
+          </article>
+
+          <article className="rounded-2xl border border-border bg-surface-soft p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Pendientes
+              </p>
+              <Clock3 size={16} className="text-amber-500" />
+            </div>
+            <p className="mt-2 text-xl font-black text-(--color-text)">
+              {summary.pendientes}
+            </p>
+          </article>
+
+          <article className="rounded-2xl border border-border bg-surface-soft p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Aprobadas
+              </p>
+              <CheckCircle2 size={16} className="text-emerald-500" />
+            </div>
+            <p className="mt-2 text-xl font-black text-(--color-text)">
+              {summary.aprobadas}
+            </p>
+          </article>
+
+          <article className="rounded-2xl border border-border bg-surface-soft p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Conversión
+              </p>
+              <TrendingUp size={16} className="text-sky-500" />
+            </div>
+            <p className="mt-2 text-xl font-black text-(--color-text)">
+              {summary.conversion}%
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Aprobadas sobre enviadas + aprobadas
+            </p>
+          </article>
+        </div>
+
+        <div className="mb-4 flex flex-wrap gap-2">
+          <CustomButton
+            text={`Enviadas: ${summary.enviadas}`}
+            variant="secondary"
+            size="sm"
+            fontSize="12px"
+            icon={<Send size={14} />}
+            onClick={() => setStatusFilter("enviada")}
+          />
+          <CustomButton
+            text={`Rechazadas: ${summary.rechazadas}`}
+            variant="secondary"
+            size="sm"
+            fontSize="12px"
+            onClick={() => setStatusFilter("rechazada")}
+          />
+          <CustomButton
+            text="Limpiar filtros"
+            variant="secondary"
+            size="sm"
+            fontSize="12px"
+            onClick={() => {
+              setSearch("");
+              setStatusFilter("all");
+            }}
+          />
         </div>
 
         {loading ? (
