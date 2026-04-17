@@ -1,0 +1,247 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 3 /Kids [4 0 R 6 0 R 8 0 R] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2046 >>
+stream
+BT /F1 11 Tf 1 0 0 1 50 792 Tm
+(INFORME GENERAL DEL PROYECTO WEB) Tj
+0 -16 Td
+(--------------------------------) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(1\) Resumen ejecutivo) Tj
+0 -16 Td
+(Este proyecto es una aplicacin web desarrollada con **React + TypeScript + Vite**.) Tj
+0 -16 Td
+(Est enfocada en un sitio corporativo pblico y un panel administrativo interno para) Tj
+0 -16 Td
+(gestionar el contenido.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(En la parte pblica, se muestran secciones como inicio, servicios, proyectos,) Tj
+0 -16 Td
+(contacto, testimonios y nosotros. En la parte privada \(admin\), se permite actualizar) Tj
+0 -16 Td
+(secciones clave del sitio desde un dashboard protegido por autenticacin.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(2\) Objetivo del sistema) Tj
+0 -16 Td
+(El objetivo principal es centralizar la presentacin de la empresa y permitir que el) Tj
+0 -16 Td
+(equipo administrador gestione:) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(? Informacin de pgina de inicio.) Tj
+0 -16 Td
+(? Seccin ?Quines somos?.) Tj
+0 -16 Td
+(? Catlogo de servicios.) Tj
+0 -16 Td
+(? Portafolio de proyectos.) Tj
+0 -16 Td
+(? Contactos recibidos.) Tj
+0 -16 Td
+(? Testimonios.) Tj
+0 -16 Td
+(? Configuracin general del sitio.) Tj
+0 -16 Td
+(? Recursos multimedia y logs administrativos.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(3\) Estructura funcional del sitio) Tj
+0 -16 Td
+(3.1 Sitio pblico) Tj
+0 -16 Td
+(Rutas principales del sitio:) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(? `/` \(Inicio\)) Tj
+0 -16 Td
+(? `/nosotros`) Tj
+0 -16 Td
+(? `/servicios`) Tj
+0 -16 Td
+(? `/servicios/:slug`) Tj
+0 -16 Td
+(? `/proyectos`) Tj
+0 -16 Td
+(? `/proyectos/:slug`) Tj
+0 -16 Td
+(? `/contacto`) Tj
+0 -16 Td
+(? `/dejar-testimonio`) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(La vista de inicio integra mdulos de hroe, estadsticas, servicios, sobre nosotros,) Tj
+0 -16 Td
+(proyectos, testimonios y llamada a la accin.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(3.2 Panel administrativo) Tj
+0 -16 Td
+(El panel admin est bajo rutas protegidas y contiene mdulos para:) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(? Dashboard) Tj
+0 -16 Td
+(? Inicio) Tj
+0 -16 Td
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 2232 >>
+stream
+BT /F1 11 Tf 1 0 0 1 50 792 Tm
+(? Quines somos) Tj
+0 -16 Td
+(? Servicios) Tj
+0 -16 Td
+(? Proyectos) Tj
+0 -16 Td
+(? Contactos) Tj
+0 -16 Td
+(? Testimonios) Tj
+0 -16 Td
+(? Configuracin) Tj
+0 -16 Td
+(? Logs) Tj
+0 -16 Td
+(? Media) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(Adems, cuenta con navegacin lateral, cambio de tema claro/oscuro y accin de cierre) Tj
+0 -16 Td
+(de sesin.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(4\) Arquitectura tcnica) Tj
+0 -16 Td
+(? **Framework**: React 19 con TypeScript.) Tj
+0 -16 Td
+(? **Build tool**: Vite.) Tj
+0 -16 Td
+(? **Navegacin**: React Router.) Tj
+0 -16 Td
+(? **Manejo de formularios**: react-hook-form + zod.) Tj
+0 -16 Td
+(? **UI**: Tailwind, MUI y componentes propios.) Tj
+0 -16 Td
+(? **Consumo de API**: Axios.) Tj
+0 -16 Td
+(? **Mapas y media**: Leaflet/react-leaflet y mdulos de media.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(5\) Gestin de datos y bootstrapping) Tj
+0 -16 Td
+(El proyecto utiliza hooks de bootstrap para cargar datos al inicio segn la pgina,) Tj
+0 -16 Td
+(evitando solicitudes repetidas cuando ya existe informacin en estado global.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(Esto mejora tiempo de carga percibido y consistencia entre secciones reutilizadas.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(6\) Seguridad y autenticacin) Tj
+0 -16 Td
+(La capa HTTP incluye:) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(? Cliente pblico y cliente autenticado.) Tj
+0 -16 Td
+(? Inyeccin automtica del token de acceso \(`Bearer`\) en requests privados.) Tj
+0 -16 Td
+(? Mecanismo de refresh token al detectar `401`.) Tj
+0 -16 Td
+(? Cierre de sesin forzado cuando no hay refresh vlido o falla la renovacin.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(7\) Valor para el negocio) Tj
+0 -16 Td
+(Este sistema permite que el contenido corporativo sea administrable sin tocar cdigo) Tj
+0 -16 Td
+(fuente en cada cambio editorial, facilitando:) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(? Actualizacin continua del sitio.) Tj
+0 -16 Td
+(? Mayor autonoma del equipo de administracin.) Tj
+0 -16 Td
+(? Escalabilidad para agregar nuevas secciones o mdulos.) Tj
+0 -16 Td
+(? Mejor experiencia para visitantes y para operadores internos.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(8\) Conclusin) Tj
+0 -16 Td
+(La aplicacin est preparada como una plataforma web empresarial moderna: separa) Tj
+0 -16 Td
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 279 >>
+stream
+BT /F1 11 Tf 1 0 0 1 50 792 Tm
+(experiencia pblica y gestin interna, aplica buenas prcticas de enrutamiento,) Tj
+0 -16 Td
+(autenticacin y consumo de API, y ofrece una base slida para evolucionar) Tj
+0 -16 Td
+(funcionalidades de contenido y operacin digital.) Tj
+0 -16 Td
+ET
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000127 00000 n 
+0000000197 00000 n 
+0000000323 00000 n 
+0000002421 00000 n 
+0000002547 00000 n 
+0000004831 00000 n 
+0000004957 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+5287
+%%EOF
