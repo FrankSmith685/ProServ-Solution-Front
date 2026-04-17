@@ -97,17 +97,35 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
 
   const errors = useMemo(() => {
     const totalValue = form.total;
+    const hasTotal =
+      totalValue !== null &&
+      totalValue !== undefined &&
+      totalValue !== "" &&
+      !Number.isNaN(Number(totalValue));
+    const totalNumber = hasTotal ? Number(totalValue) : null;
+    const requiresTotalForStatus =
+      form.estado === "enviada" || form.estado === "aprobada";
 
     return {
       estado: touched.estado && !form.estado,
       total:
         touched.total &&
-        totalValue !== null &&
-        totalValue !== undefined &&
-        totalValue !== "" &&
-        Number(totalValue) < 0,
+        hasTotal &&
+        totalNumber !== null &&
+        totalNumber < 0,
+      totalRequiredByStatus: requiresTotalForStatus && (!hasTotal || Number(totalValue) <= 0),
     };
   }, [form.estado, form.total, touched.estado, touched.total]);
+
+  const hasValidPositiveTotal =
+    form.total !== null &&
+    form.total !== undefined &&
+    form.total !== "" &&
+    !Number.isNaN(Number(form.total)) &&
+    Number(form.total) > 0;
+
+  const requiresTotalForStatus =
+    form.estado === "enviada" || form.estado === "aprobada";
 
   const isInvalid =
     !form.estado ||
@@ -115,7 +133,8 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
     (form.total !== null &&
       form.total !== undefined &&
       form.total !== "" &&
-      Number(form.total) < 0);
+      Number(form.total) < 0) ||
+    (requiresTotalForStatus && !hasValidPositiveTotal);
 
   return (
     <CustomModal
@@ -188,7 +207,13 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
               onChange={handleTotalChange}
               type="number"
               error={errors.total}
-              helperText={errors.total ? "El total no puede ser negativo" : ""}
+              helperText={
+                errors.total
+                  ? "El total no puede ser negativo"
+                  : errors.totalRequiredByStatus
+                    ? "Para estados Enviada o Aprobada, el total debe ser mayor a 0."
+                    : ""
+              }
               icon={
                 <BadgeDollarSign
                   size={18}

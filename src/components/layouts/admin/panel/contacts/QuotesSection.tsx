@@ -15,6 +15,8 @@ import { useNotification } from "@/hooks/useNotificationHooks/useNotification";
 
 import { CustomTable } from "@/components/ui/kit/CustomTable";
 import { CustomButton } from "@/components/ui/kit/CustomButton";
+import { CustomInput } from "@/components/ui/kit/CustomInput";
+import { CustomSelected } from "@/components/ui/kit/CustomSelected";
 
 import type { Quote } from "@/interfaces/hook/IUseQuotes";
 import { ModalAdminQuote } from "../ModalAdminQuote";
@@ -61,6 +63,8 @@ const QuotesSection = () => {
   const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
   const [form, setForm] = useState<Partial<Quote>>({});
   const [saving, setSaving] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   useEffect(() => {
     getQuotes();
@@ -95,6 +99,10 @@ const QuotesSection = () => {
 
     window.open(url, "_blank", "noopener,noreferrer");
 
+    if (quote.estado === "pendiente") {
+      await updateQuote(quote.id, { estado: "enviada" });
+    }
+
     await updateContact(contact.id, {
       estado: "respondido",
       notas_admin: contact.notas_admin
@@ -122,8 +130,29 @@ const QuotesSection = () => {
     setSaving(false);
   };
 
+  const filteredQuotes = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return quotes.filter((quote) => {
+      const matchesStatus =
+        statusFilter === "all" ? true : quote.estado === statusFilter;
+
+      if (!matchesStatus) return false;
+      if (!normalizedSearch) return true;
+
+      const name = quote.contact?.nombre?.toLowerCase() || "";
+      const email = quote.contact?.email?.toLowerCase() || "";
+
+      return (
+        name.includes(normalizedSearch) ||
+        email.includes(normalizedSearch) ||
+        quote.estado.toLowerCase().includes(normalizedSearch)
+      );
+    });
+  }, [quotes, search, statusFilter]);
+
   const tableRows: ReactNode[][] = useMemo(() => {
-    return quotes.map((quote) => [
+    return filteredQuotes.map((quote) => [
       <div className="min-w-44 max-w-56" key={`${quote.id}-nombre`}>
         <div className="inline-flex items-center gap-2 text-sm text-(--color-text)">
           <User size={14} />
@@ -182,7 +211,7 @@ const QuotesSection = () => {
         </button>
       </div>,
     ]);
-  }, [quotes]);
+  }, [filteredQuotes]);
 
   return (
     <section className="space-y-6">
@@ -197,7 +226,7 @@ const QuotesSection = () => {
 
           <div className="w-full md:w-auto">
             <CustomButton
-              text={`${quotes.length} registros`}
+              text={`${filteredQuotes.length} registros`}
               size="md"
               fontSize="14px"
               variant="secondary"
@@ -205,6 +234,31 @@ const QuotesSection = () => {
               icon={<FileText size={16} />}
             />
           </div>
+        </div>
+
+        <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-[1fr_220px]">
+          <CustomInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por contacto, correo o estado..."
+            fullWidth
+          />
+
+          <CustomSelected
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(String(e.target.value || "all"))}
+            label="Filtrar por estado"
+            options={[
+              { value: "all", label: "Todos" },
+              { value: "pendiente", label: "Pendiente" },
+              { value: "enviada", label: "Enviada" },
+              { value: "aprobada", label: "Aprobada" },
+              { value: "rechazada", label: "Rechazada" },
+            ]}
+            fullWidth
+            variant="primary"
+            size="md"
+          />
         </div>
 
         {loading ? (
