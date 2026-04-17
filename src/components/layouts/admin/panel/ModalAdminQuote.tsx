@@ -68,11 +68,36 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
     };
 
   const errors = useMemo(
-    () => ({
-      estado: touched.estado && !form.estado,
-    }),
-    [form.estado, touched.estado]
+    () => {
+      const totalValue = form.total;
+      const hasTotal =
+        totalValue !== null &&
+        totalValue !== undefined &&
+        totalValue !== "" &&
+        !Number.isNaN(Number(totalValue));
+      const totalNumber = hasTotal ? Number(totalValue) : null;
+      const requiresTotalForStatus =
+        form.estado === "enviada" || form.estado === "aprobada";
+
+      return {
+        estado: touched.estado && !form.estado,
+        total: hasTotal && totalNumber !== null && totalNumber < 0,
+        totalRequiredByStatus:
+          requiresTotalForStatus && (!hasTotal || Number(totalValue) <= 0),
+      };
+    },
+    [form.estado, form.total, touched.estado]
   );
+
+  const hasValidPositiveTotal =
+    form.total !== null &&
+    form.total !== undefined &&
+    form.total !== "" &&
+    !Number.isNaN(Number(form.total)) &&
+    Number(form.total) > 0;
+
+  const requiresTotalForStatus =
+    form.estado === "enviada" || form.estado === "aprobada";
 
   return (
     <CustomModal
@@ -95,7 +120,11 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
             icon={<Save size={16} />}
             onClick={onSave}
             loading={loading}
-            disabled={!form.estado}
+            disabled={
+              !form.estado ||
+              errors.total ||
+              (requiresTotalForStatus && !hasValidPositiveTotal)
+            }
             className="w-full! gap-2! px-4! sm:w-auto!"
             fontSize="14px"
           />
@@ -110,6 +139,14 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
               type="number"
               value={form?.total?.toString() ?? ""}
               onChange={handleChange("total")}
+              error={errors.total || errors.totalRequiredByStatus}
+              helperText={
+                errors.total
+                  ? "El total no puede ser negativo"
+                  : errors.totalRequiredByStatus
+                    ? "Para estados Enviada o Aprobada, el total debe ser mayor a 0."
+                    : ""
+              }
               icon={<BadgeDollarSign size={18} style={{ color: "var(--color-text-muted)" }} />}
               fullWidth
             />
