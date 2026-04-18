@@ -285,7 +285,7 @@ const ServicioDetalleContent: FC = () => {
                   Lo que incluye este servicio
                 </h2>
 
-                <div className={pointsGridClass}>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {points.map((point, index) => (
                     <DetailPointCard
                       key={`${point}-${index}`}
