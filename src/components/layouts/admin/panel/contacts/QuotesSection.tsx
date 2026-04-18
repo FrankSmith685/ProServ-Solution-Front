@@ -11,7 +11,6 @@ import {
   Clock3,
   Send,
   TrendingUp,
-  XCircle,
 } from "lucide-react";
 
 import { useQuotes } from "@/hooks/useQuotes";
@@ -123,7 +122,7 @@ const QuotesSection = () => {
     window.open(url, "_blank", "noopener,noreferrer");
 
     if (quote.estado === "pendiente") {
-      await sendQuote(quote.id);
+      await updateQuote(quote.id, { estado: "enviada" });
     }
 
     await updateContact(contact.id, {
@@ -191,51 +190,14 @@ const QuotesSection = () => {
 
       const name = quote.contact?.nombre?.toLowerCase() || "";
       const email = quote.contact?.email?.toLowerCase() || "";
-      const quoteNumber = quote.numero?.toLowerCase() || "";
 
       return (
         name.includes(normalizedSearch) ||
         email.includes(normalizedSearch) ||
-        quoteNumber.includes(normalizedSearch) ||
         quote.estado.toLowerCase().includes(normalizedSearch)
       );
     });
   }, [quotes, search, statusFilter]);
-
-  const summary = useMemo(() => {
-    const stats = {
-      totalRegistros: quotes.length,
-      totalMonto: 0,
-      pendientes: 0,
-      enviadas: 0,
-      aprobadas: 0,
-      rechazadas: 0,
-    };
-
-    quotes.forEach((quote) => {
-      if (quote.estado === "pendiente") stats.pendientes += 1;
-      if (quote.estado === "enviada") stats.enviadas += 1;
-      if (quote.estado === "aprobada") stats.aprobadas += 1;
-      if (quote.estado === "rechazada") stats.rechazadas += 1;
-
-      if (quote.total !== null && quote.total !== undefined && quote.total !== "") {
-        const amount = Number(quote.total);
-        if (Number.isFinite(amount)) {
-          stats.totalMonto += amount;
-        }
-      }
-    });
-
-    const conversion =
-      stats.enviadas + stats.aprobadas > 0
-        ? Math.round((stats.aprobadas / (stats.enviadas + stats.aprobadas)) * 100)
-        : 0;
-
-    return {
-      ...stats,
-      conversion,
-    };
-  }, [quotes]);
 
   const tableRows: ReactNode[][] = useMemo(() => {
     return filteredQuotes.map((quote) => [
@@ -379,87 +341,6 @@ const QuotesSection = () => {
             fullWidth
             variant="primary"
             size="md"
-          />
-        </div>
-
-        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <article className="rounded-2xl border border-border bg-surface-soft p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Monto cotizado
-              </p>
-              <BadgeDollarSign size={16} className="text-primary" />
-            </div>
-            <p className="mt-2 text-xl font-black text-(--color-text)">
-              S/ {summary.totalMonto.toFixed(2)}
-            </p>
-          </article>
-
-          <article className="rounded-2xl border border-border bg-surface-soft p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Pendientes
-              </p>
-              <Clock3 size={16} className="text-amber-500" />
-            </div>
-            <p className="mt-2 text-xl font-black text-(--color-text)">
-              {summary.pendientes}
-            </p>
-          </article>
-
-          <article className="rounded-2xl border border-border bg-surface-soft p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Aprobadas
-              </p>
-              <CheckCircle2 size={16} className="text-emerald-500" />
-            </div>
-            <p className="mt-2 text-xl font-black text-(--color-text)">
-              {summary.aprobadas}
-            </p>
-          </article>
-
-          <article className="rounded-2xl border border-border bg-surface-soft p-4">
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Conversión
-              </p>
-              <TrendingUp size={16} className="text-sky-500" />
-            </div>
-            <p className="mt-2 text-xl font-black text-(--color-text)">
-              {summary.conversion}%
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Aprobadas sobre enviadas + aprobadas
-            </p>
-          </article>
-        </div>
-
-        <div className="mb-4 flex flex-wrap gap-2">
-          <CustomButton
-            text={`Enviadas: ${summary.enviadas}`}
-            variant="secondary"
-            size="sm"
-            fontSize="12px"
-            icon={<Send size={14} />}
-            onClick={() => setStatusFilter("enviada")}
-          />
-          <CustomButton
-            text={`Rechazadas: ${summary.rechazadas}`}
-            variant="secondary"
-            size="sm"
-            fontSize="12px"
-            onClick={() => setStatusFilter("rechazada")}
-          />
-          <CustomButton
-            text="Limpiar filtros"
-            variant="secondary"
-            size="sm"
-            fontSize="12px"
-            onClick={() => {
-              setSearch("");
-              setStatusFilter("all");
-            }}
           />
         </div>
 

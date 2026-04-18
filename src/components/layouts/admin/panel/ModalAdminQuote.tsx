@@ -93,13 +93,9 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
         total: hasTotal && totalNumber !== null && totalNumber < 0,
         totalRequiredByStatus:
           requiresTotalForStatus && (!hasTotal || Number(totalValue) <= 0),
-        motivoRechazo:
-          touched.motivo_rechazo &&
-          form.estado === "rechazada" &&
-          !(form.motivo_rechazo || "").trim(),
       };
     },
-    [form.estado, form.total, form.motivo_rechazo, touched.estado, touched.motivo_rechazo]
+    [form.estado, form.total, touched.estado]
   );
 
   const hasValidPositiveTotal =
@@ -136,8 +132,7 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
             disabled={
               !form.estado ||
               errors.total ||
-              (requiresTotalForStatus && !hasValidPositiveTotal) ||
-              (form.estado === "rechazada" && !(form.motivo_rechazo || "").trim())
+              (requiresTotalForStatus && !hasValidPositiveTotal)
             }
             className="w-full! gap-2! px-4! sm:w-auto!"
             fontSize="14px"
