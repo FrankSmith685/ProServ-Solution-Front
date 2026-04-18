@@ -78,10 +78,14 @@ const INITIAL_FORM: Partial<Contact> = {
 const INITIAL_QUOTE_FORM: Partial<Quote> = {
   contacto_id: "",
   moneda: "PEN",
+  subtotal: 0,
+  impuestos: 0,
+  descuento: 0,
   fecha_vencimiento: null,
+  fecha_envio: null,
   observaciones: "",
   motivo_rechazo: "",
-  total: null,
+  total: 0,
   estado: "pendiente",
 };
 
@@ -175,10 +179,14 @@ const ContactsSection = () => {
     setQuoteForm({
       contacto_id: contact.id,
       moneda: "PEN",
+      subtotal: 0,
+      impuestos: 0,
+      descuento: 0,
       fecha_vencimiento: null,
+      fecha_envio: null,
       observaciones: "",
       motivo_rechazo: "",
-      total: null,
+      total: 0,
       estado: "pendiente",
     });
     setQuoteModalOpen(true);
@@ -241,14 +249,25 @@ const ContactsSection = () => {
     await createQuote(
       {
         contacto_id: selectedContact.id,
+        numero: quoteForm.numero || undefined,
         moneda: quoteForm.moneda || "PEN",
+        subtotal:
+          quoteForm.subtotal === "" || quoteForm.subtotal === undefined
+            ? 0
+            : Number(quoteForm.subtotal),
+        impuestos:
+          quoteForm.impuestos === "" || quoteForm.impuestos === undefined
+            ? 0
+            : Number(quoteForm.impuestos),
+        descuento:
+          quoteForm.descuento === "" || quoteForm.descuento === undefined
+            ? 0
+            : Number(quoteForm.descuento),
         fecha_vencimiento: quoteForm.fecha_vencimiento || null,
+        fecha_envio: quoteForm.estado === "enviada" ? (quoteForm.fecha_envio || new Date().toISOString()) : null,
         observaciones: quoteForm.observaciones || null,
         motivo_rechazo: quoteForm.motivo_rechazo || null,
-        total:
-          quoteForm.total === "" || quoteForm.total === undefined
-            ? null
-            : Number(quoteForm.total),
+        total: quoteForm.total === "" || quoteForm.total === undefined ? 0 : Number(quoteForm.total),
         estado: quoteForm.estado || "pendiente",
       },
       async ({ success, message }) => {
