@@ -34,6 +34,7 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
 }) => {
   const [touched, setTouched] = useState({
     estado: false,
+    fecha_vencimiento: false,
     motivo_rechazo: false,
   });
 
@@ -51,6 +52,13 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
         setTouched((prev) => ({
           ...prev,
           motivo_rechazo: true,
+        }));
+      }
+
+      if (key === "fecha_vencimiento") {
+        setTouched((prev) => ({
+          ...prev,
+          fecha_vencimiento: true,
         }));
       }
     };
@@ -90,6 +98,8 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
 
       return {
         estado: touched.estado && !form.estado,
+        fechaVencimiento:
+          touched.fecha_vencimiento && !String(form.fecha_vencimiento ?? "").trim(),
         total: hasTotal && totalNumber !== null && totalNumber < 0,
         totalRequiredByStatus:
           requiresTotalForStatus && (!hasTotal || Number(totalValue) <= 0),
@@ -99,7 +109,7 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
           !String(form.motivo_rechazo ?? "").trim(),
       };
     },
-    [form.estado, form.total, form.motivo_rechazo, touched.estado, touched.motivo_rechazo]
+    [form.estado, form.total, form.fecha_vencimiento, form.motivo_rechazo, touched.estado, touched.fecha_vencimiento, touched.motivo_rechazo]
   );
 
   const hasValidPositiveTotal =
@@ -135,6 +145,7 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
             loading={loading}
             disabled={
               !form.estado ||
+              !String(form.fecha_vencimiento ?? "").trim() ||
               errors.total ||
               errors.motivoRechazo ||
               (requiresTotalForStatus && !hasValidPositiveTotal)
@@ -149,11 +160,44 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
         <div className="rounded-2xl border border-border bg-surface-soft p-4 sm:p-5">
           <div className="grid grid-cols-1 gap-4">
             <CustomInput
+              label="Número (opcional)"
+              value={form.numero?.toString() ?? ""}
+              onChange={handleChange("numero")}
+              fullWidth
+            />
+
+            <CustomInput
               label="Moneda"
               value={form.moneda?.toString() ?? "PEN"}
               onChange={handleChange("moneda")}
               fullWidth
             />
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <CustomInput
+                label="Subtotal"
+                type="number"
+                value={form.subtotal?.toString() ?? "0"}
+                onChange={handleChange("subtotal")}
+                fullWidth
+              />
+
+              <CustomInput
+                label="Impuestos"
+                type="number"
+                value={form.impuestos?.toString() ?? "0"}
+                onChange={handleChange("impuestos")}
+                fullWidth
+              />
+
+              <CustomInput
+                label="Descuento"
+                type="number"
+                value={form.descuento?.toString() ?? "0"}
+                onChange={handleChange("descuento")}
+                fullWidth
+              />
+            </div>
 
             <CustomInput
               label="Fecha de vencimiento"
@@ -161,6 +205,8 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
               value={form.fecha_vencimiento?.toString() ?? ""}
               onChange={handleChange("fecha_vencimiento")}
               icon={<CalendarClock size={18} style={{ color: "var(--color-text-muted)" }} />}
+              error={errors.fechaVencimiento}
+              helperText={errors.fechaVencimiento ? "La fecha de vencimiento es requerida." : ""}
               fullWidth
             />
 

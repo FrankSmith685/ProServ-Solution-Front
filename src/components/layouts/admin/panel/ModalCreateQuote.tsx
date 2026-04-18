@@ -59,6 +59,7 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
   const [touched, setTouched] = useState({
     estado: false,
     total: false,
+    fecha_vencimiento: false,
     motivo_rechazo: false,
   });
 
@@ -112,6 +113,13 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
           motivo_rechazo: true,
         }));
       }
+
+      if (key === "fecha_vencimiento") {
+        setTouched((prev) => ({
+          ...prev,
+          fecha_vencimiento: true,
+        }));
+      }
     };
 
   const errors = useMemo(() => {
@@ -127,6 +135,8 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
 
     return {
       estado: touched.estado && !form.estado,
+      fechaVencimiento:
+        touched.fecha_vencimiento && !String(form.fecha_vencimiento ?? "").trim(),
       total:
         touched.total &&
         hasTotal &&
@@ -138,7 +148,7 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
         touched.motivo_rechazo &&
         !String(form.motivo_rechazo ?? "").trim(),
     };
-  }, [form.estado, form.total, form.motivo_rechazo, touched.estado, touched.total, touched.motivo_rechazo]);
+  }, [form.estado, form.total, form.fecha_vencimiento, form.motivo_rechazo, touched.estado, touched.total, touched.fecha_vencimiento, touched.motivo_rechazo]);
 
   const hasValidPositiveTotal =
     form.total !== null &&
@@ -163,6 +173,7 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
   const isInvalid =
     !form.estado ||
     !contact?.id ||
+    !String(form.fecha_vencimiento ?? "").trim() ||
     errors.motivoRechazo ||
     (form.total !== null &&
       form.total !== undefined &&
@@ -235,12 +246,46 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
             </div>
 
             <CustomInput
+              label="Número (opcional)"
+              placeholder="COT-2026-000123"
+              value={form.numero?.toString() ?? ""}
+              onChange={handleInputChange("numero")}
+              fullWidth
+            />
+
+            <CustomInput
               label="Moneda"
               placeholder="PEN"
               value={form.moneda?.toString() ?? "PEN"}
               onChange={handleInputChange("moneda")}
               fullWidth
             />
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <CustomInput
+                label="Subtotal"
+                type="number"
+                value={form.subtotal?.toString() ?? "0"}
+                onChange={handleInputChange("subtotal")}
+                fullWidth
+              />
+
+              <CustomInput
+                label="Impuestos"
+                type="number"
+                value={form.impuestos?.toString() ?? "0"}
+                onChange={handleInputChange("impuestos")}
+                fullWidth
+              />
+
+              <CustomInput
+                label="Descuento"
+                type="number"
+                value={form.descuento?.toString() ?? "0"}
+                onChange={handleInputChange("descuento")}
+                fullWidth
+              />
+            </div>
 
             <CustomInput
               label="Fecha de vencimiento"
@@ -253,6 +298,8 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
                   style={{ color: "var(--color-text-muted)" }}
                 />
               }
+              error={errors.fechaVencimiento}
+              helperText={errors.fechaVencimiento ? "La fecha de vencimiento es requerida." : ""}
               fullWidth
             />
 
