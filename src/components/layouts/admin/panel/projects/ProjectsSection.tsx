@@ -365,6 +365,19 @@ const ProjectsSection = () => {
   const loading =
     loadingProjects || loadingServices || loadingCategories || loadingTags;
 
+  const metrics = useMemo(() => {
+    const active = rowsData.filter((item) => item.activo).length;
+    const featured = rowsData.filter((item) => item.destacado).length;
+    const withImages = rowsData.filter((item) => Boolean(item.first_image_url)).length;
+
+    return {
+      active,
+      inactive: rowsData.length - active,
+      featured,
+      withImages,
+    };
+  }, [rowsData]);
+
   return (
     <section className="space-y-6">
       <div className="rounded-3xl border border-border bg-surface p-4 shadow-sm sm:p-5 lg:p-6">
@@ -386,6 +399,33 @@ const ProjectsSection = () => {
               variant="primary"
               className="w-full justify-center px-4! md:w-auto"
             />
+          </div>
+        </div>
+
+        <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-2xl border border-border bg-surface-soft p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              Total
+            </p>
+            <p className="mt-2 text-2xl font-black text-dark">{rowsData.length}</p>
+          </div>
+          <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary">
+              Activos
+            </p>
+            <p className="mt-2 text-2xl font-black text-dark">{metrics.active}</p>
+          </div>
+          <div className="rounded-2xl border border-border bg-surface-soft p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              Destacados
+            </p>
+            <p className="mt-2 text-2xl font-black text-dark">{metrics.featured}</p>
+          </div>
+          <div className="rounded-2xl border border-border bg-surface-soft p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              Con imágenes
+            </p>
+            <p className="mt-2 text-2xl font-black text-dark">{metrics.withImages}</p>
           </div>
         </div>
 

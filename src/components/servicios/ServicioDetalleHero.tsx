@@ -5,7 +5,7 @@ import {
   isValidElement,
 } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Wrench } from "lucide-react";
+import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles, Wrench } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 import { useAppState } from "@/hooks/useAppState";
@@ -179,6 +179,17 @@ const ServicioDetalleHero: FC = () => {
                 safeText(service.descripcion_larga) ||
                 "Servicio profesional orientado a brindar resultados con calidad, confianza y atención especializada."}
             </p>
+
+            <div className={`mt-6 flex flex-wrap gap-3 ${image ? "" : "justify-center"}`}>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white/90">
+                <BadgeCheck size={14} className="text-primary" />
+                Calidad profesional
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white/90">
+                <ShieldCheck size={14} className="text-primary" />
+                Atención personalizada
+              </div>
+            </div>
 
             <div
               className={`mt-10 flex flex-wrap gap-4 ${
