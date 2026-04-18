@@ -254,7 +254,7 @@ const ServicioDetalleContent: FC = () => {
           transition={{ duration: 0.45 }}
           className="grid items-start gap-6 lg:grid-cols-12"
         >
-          <div className="lg:col-span-8 lg:pr-2">
+          <div className="space-y-8 lg:col-span-8 lg:pr-2">
             {hasLongContent ? (
               <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
@@ -280,12 +280,12 @@ const ServicioDetalleContent: FC = () => {
             ) : null}
 
             {points.length > 0 ? (
-              <div className="mt-8">
+              <div>
                 <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
                   Lo que incluye este servicio
                 </h2>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <div className={pointsGridClass}>
                   {points.map((point, index) => (
                     <DetailPointCard
                       key={`${point}-${index}`}
@@ -297,12 +297,12 @@ const ServicioDetalleContent: FC = () => {
               </div>
             ) : null}
 
-            <div className="mt-8">
+            <div>
               <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
                 Información adicional
               </h2>
 
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <ServiceInfoCard
                   label="Empresa"
                   value={companyName}
@@ -323,7 +323,7 @@ const ServicioDetalleContent: FC = () => {
               </div>
             </div>
 
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4">
               <CustomButton
                 text="Ver todos los servicios"
                 component={Link}
@@ -331,7 +331,7 @@ const ServicioDetalleContent: FC = () => {
                 icon={<ArrowRight size={17} />}
                 variant="primary"
                 size="lg"
-                className="px-4! gap-1!"
+                className="w-full px-4! gap-1! sm:w-auto"
               />
 
               {phoneHref ? (
@@ -342,7 +342,7 @@ const ServicioDetalleContent: FC = () => {
                   icon={<Phone size={17} />}
                   variant="secondary"
                   size="lg"
-                  className="px-4! gap-1!"
+                  className="w-full px-4! gap-1! sm:w-auto"
                 />
               ) : (
                 <CustomButton
@@ -351,7 +351,7 @@ const ServicioDetalleContent: FC = () => {
                   to="/contacto"
                   variant="secondary"
                   size="lg"
-                  className="px-4! gap-1!"
+                  className="w-full px-4! gap-1! sm:w-auto"
                 />
               )}
             </div>
