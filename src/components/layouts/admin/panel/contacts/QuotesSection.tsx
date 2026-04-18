@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   XCircle,
   History,
+  FileDown,
 } from "lucide-react";
 
 import { useQuotes } from "@/hooks/useQuotes";
@@ -74,6 +75,7 @@ const QuotesSection = () => {
     approveQuote,
     rejectQuote,
     getQuoteEvents,
+    getQuotePdf,
   } = useQuotes();
   const { updateContact } = useContacts();
   const { showMessage } = useNotification();
@@ -159,6 +161,29 @@ const QuotesSection = () => {
     });
 
     setTimelineLoading(false);
+  };
+
+  const handleDownloadPdf = async (quote: Quote): Promise<void> => {
+    const previewWindow = window.open("", "_blank", "noopener,noreferrer");
+
+    await getQuotePdf(quote.id, ({ pdfUrl, message }) => {
+      if (!pdfUrl) {
+        previewWindow?.close();
+        showMessage(
+          message || "El backend aún no devolvió un PDF real para esta cotización.",
+          "info"
+        );
+        return;
+      }
+
+      if (previewWindow) {
+        previewWindow.location.href = pdfUrl;
+      } else {
+        window.open(pdfUrl, "_blank", "noopener,noreferrer");
+      }
+
+      window.setTimeout(() => URL.revokeObjectURL(pdfUrl), 60_000);
+    });
   };
 
   const handleApprove = async (quote: Quote): Promise<void> => {
@@ -327,6 +352,15 @@ const QuotesSection = () => {
           className={actionBtnClass}
         >
           <History size={15} />
+        </button>
+
+        <button
+          type="button"
+          aria-label="Descargar PDF de cotización"
+          onClick={() => void handleDownloadPdf(quote)}
+          className={actionBtnClass}
+        >
+          <FileDown size={15} />
         </button>
 
         <button

@@ -6,6 +6,7 @@ import type {
   Quote,
   QuoteEvent,
   QuoteEventsResponse,
+  QuotePdfResult,
   QuoteResponse,
   QuoteSendChannel,
   QuotesResponse,
@@ -228,6 +229,64 @@ export const useQuotes = (): UseQuotes => {
     }
   };
 
+  const getQuotePdf = async (
+    id: string,
+    callback?: (result: QuotePdfResult) => void
+  ): Promise<void> => {
+    setLoading(true);
+
+    try {
+      const response = await apiWithAuth.get(`/quotes/${id}/pdf`, {
+        responseType: "blob",
+      });
+
+      const contentType = response.headers["content-type"] || "";
+      const isPdf = contentType.includes("application/pdf");
+
+      if (!isPdf) {
+        const rawText = await response.data.text();
+
+        try {
+          const parsed = JSON.parse(rawText) as {
+            message?: string;
+            data?: { pdfUrl?: string; url?: string };
+          };
+
+          const maybePdfUrl =
+            parsed.data?.pdfUrl ||
+            parsed.data?.url ||
+            null;
+
+          callback?.({
+            pdfUrl: maybePdfUrl,
+            message:
+              parsed.message ||
+              "El endpoint respondió sin PDF binario. Verifica si aún está en modo placeholder.",
+          });
+        } catch {
+          callback?.({
+            pdfUrl: null,
+            message: "El endpoint respondió sin PDF binario y no se pudo interpretar la respuesta.",
+          });
+        }
+        return;
+      }
+
+      const file = new Blob([response.data], { type: "application/pdf" });
+      const pdfUrl = URL.createObjectURL(file);
+      callback?.({ pdfUrl });
+    } catch (error) {
+      const handled = handleApiError(error);
+      console.error("Error obteniendo PDF de cotización:", handled.message);
+      callback?.({
+        pdfUrl: null,
+        message: handled.message || "No se pudo obtener el PDF de la cotización.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const approveQuote = async (id: string, callback?: BasicCallback): Promise<void> => {
     setLoading(true);
 
@@ -374,6 +433,7 @@ export const useQuotes = (): UseQuotes => {
     approveQuote,
     rejectQuote,
     getQuoteEvents,
+    getQuotePdf,
     addQuoteItem,
     updateQuoteItem,
     deleteQuoteItem,

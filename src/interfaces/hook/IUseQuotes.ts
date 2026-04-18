@@ -67,6 +67,11 @@ export interface QuoteEventsResponse {
   data: QuoteEvent[];
 }
 
+export interface QuotePdfResult {
+  pdfUrl: string | null;
+  message?: string;
+}
+
 export interface UseQuotes {
   quotes: Quote[];
   loading: boolean;
@@ -102,6 +107,10 @@ export interface UseQuotes {
   getQuoteEvents: (
     id: string,
     callback?: (events: QuoteEvent[]) => void
+  ) => Promise<void>;
+  getQuotePdf: (
+    id: string,
+    callback?: (result: QuotePdfResult) => void
   ) => Promise<void>;
 
   addQuoteItem: (
