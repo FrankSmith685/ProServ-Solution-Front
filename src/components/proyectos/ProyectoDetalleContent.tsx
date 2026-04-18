@@ -256,7 +256,7 @@ const ProyectoDetalleContent: FC = () => {
       <div className="absolute -left-16 top-12 h-52 w-52 rounded-full bg-primary/8 blur-3xl" />
       <div className="absolute -right-16 bottom-10 h-64 w-64 rounded-full bg-primary/8 blur-3xl" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
