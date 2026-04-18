@@ -1,6 +1,6 @@
 import { useMemo, type FC } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, FolderKanban, Sparkles } from "lucide-react";
+import { ArrowRight, BadgeCheck, FolderKanban, Sparkles, UserRound } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 import { useAppState } from "@/hooks/useAppState";
@@ -153,6 +153,9 @@ const ProyectoDetalleHero: FC = () => {
     safeText(project.descripcion) ||
     safeText(project.descripcion_larga) ||
     "Proyecto desarrollado con planificación, ejecución profesional y resultados de alto nivel.";
+  const categoryName =
+    safeText(project.categoria?.nombre) || safeText(project.category?.nombre);
+  const clientName = safeText(project.cliente);
 
   return (
     <section className="relative overflow-hidden bg-dark py-20 text-white md:py-28">
@@ -188,6 +191,23 @@ const ProyectoDetalleHero: FC = () => {
             <p className="mt-6 max-w-2xl text-sm leading-relaxed text-white/76 md:text-base">
               {description}
             </p>
+
+            {(categoryName || clientName) ? (
+              <div className={`mt-6 flex flex-wrap gap-3 ${image ? "" : "justify-center"}`}>
+                {categoryName ? (
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white/90">
+                    <BadgeCheck size={14} className="text-primary" />
+                    {categoryName}
+                  </div>
+                ) : null}
+                {clientName ? (
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white/90">
+                    <UserRound size={14} className="text-primary" />
+                    {clientName}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
             <div
               className={`mt-10 flex flex-wrap gap-4 ${
