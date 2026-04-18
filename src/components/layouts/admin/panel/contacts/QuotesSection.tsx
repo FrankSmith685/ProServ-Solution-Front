@@ -164,11 +164,8 @@ const QuotesSection = () => {
   };
 
   const handleDownloadPdf = async (quote: Quote): Promise<void> => {
-    const previewWindow = window.open("", "_blank", "noopener,noreferrer");
-
     await getQuotePdf(quote.id, ({ pdfUrl, message }) => {
       if (!pdfUrl) {
-        previewWindow?.close();
         showMessage(
           message || "El backend aún no devolvió un PDF real para esta cotización.",
           "info"
@@ -176,11 +173,12 @@ const QuotesSection = () => {
         return;
       }
 
-      if (previewWindow) {
-        previewWindow.location.href = pdfUrl;
-      } else {
-        window.open(pdfUrl, "_blank", "noopener,noreferrer");
-      }
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = `${quote.numero || `cotizacion-${quote.id}`}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
 
       window.setTimeout(() => URL.revokeObjectURL(pdfUrl), 60_000);
     });
