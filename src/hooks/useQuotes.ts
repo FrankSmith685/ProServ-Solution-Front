@@ -4,7 +4,11 @@ import { handleApiError } from "../api/apiError";
 
 import type {
   Quote,
+  QuoteEvent,
+  QuoteEventsResponse,
+  QuotePdfResult,
   QuoteResponse,
+  QuoteSendChannel,
   QuotesResponse,
   UseQuotes,
 } from "@/interfaces/hook/IUseQuotes";
@@ -14,6 +18,11 @@ import { useAppState } from "./useAppState";
 export const useQuotes = (): UseQuotes => {
   const { quotes, setQuotes } = useAppState();
   const [loading, setLoading] = useState<boolean>(false);
+
+  const normalizeAmount = (value?: number | string | null): number => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
 
   const syncQuoteInState = (updatedQuote: Quote): void => {
     setQuotes(
@@ -83,12 +92,14 @@ export const useQuotes = (): UseQuotes => {
     try {
       const payload = {
         contacto_id: form.contacto_id || "",
+        numero: form.numero || undefined,
+        fecha_envio: form.fecha_envio || null,
         fecha_vencimiento: form.fecha_vencimiento || null,
         moneda: form.moneda || "PEN",
-        subtotal: form.subtotal ?? null,
-        impuestos: form.impuestos ?? null,
-        descuento: form.descuento ?? null,
-        total: form.total ?? null,
+        subtotal: normalizeAmount(form.subtotal),
+        impuestos: normalizeAmount(form.impuestos),
+        descuento: normalizeAmount(form.descuento),
+        total: normalizeAmount(form.total),
         observaciones: form.observaciones || null,
         motivo_rechazo: form.motivo_rechazo || null,
         estado: form.estado || "pendiente",
@@ -126,7 +137,21 @@ export const useQuotes = (): UseQuotes => {
     setLoading(true);
 
     try {
-      const { data } = await apiWithAuth.put<QuoteResponse>(`/quotes/${id}`, form);
+      const payload = {
+        ...form,
+        numero: form.numero || undefined,
+        fecha_envio: form.fecha_envio || null,
+        fecha_vencimiento: form.fecha_vencimiento || null,
+        moneda: form.moneda || "PEN",
+        subtotal: normalizeAmount(form.subtotal),
+        impuestos: normalizeAmount(form.impuestos),
+        descuento: normalizeAmount(form.descuento),
+        total: normalizeAmount(form.total),
+        observaciones: form.observaciones || null,
+        motivo_rechazo: form.motivo_rechazo || null,
+      };
+
+      const { data } = await apiWithAuth.put<QuoteResponse>(`/quotes/${id}`, payload);
 
       if (!data.success) {
         throw new Error(data.message);
@@ -150,11 +175,15 @@ export const useQuotes = (): UseQuotes => {
     }
   };
 
-  const sendQuote = async (id: string, callback?: BasicCallback): Promise<void> => {
+  const sendQuote = async (
+    id: string,
+    payload?: { canal?: QuoteSendChannel },
+    callback?: BasicCallback
+  ): Promise<void> => {
     setLoading(true);
 
     try {
-      const { data } = await apiWithAuth.post<QuoteResponse>(`/quotes/${id}/send`);
+      const { data } = await apiWithAuth.post<QuoteResponse>(`/quotes/${id}/send`, payload || {});
 
       if (!data.success) {
         throw new Error(data.message);
@@ -171,6 +200,87 @@ export const useQuotes = (): UseQuotes => {
       callback?.({
         success: false,
         message: handled.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getQuoteEvents = async (
+    id: string,
+    callback?: (events: QuoteEvent[]) => void
+  ): Promise<void> => {
+    setLoading(true);
+
+    try {
+      const { data } = await apiWithAuth.get<QuoteEventsResponse>(`/quotes/${id}/events`);
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      callback?.(data.data);
+    } catch (error) {
+      const handled = handleApiError(error);
+      console.error("Error obteniendo timeline de cotización:", handled.message);
+      callback?.([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getQuotePdf = async (
+    id: string,
+    callback?: (result: QuotePdfResult) => void
+  ): Promise<void> => {
+    setLoading(true);
+
+    try {
+      const response = await apiWithAuth.get(`/quotes/${id}/pdf`, {
+        responseType: "blob",
+      });
+
+      const contentType = response.headers["content-type"] || "";
+      const isPdf = contentType.includes("application/pdf");
+
+      if (!isPdf) {
+        const rawText = await response.data.text();
+
+        try {
+          const parsed = JSON.parse(rawText) as {
+            message?: string;
+            data?: { pdfUrl?: string; url?: string };
+          };
+
+          const maybePdfUrl =
+            parsed.data?.pdfUrl ||
+            parsed.data?.url ||
+            null;
+
+          callback?.({
+            pdfUrl: maybePdfUrl,
+            message:
+              parsed.message ||
+              "El endpoint respondió sin PDF binario. Verifica si aún está en modo placeholder.",
+          });
+        } catch {
+          callback?.({
+            pdfUrl: null,
+            message: "El endpoint respondió sin PDF binario y no se pudo interpretar la respuesta.",
+          });
+        }
+        return;
+      }
+
+      const file = new Blob([response.data], { type: "application/pdf" });
+      const pdfUrl = URL.createObjectURL(file);
+      callback?.({ pdfUrl });
+    } catch (error) {
+      const handled = handleApiError(error);
+      console.error("Error obteniendo PDF de cotización:", handled.message);
+      callback?.({
+        pdfUrl: null,
+        message: handled.message || "No se pudo obtener el PDF de la cotización.",
       });
     } finally {
       setLoading(false);
@@ -322,6 +432,8 @@ export const useQuotes = (): UseQuotes => {
     sendQuote,
     approveQuote,
     rejectQuote,
+    getQuoteEvents,
+    getQuotePdf,
     addQuoteItem,
     updateQuoteItem,
     deleteQuoteItem,

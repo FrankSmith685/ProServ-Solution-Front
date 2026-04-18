@@ -9,6 +9,8 @@ import {
   MessageCircle,
   CheckCircle2,
   XCircle,
+  History,
+  FileDown,
 } from "lucide-react";
 
 import { useQuotes } from "@/hooks/useQuotes";
@@ -19,8 +21,9 @@ import { CustomTable } from "@/components/ui/kit/CustomTable";
 import { CustomButton } from "@/components/ui/kit/CustomButton";
 import { CustomInput } from "@/components/ui/kit/CustomInput";
 import { CustomSelected } from "@/components/ui/kit/CustomSelected";
+import { CustomModal } from "@/components/ui/overlay/CustomModal";
 
-import type { Quote } from "@/interfaces/hook/IUseQuotes";
+import type { Quote, QuoteEvent } from "@/interfaces/hook/IUseQuotes";
 import { ModalAdminQuote } from "../ModalAdminQuote";
 
 const TABLE_HEADERS: string[] = [
@@ -67,9 +70,12 @@ const QuotesSection = () => {
     quotes,
     loading,
     getQuotes,
+    sendQuote,
     updateQuote,
     approveQuote,
     rejectQuote,
+    getQuoteEvents,
+    getQuotePdf,
   } = useQuotes();
   const { updateContact } = useContacts();
   const { showMessage } = useNotification();
@@ -78,6 +84,10 @@ const QuotesSection = () => {
   const [editingQuote, setEditingQuote] = useState<Quote | null>(null);
   const [form, setForm] = useState<Partial<Quote>>({});
   const [saving, setSaving] = useState<boolean>(false);
+  const [timelineOpen, setTimelineOpen] = useState<boolean>(false);
+  const [timelineEvents, setTimelineEvents] = useState<QuoteEvent[]>([]);
+  const [timelineLoading, setTimelineLoading] = useState<boolean>(false);
+  const [timelineQuoteNumber, setTimelineQuoteNumber] = useState<string>("");
   const [search, setSearch] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -90,7 +100,12 @@ const QuotesSection = () => {
     setForm({
       id: quote.id,
       contacto_id: quote.contacto_id,
+      numero: quote.numero || "",
       moneda: quote.moneda || "PEN",
+      subtotal: quote.subtotal ?? 0,
+      impuestos: quote.impuestos ?? 0,
+      descuento: quote.descuento ?? 0,
+      fecha_envio: quote.fecha_envio || null,
       fecha_vencimiento: quote.fecha_vencimiento || null,
       observaciones: quote.observaciones || "",
       motivo_rechazo: quote.motivo_rechazo || "",
@@ -119,7 +134,12 @@ const QuotesSection = () => {
     window.open(url, "_blank", "noopener,noreferrer");
 
     if (quote.estado === "pendiente") {
-      await updateQuote(quote.id, { estado: "enviada" });
+      await sendQuote(quote.id, { canal: "whatsapp" }, ({ success, message }) => {
+        showMessage(
+          message || (success ? "Cotización enviada por WhatsApp." : "No se pudo enviar la cotización."),
+          success ? "success" : "error"
+        );
+      });
     }
 
     await updateContact(contact.id, {
@@ -127,6 +147,40 @@ const QuotesSection = () => {
       notas_admin: contact.notas_admin
         ? `${contact.notas_admin}\nSeguimiento por WhatsApp desde cotizaciones.`
         : "Seguimiento por WhatsApp desde cotizaciones.",
+    });
+  };
+
+  const handleOpenTimeline = async (quote: Quote): Promise<void> => {
+    setTimelineOpen(true);
+    setTimelineLoading(true);
+    setTimelineEvents([]);
+    setTimelineQuoteNumber(quote.numero || quote.id);
+
+    await getQuoteEvents(quote.id, (events) => {
+      setTimelineEvents(events);
+    });
+
+    setTimelineLoading(false);
+  };
+
+  const handleDownloadPdf = async (quote: Quote): Promise<void> => {
+    await getQuotePdf(quote.id, ({ pdfUrl, message }) => {
+      if (!pdfUrl) {
+        showMessage(
+          message || "El backend aún no devolvió un PDF real para esta cotización.",
+          "info"
+        );
+        return;
+      }
+
+      const link = document.createElement("a");
+      link.href = pdfUrl;
+      link.download = `${quote.numero || `cotizacion-${quote.id}`}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.setTimeout(() => URL.revokeObjectURL(pdfUrl), 60_000);
     });
   };
 
@@ -161,7 +215,15 @@ const QuotesSection = () => {
 
     setSaving(true);
 
-    await updateQuote(editingQuote.id, form, ({ success, message }) => {
+    const payload: Partial<Quote> = {
+      ...form,
+      fecha_envio:
+        form.estado === "enviada"
+          ? (form.fecha_envio || new Date().toISOString())
+          : null,
+    };
+
+    await updateQuote(editingQuote.id, payload, ({ success, message }) => {
       if (success) {
         showMessage(message || "Cotización actualizada correctamente", "success");
         setModalOpen(false);
@@ -259,7 +321,7 @@ const QuotesSection = () => {
           <MessageCircle size={15} />
         </button>
 
-        {quote.estado !== "aprobada" && quote.estado !== "rechazada" ? (
+        {quote.estado === "enviada" ? (
           <button
             type="button"
             aria-label="Aprobar cotización"
@@ -270,7 +332,7 @@ const QuotesSection = () => {
           </button>
         ) : null}
 
-        {quote.estado !== "rechazada" ? (
+        {quote.estado === "enviada" ? (
           <button
             type="button"
             aria-label="Rechazar cotización"
@@ -280,6 +342,24 @@ const QuotesSection = () => {
             <XCircle size={15} />
           </button>
         ) : null}
+
+        <button
+          type="button"
+          aria-label="Ver timeline de cotización"
+          onClick={() => void handleOpenTimeline(quote)}
+          className={actionBtnClass}
+        >
+          <History size={15} />
+        </button>
+
+        <button
+          type="button"
+          aria-label="Descargar PDF de cotización"
+          onClick={() => void handleDownloadPdf(quote)}
+          className={actionBtnClass}
+        >
+          <FileDown size={15} />
+        </button>
 
         <button
           type="button"
@@ -374,6 +454,57 @@ const QuotesSection = () => {
         onSave={handleSave}
         loading={saving}
       />
+
+      <CustomModal
+        isOpen={timelineOpen}
+        onClose={() => setTimelineOpen(false)}
+        title={`Timeline: ${timelineQuoteNumber}`}
+        width="min(760px, 96vw)"
+        height="min(80dvh, 900px)"
+      >
+        <section className="space-y-3">
+          {timelineLoading ? (
+            <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface p-4 text-sm text-muted-foreground">
+              <Loader2 size={16} className="animate-spin" />
+              <span>Cargando eventos...</span>
+            </div>
+          ) : timelineEvents.length === 0 ? (
+            <div className="rounded-2xl border border-border bg-surface p-4 text-sm text-muted-foreground">
+              No hay eventos registrados para esta cotización.
+            </div>
+          ) : (
+            <ul className="space-y-3">
+              {timelineEvents.map((event) => (
+                <li
+                  key={event.id}
+                  className="rounded-2xl border border-border bg-surface p-4"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm font-semibold capitalize text-(--color-text)">
+                      {event.tipo_evento.replaceAll("_", " ")}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(event.created_at).toLocaleString()}
+                    </p>
+                  </div>
+
+                  {event.user_name || event.user_id ? (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Usuario: {event.user_name || event.user_id}
+                    </p>
+                  ) : null}
+
+                  {event.metadata ? (
+                    <pre className="mt-3 overflow-auto rounded-xl bg-muted/30 p-3 text-xs text-(--color-text)">
+                      {JSON.stringify(event.metadata, null, 2)}
+                    </pre>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </CustomModal>
     </section>
   );
 };
