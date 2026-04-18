@@ -133,6 +133,10 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
         totalNumber !== null &&
         totalNumber < 0,
       totalRequiredByStatus: requiresTotalForStatus && (!hasTotal || Number(totalValue) <= 0),
+      motivoRechazo:
+        form.estado === "rechazada" &&
+        touched.motivo_rechazo &&
+        !String(form.motivo_rechazo ?? "").trim(),
     };
   }, [form.estado, form.total, form.motivo_rechazo, touched.estado, touched.total, touched.motivo_rechazo]);
 
@@ -159,6 +163,7 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
   const isInvalid =
     !form.estado ||
     !contact?.id ||
+    errors.motivoRechazo ||
     (form.total !== null &&
       form.total !== undefined &&
       form.total !== "" &&
