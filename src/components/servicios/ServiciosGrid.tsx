@@ -7,7 +7,13 @@ import {
 } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Wrench } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  BriefcaseBusiness,
+  Sparkles,
+  Wrench,
+} from "lucide-react";
 
 import { useAppState } from "@/hooks/useAppState";
 import { getServiceIconMeta } from "@/shared/design/serviceIcons";
@@ -206,6 +212,8 @@ const ServiciosGrid: FC = () => {
     });
   }, [items, search]);
 
+  const hasSearch = search.trim().length > 0;
+
   if (!Array.isArray(services)) {
     return <ServicesSectionSkeleton />;
   }
@@ -235,6 +243,23 @@ const ServiciosGrid: FC = () => {
               onClick={() => setSearch("")}
             />
           </div>
+        </div>
+
+        <div className="mb-8 flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-dark">
+            <BriefcaseBusiness size={14} className="text-primary" />
+            {items.length} servicios activos
+          </div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-dark">
+            <BadgeCheck size={14} className="text-primary" />
+            Atención personalizada
+          </div>
+          {hasSearch ? (
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-primary">
+              <Sparkles size={14} />
+              Búsqueda activa
+            </div>
+          ) : null}
         </div>
 
         {items.length === 0 ? (
@@ -318,6 +343,45 @@ const ServiciosGrid: FC = () => {
             })}
           </div>
         )}
+
+        {items.length > 0 ? (
+          <div className="mt-8 rounded-4xl border border-primary/12 bg-linear-to-r from-white via-surface to-primary/5 p-6 shadow-sm md:p-8">
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                  <Sparkles size={14} />
+                  Asesoría profesional
+                </div>
+                <h3 className="mt-4 text-2xl font-black tracking-tight text-dark">
+                  ¿No encuentras exactamente lo que buscas?
+                </h3>
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">
+                  Cuéntanos tu necesidad y te orientamos con una solución a
+                  medida, aprovechando nuestro equipo y experiencia técnica.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <CustomButton
+                  text="Solicitar cotización"
+                  component={Link}
+                  to="/contacto"
+                  variant="primary"
+                  size="lg"
+                  className="px-4!"
+                />
+                <CustomButton
+                  text="Ver proyectos"
+                  component={Link}
+                  to="/proyectos"
+                  variant="secondary"
+                  size="lg"
+                  className="px-4!"
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );
