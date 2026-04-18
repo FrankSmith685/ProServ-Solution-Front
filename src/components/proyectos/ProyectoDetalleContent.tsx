@@ -239,6 +239,12 @@ const ProyectoDetalleContent: FC = () => {
     return collectDetailPoints(project);
   }, [project]);
 
+  const pointsGridClass = useMemo(() => {
+    if (points.length >= 3) return "mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3";
+    if (points.length === 2) return "mt-6 grid gap-4 sm:grid-cols-2";
+    return "mt-6 grid gap-4";
+  }, [points.length]);
+
   const companyName =
     safeText(company?.nombre) ||
     safeText(siteConfig?.site_name) ||
