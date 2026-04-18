@@ -237,12 +237,12 @@ const ServicioDetalleContent: FC = () => {
       <div className="absolute -left-16 top-12 h-52 w-52 rounded-full bg-primary/8 blur-3xl" />
       <div className="absolute -right-16 bottom-10 h-64 w-64 rounded-full bg-primary/8 blur-3xl" />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="mx-auto max-w-5xl"
+          className="space-y-8"
         >
           {hasLongContent ? (
             <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
@@ -268,25 +268,7 @@ const ServicioDetalleContent: FC = () => {
             </div>
           ) : null}
 
-          {points.length > 0 ? (
-            <div className="mt-8">
-              <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
-                Lo que incluye este servicio
-              </h2>
-
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {points.map((point, index) => (
-                  <DetailPointCard
-                    key={`${point}-${index}`}
-                    text={point}
-                    index={index}
-                  />
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          <div className="mt-8">
+          <div>
             <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
               Información adicional
             </h2>
@@ -312,37 +294,73 @@ const ServicioDetalleContent: FC = () => {
             </div>
           </div>
 
-          <div className="mt-10 flex flex-wrap gap-4">
-            <CustomButton
-              text="Ver todos los servicios"
-              component={Link}
-              to="/servicios"
-              icon={<ArrowRight size={17} />}
-              variant="primary"
-              size="lg"
-              className="px-4! gap-1!"
-            />
+          {points.length > 0 ? (
+            <div>
+              <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
+                Lo que incluye este servicio
+              </h2>
 
-            {phoneHref ? (
+              <div
+                className={`mt-6 grid gap-4 ${
+                  points.length === 1
+                    ? "grid-cols-1"
+                    : points.length === 2
+                      ? "sm:grid-cols-2"
+                      : "sm:grid-cols-2 lg:grid-cols-3"
+                }`}
+              >
+                {points.map((point, index) => (
+                  <DetailPointCard
+                    key={`${point}-${index}`}
+                    text={point}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className="rounded-[1.6rem] border border-primary/15 bg-white p-6 shadow-sm md:p-8">
+            <h3 className="text-xl font-black tracking-tight text-dark">
+              ¿Quieres cotizar este servicio?
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
+              Te ayudamos con alcance, tiempos y propuesta comercial para que
+              avances con claridad.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-4">
               <CustomButton
-                text="Solicitar información"
-                component="a"
-                href={`tel:${phoneHref}`}
-                icon={<Phone size={17} />}
-                variant="secondary"
-                size="lg"
-                className="px-4! gap-1!"
-              />
-            ) : (
-              <CustomButton
-                text="Ir a contacto"
+                text="Ver todos los servicios"
                 component={Link}
-                to="/contacto"
-                variant="secondary"
+                to="/servicios"
+                icon={<ArrowRight size={17} />}
+                variant="primary"
                 size="lg"
                 className="px-4! gap-1!"
               />
-            )}
+
+              {phoneHref ? (
+                <CustomButton
+                  text="Solicitar información"
+                  component="a"
+                  href={`tel:${phoneHref}`}
+                  icon={<Phone size={17} />}
+                  variant="secondary"
+                  size="lg"
+                  className="px-4! gap-1!"
+                />
+              ) : (
+                <CustomButton
+                  text="Ir a contacto"
+                  component={Link}
+                  to="/contacto"
+                  variant="secondary"
+                  size="lg"
+                  className="px-4! gap-1!"
+                />
+              )}
+            </div>
           </div>
         </motion.div>
       </div>
