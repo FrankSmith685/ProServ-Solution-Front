@@ -8,9 +8,7 @@ import {
   BadgeDollarSign,
   MessageCircle,
   CheckCircle2,
-  Clock3,
-  Send,
-  TrendingUp,
+  XCircle,
 } from "lucide-react";
 
 import { useQuotes } from "@/hooks/useQuotes";
@@ -70,7 +68,6 @@ const QuotesSection = () => {
     loading,
     getQuotes,
     updateQuote,
-    sendQuote,
     approveQuote,
     rejectQuote,
   } = useQuotes();

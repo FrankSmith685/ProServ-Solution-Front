@@ -143,15 +143,15 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
     !Number.isNaN(Number(form.total)) &&
     Number(form.total) > 0;
 
-  const requiresTotalForStatus =
-    form.estado === "enviada" || form.estado === "aprobada";
+  // const requiresTotalForStatus =
+  //   form.estado === "enviada" || form.estado === "aprobada";
 
-  const hasValidPositiveTotal =
-    form.total !== null &&
-    form.total !== undefined &&
-    form.total !== "" &&
-    !Number.isNaN(Number(form.total)) &&
-    Number(form.total) > 0;
+  // const hasValidPositiveTotal =
+  //   form.total !== null &&
+  //   form.total !== undefined &&
+  //   form.total !== "" &&
+  //   !Number.isNaN(Number(form.total)) &&
+  //   Number(form.total) > 0;
 
   const requiresTotalForStatus =
     form.estado === "enviada" || form.estado === "aprobada";
