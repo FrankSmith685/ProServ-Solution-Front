@@ -218,6 +218,11 @@ const ServicioDetalleContent: FC = () => {
     return collectDetailPoints(service);
   }, [service]);
 
+  const pointsGridClass = useMemo(() => {
+    if (points.length >= 3) return "mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3";
+    return "mt-6 grid gap-4";
+  }, [points.length]);
+
   const companyName =
     safeText(company?.nombre) ||
     safeText(siteConfig?.site_name) ||
@@ -246,9 +251,9 @@ const ServicioDetalleContent: FC = () => {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="grid gap-6 xl:grid-cols-12"
+          className="grid items-start gap-6 lg:grid-cols-12"
         >
-          <div className="xl:col-span-8">
+          <div className="lg:col-span-8 lg:pr-2">
             {hasLongContent ? (
               <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
                 <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
@@ -279,7 +284,7 @@ const ServicioDetalleContent: FC = () => {
                   Lo que incluye este servicio
                 </h2>
 
-                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className={pointsGridClass}>
                   {points.map((point, index) => (
                     <DetailPointCard
                       key={`${point}-${index}`}
@@ -296,7 +301,7 @@ const ServicioDetalleContent: FC = () => {
                 Información adicional
               </h2>
 
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
                 <ServiceInfoCard
                   label="Empresa"
                   value={companyName}
@@ -351,7 +356,7 @@ const ServicioDetalleContent: FC = () => {
             </div>
           </div>
 
-          <aside className="xl:col-span-4">
+          <aside className="lg:col-span-4 lg:self-start lg:pl-2">
             <div className="sticky top-24 space-y-4">
               <div className="rounded-[1.6rem] border border-border bg-white p-5 shadow-sm">
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
