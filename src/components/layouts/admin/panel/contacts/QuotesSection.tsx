@@ -7,6 +7,10 @@ import {
   User,
   BadgeDollarSign,
   MessageCircle,
+  CheckCircle2,
+  Clock3,
+  Send,
+  TrendingUp,
 } from "lucide-react";
 
 import { useQuotes } from "@/hooks/useQuotes";
