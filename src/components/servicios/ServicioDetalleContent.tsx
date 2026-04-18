@@ -9,9 +9,12 @@ import {
   BadgeCheck,
   Building2,
   CheckCircle2,
+  ClipboardCheck,
+  MessageCircle,
   Phone,
   ShieldCheck,
   Sparkles,
+  Timer,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
@@ -230,6 +233,7 @@ const ServicioDetalleContent: FC = () => {
   }
 
   const hasLongContent = Boolean(service.descripcionLarga);
+  const hasPhone = Boolean(phoneHref);
 
   return (
     <section className="relative overflow-hidden bg-surface py-20 md:py-24">
@@ -242,94 +246,78 @@ const ServicioDetalleContent: FC = () => {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="space-y-8"
+          className="grid gap-6 xl:grid-cols-12"
         >
-          {hasLongContent ? (
-            <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                <Sparkles size={14} />
-                Descripción del servicio
+          <div className="xl:col-span-8">
+            {hasLongContent ? (
+              <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                  <Sparkles size={14} />
+                  Descripción del servicio
+                </div>
+
+                <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground md:text-base">
+                  {service.descripcionLarga}
+                </p>
               </div>
+            ) : service.descripcion ? (
+              <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                  <Sparkles size={14} />
+                  Resumen del servicio
+                </div>
 
-              <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground md:text-base">
-                {service.descripcionLarga}
-              </p>
-            </div>
-          ) : service.descripcion ? (
-            <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                <Sparkles size={14} />
-                Resumen del servicio
+                <p className="mt-5 text-sm leading-relaxed text-muted-foreground md:text-base">
+                  {service.descripcion}
+                </p>
               </div>
+            ) : null}
 
-              <p className="mt-5 text-sm leading-relaxed text-muted-foreground md:text-base">
-                {service.descripcion}
-              </p>
-            </div>
-          ) : null}
+            {points.length > 0 ? (
+              <div className="mt-8">
+                <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
+                  Lo que incluye este servicio
+                </h2>
 
-          <div>
-            <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
-              Información adicional
-            </h2>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {points.map((point, index) => (
+                    <DetailPointCard
+                      key={`${point}-${index}`}
+                      text={point}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null}
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              <ServiceInfoCard
-                label="Empresa"
-                value={companyName}
-                icon={<Building2 size={18} />}
-              />
-
-              <ServiceInfoCard
-                label="Servicio"
-                value={service.titulo}
-                icon={<BadgeCheck size={18} />}
-              />
-
-              <ServiceInfoCard
-                label="Contacto"
-                value={contactPhone}
-                icon={<Phone size={18} />}
-              />
-            </div>
-          </div>
-
-          {points.length > 0 ? (
-            <div>
+            <div className="mt-8">
               <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
-                Lo que incluye este servicio
+                Información adicional
               </h2>
 
-              <div
-                className={`mt-6 grid gap-4 ${
-                  points.length === 1
-                    ? "grid-cols-1"
-                    : points.length === 2
-                      ? "sm:grid-cols-2"
-                      : "sm:grid-cols-2 lg:grid-cols-3"
-                }`}
-              >
-                {points.map((point, index) => (
-                  <DetailPointCard
-                    key={`${point}-${index}`}
-                    text={point}
-                    index={index}
-                  />
-                ))}
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                <ServiceInfoCard
+                  label="Empresa"
+                  value={companyName}
+                  icon={<Building2 size={18} />}
+                />
+
+                <ServiceInfoCard
+                  label="Servicio"
+                  value={service.titulo}
+                  icon={<BadgeCheck size={18} />}
+                />
+
+                <ServiceInfoCard
+                  label="Contacto"
+                  value={contactPhone}
+                  icon={<Phone size={18} />}
+                />
               </div>
             </div>
-          ) : null}
 
-          <div className="rounded-[1.6rem] border border-primary/15 bg-white p-6 shadow-sm md:p-8">
-            <h3 className="text-xl font-black tracking-tight text-dark">
-              ¿Quieres cotizar este servicio?
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
-              Te ayudamos con alcance, tiempos y propuesta comercial para que
-              avances con claridad.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-4">
+            <div className="mt-10 flex flex-wrap gap-4">
               <CustomButton
                 text="Ver todos los servicios"
                 component={Link}
@@ -362,6 +350,68 @@ const ServicioDetalleContent: FC = () => {
               )}
             </div>
           </div>
+
+          <aside className="xl:col-span-4">
+            <div className="sticky top-24 space-y-4">
+              <div className="rounded-[1.6rem] border border-border bg-white p-5 shadow-sm">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+                  Resumen rápido
+                </p>
+                <h3 className="mt-2 text-lg font-black text-dark">
+                  Cotización clara y profesional
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Te guiamos con alcance, alternativas y próximos pasos para que
+                  tomes una decisión con confianza.
+                </p>
+              </div>
+
+              <div className="rounded-[1.6rem] border border-border bg-white p-5 shadow-sm">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 rounded-2xl bg-primary/5 px-3 py-2">
+                    <Timer size={16} className="text-primary" />
+                    <p className="text-sm font-semibold text-dark">
+                      Respuesta inicial rápida
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-2xl bg-primary/5 px-3 py-2">
+                    <ClipboardCheck size={16} className="text-primary" />
+                    <p className="text-sm font-semibold text-dark">
+                      Alcance y propuesta estructurada
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-2xl bg-primary/5 px-3 py-2">
+                    <MessageCircle size={16} className="text-primary" />
+                    <p className="text-sm font-semibold text-dark">
+                      Comunicación en todo el proceso
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {hasPhone ? (
+                <CustomButton
+                  text="Llamar ahora"
+                  component="a"
+                  href={`tel:${phoneHref}`}
+                  icon={<Phone size={17} />}
+                  variant="primary"
+                  size="lg"
+                  className="w-full! justify-center gap-1!"
+                />
+              ) : null}
+
+              <CustomButton
+                text="Solicitar cotización"
+                component={Link}
+                to="/contacto"
+                icon={<ArrowRight size={17} />}
+                variant="secondary"
+                size="lg"
+                className="w-full! justify-center gap-1!"
+              />
+            </div>
+          </aside>
         </motion.div>
       </div>
     </section>

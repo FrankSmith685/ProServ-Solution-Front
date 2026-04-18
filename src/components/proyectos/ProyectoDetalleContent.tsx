@@ -6,9 +6,12 @@ import {
   BriefcaseBusiness,
   Building2,
   CheckCircle2,
+  ClipboardCheck,
   FolderKanban,
+  MessageCircle,
   ShieldCheck,
   Sparkles,
+  Timer,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
@@ -258,100 +261,84 @@ const ProyectoDetalleContent: FC = () => {
           initial={{ opacity: 0, y: 22 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="space-y-8"
+          className="grid gap-6 xl:grid-cols-12"
         >
-          {hasLongContent ? (
-            <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                <Sparkles size={14} />
-                Descripción del proyecto
+          <div className="xl:col-span-8">
+            {hasLongContent ? (
+              <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                  <Sparkles size={14} />
+                  Descripción del proyecto
+                </div>
+
+                <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground md:text-base">
+                  {project.descripcionLarga}
+                </p>
               </div>
+            ) : project.descripcion ? (
+              <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+                  <Sparkles size={14} />
+                  Resumen del proyecto
+                </div>
 
-              <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground md:text-base">
-                {project.descripcionLarga}
-              </p>
-            </div>
-          ) : project.descripcion ? (
-            <div className="rounded-[1.8rem] border border-border bg-white p-6 shadow-sm md:p-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                <Sparkles size={14} />
-                Resumen del proyecto
+                <p className="mt-5 text-sm leading-relaxed text-muted-foreground md:text-base">
+                  {project.descripcion}
+                </p>
               </div>
+            ) : null}
 
-              <p className="mt-5 text-sm leading-relaxed text-muted-foreground md:text-base">
-                {project.descripcion}
-              </p>
-            </div>
-          ) : null}
+            {points.length > 0 ? (
+              <div className="mt-8">
+                <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
+                  Aspectos destacados
+                </h2>
 
-          <div>
-            <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
-              Información del proyecto
-            </h2>
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {points.map((point, index) => (
+                    <DetailPointCard
+                      key={`${point}-${index}`}
+                      text={point}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : null}
 
-            <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <InfoCard
-                label="Empresa"
-                value={companyName}
-                icon={<Building2 size={18} />}
-              />
-
-              <InfoCard
-                label="Proyecto"
-                value={project.titulo}
-                icon={<FolderKanban size={18} />}
-              />
-
-              <InfoCard
-                label="Categoría"
-                value={project.categoria}
-                icon={<BadgeCheck size={18} />}
-              />
-
-              <InfoCard
-                label="Servicio"
-                value={project.servicio}
-                icon={<BriefcaseBusiness size={18} />}
-              />
-            </div>
-          </div>
-
-          {points.length > 0 ? (
-            <div>
+            <div className="mt-8">
               <h2 className="text-2xl font-black tracking-tight text-dark md:text-3xl">
-                Aspectos destacados
+                Información del proyecto
               </h2>
 
-              <div
-                className={`mt-6 grid gap-4 ${
-                  points.length === 1
-                    ? "grid-cols-1"
-                    : points.length === 2
-                      ? "sm:grid-cols-2"
-                      : "sm:grid-cols-2 lg:grid-cols-3"
-                }`}
-              >
-                {points.map((point, index) => (
-                  <DetailPointCard
-                    key={`${point}-${index}`}
-                    text={point}
-                    index={index}
-                  />
-                ))}
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <InfoCard
+                  label="Empresa"
+                  value={companyName}
+                  icon={<Building2 size={18} />}
+                />
+
+                <InfoCard
+                  label="Proyecto"
+                  value={project.titulo}
+                  icon={<FolderKanban size={18} />}
+                />
+
+                <InfoCard
+                  label="Categoría"
+                  value={project.categoria}
+                  icon={<BadgeCheck size={18} />}
+                />
+
+                <InfoCard
+                  label="Servicio"
+                  value={project.servicio}
+                  icon={<BriefcaseBusiness size={18} />}
+                />
               </div>
             </div>
-          ) : null}
 
-          <div className="rounded-[1.6rem] border border-primary/15 bg-white p-6 shadow-sm md:p-8">
-            <h3 className="text-xl font-black tracking-tight text-dark">
-              ¿Te gustaría un proyecto similar?
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground md:text-base">
-              Podemos ayudarte a definir alcance, tiempos y propuesta de trabajo
-              para tu caso.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-4">
+            <div className="mt-10 flex flex-wrap gap-4">
               <CustomButton
                 text="Ver todos los proyectos"
                 component={Link}
@@ -372,6 +359,56 @@ const ProyectoDetalleContent: FC = () => {
               />
             </div>
           </div>
+
+          <aside className="xl:col-span-4">
+            <div className="sticky top-24 space-y-4">
+              <div className="rounded-[1.6rem] border border-border bg-white p-5 shadow-sm">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+                  Enfoque de ejecución
+                </p>
+                <h3 className="mt-2 text-lg font-black text-dark">
+                  Proyecto con gestión y seguimiento
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  Planificamos y ejecutamos cuidando tiempos, calidad técnica y
+                  comunicación contigo en cada etapa.
+                </p>
+              </div>
+
+              <div className="rounded-[1.6rem] border border-border bg-white p-5 shadow-sm">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 rounded-2xl bg-primary/5 px-3 py-2">
+                    <Timer size={16} className="text-primary" />
+                    <p className="text-sm font-semibold text-dark">
+                      Planificación por etapas
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-2xl bg-primary/5 px-3 py-2">
+                    <ClipboardCheck size={16} className="text-primary" />
+                    <p className="text-sm font-semibold text-dark">
+                      Control de entregables
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 rounded-2xl bg-primary/5 px-3 py-2">
+                    <MessageCircle size={16} className="text-primary" />
+                    <p className="text-sm font-semibold text-dark">
+                      Soporte y coordinación
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <CustomButton
+                text="Cotizar proyecto"
+                component={Link}
+                to="/contacto"
+                icon={<ArrowRight size={17} />}
+                variant="primary"
+                size="lg"
+                className="w-full! justify-center gap-1!"
+              />
+            </div>
+          </aside>
         </motion.div>
       </div>
     </section>
