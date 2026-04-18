@@ -40,6 +40,12 @@ const actionBtnClass =
 const actionBtnWhatsappClass =
   "flex h-9 w-9 items-center justify-center rounded-xl border border-green-500/20 bg-green-500/8 text-green-600 transition-all duration-200 hover:bg-green-500/15";
 
+const actionBtnApproveClass =
+  "flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/8 text-emerald-600 transition-all duration-200 hover:bg-emerald-500/15";
+
+const actionBtnRejectClass =
+  "flex h-9 w-9 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/8 text-red-500 transition-all duration-200 hover:bg-red-500/15";
+
 const statusClassMap: Record<string, string> = {
   pendiente: "bg-amber-500 text-white",
   enviada: "bg-blue-500 text-white",
@@ -59,7 +65,15 @@ const buildWhatsAppUrl = (phone?: string | null, message?: string): string => {
 };
 
 const QuotesSection = () => {
-  const { quotes, loading, getQuotes, updateQuote } = useQuotes();
+  const {
+    quotes,
+    loading,
+    getQuotes,
+    updateQuote,
+    sendQuote,
+    approveQuote,
+    rejectQuote,
+  } = useQuotes();
   const { updateContact } = useContacts();
   const { showMessage } = useNotification();
 
@@ -79,6 +93,10 @@ const QuotesSection = () => {
     setForm({
       id: quote.id,
       contacto_id: quote.contacto_id,
+      moneda: quote.moneda || "PEN",
+      fecha_vencimiento: quote.fecha_vencimiento || null,
+      observaciones: quote.observaciones || "",
+      motivo_rechazo: quote.motivo_rechazo || "",
       total: quote.total,
       estado: quote.estado,
     });
@@ -112,6 +130,32 @@ const QuotesSection = () => {
       notas_admin: contact.notas_admin
         ? `${contact.notas_admin}\nSeguimiento por WhatsApp desde cotizaciones.`
         : "Seguimiento por WhatsApp desde cotizaciones.",
+    });
+  };
+
+  const handleApprove = async (quote: Quote): Promise<void> => {
+    await approveQuote(quote.id, ({ success, message }) => {
+      showMessage(
+        message || (success ? "Cotización aprobada." : "No se pudo aprobar."),
+        success ? "success" : "error"
+      );
+    });
+  };
+
+  const handleReject = async (quote: Quote): Promise<void> => {
+    const reason =
+      (window.prompt("Motivo de rechazo de la cotización:") || "").trim();
+
+    if (!reason) {
+      showMessage("Debes indicar un motivo para rechazar.", "info");
+      return;
+    }
+
+    await rejectQuote(quote.id, { motivo_rechazo: reason }, ({ success, message }) => {
+      showMessage(
+        message || (success ? "Cotización rechazada." : "No se pudo rechazar."),
+        success ? "success" : "error"
+      );
     });
   };
 
@@ -165,9 +209,14 @@ const QuotesSection = () => {
       </div>,
 
       <div className="min-w-52 max-w-72" key={`${quote.id}-email`}>
-        <span className="break-all text-sm text-muted-foreground">
-          {quote.contact?.email || "-"}
-        </span>
+        <div className="space-y-1">
+          <span className="break-all text-sm text-muted-foreground">
+            {quote.contact?.email || "-"}
+          </span>
+          <p className="text-[11px] text-muted-foreground">
+            {quote.numero || "Sin número"}
+          </p>
+        </div>
       </div>,
 
       <div className="min-w-32" key={`${quote.id}-total`}>
@@ -192,7 +241,15 @@ const QuotesSection = () => {
       </div>,
 
       <div className="min-w-36 text-sm text-muted-foreground" key={`${quote.id}-date`}>
-        {new Date(quote.created_at).toLocaleDateString()}
+        <div className="space-y-1">
+          <p>{new Date(quote.created_at).toLocaleDateString()}</p>
+          <p className="text-[11px]">
+            Vence:{" "}
+            {quote.fecha_vencimiento
+              ? new Date(quote.fecha_vencimiento).toLocaleDateString()
+              : "-"}
+          </p>
+        </div>
       </div>,
 
       <div className="flex min-w-24 items-center gap-2" key={`${quote.id}-actions`}>
@@ -204,6 +261,28 @@ const QuotesSection = () => {
         >
           <MessageCircle size={15} />
         </button>
+
+        {quote.estado !== "aprobada" && quote.estado !== "rechazada" ? (
+          <button
+            type="button"
+            aria-label="Aprobar cotización"
+            onClick={() => void handleApprove(quote)}
+            className={actionBtnApproveClass}
+          >
+            <CheckCircle2 size={15} />
+          </button>
+        ) : null}
+
+        {quote.estado !== "rechazada" ? (
+          <button
+            type="button"
+            aria-label="Rechazar cotización"
+            onClick={() => void handleReject(quote)}
+            className={actionBtnRejectClass}
+          >
+            <XCircle size={15} />
+          </button>
+        ) : null}
 
         <button
           type="button"

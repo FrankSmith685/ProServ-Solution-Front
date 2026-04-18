@@ -1,5 +1,5 @@
 import { type FC, useMemo, useState, type ChangeEvent } from "react";
-import { Save, User, Mail, BadgeDollarSign } from "lucide-react";
+import { Save, User, Mail, BadgeDollarSign, CalendarClock } from "lucide-react";
 
 import type { Contact } from "@/interfaces/hook/IUseContacts";
 import type { Quote, QuoteStatus } from "@/interfaces/hook/IUseQuotes";
@@ -59,6 +59,7 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
   const [touched, setTouched] = useState({
     estado: false,
     total: false,
+    motivo_rechazo: false,
   });
 
   const handleTotalChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +93,25 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
       setTouched((prev) => ({
         ...prev,
         [key]: true,
+        motivo_rechazo: value === "rechazada" ? true : prev.motivo_rechazo,
       }));
+    };
+
+  const handleInputChange =
+    (key: keyof Quote) =>
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      setForm((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+
+      if (key === "motivo_rechazo") {
+        setTouched((prev) => ({
+          ...prev,
+          motivo_rechazo: true,
+        }));
+      }
     };
 
   const errors = useMemo(() => {
@@ -115,7 +134,17 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
         totalNumber < 0,
       totalRequiredByStatus: requiresTotalForStatus && (!hasTotal || Number(totalValue) <= 0),
     };
-  }, [form.estado, form.total, touched.estado, touched.total]);
+  }, [form.estado, form.total, form.motivo_rechazo, touched.estado, touched.total, touched.motivo_rechazo]);
+
+  const hasValidPositiveTotal =
+    form.total !== null &&
+    form.total !== undefined &&
+    form.total !== "" &&
+    !Number.isNaN(Number(form.total)) &&
+    Number(form.total) > 0;
+
+  const requiresTotalForStatus =
+    form.estado === "enviada" || form.estado === "aprobada";
 
   const hasValidPositiveTotal =
     form.total !== null &&
@@ -201,6 +230,28 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
             </div>
 
             <CustomInput
+              label="Moneda"
+              placeholder="PEN"
+              value={form.moneda?.toString() ?? "PEN"}
+              onChange={handleInputChange("moneda")}
+              fullWidth
+            />
+
+            <CustomInput
+              label="Fecha de vencimiento"
+              value={form.fecha_vencimiento?.toString() ?? ""}
+              onChange={handleInputChange("fecha_vencimiento")}
+              type="date"
+              icon={
+                <CalendarClock
+                  size={18}
+                  style={{ color: "var(--color-text-muted)" }}
+                />
+              }
+              fullWidth
+            />
+
+            <CustomInput
               label="Total"
               placeholder="Ej: 150.00"
               value={form.total?.toString() ?? ""}
@@ -234,6 +285,32 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
               fullWidth
               variant="primary"
               size="lg"
+            />
+
+            <CustomInput
+              label="Observaciones"
+              placeholder="Notas visibles o internas de la cotización"
+              value={form.observaciones?.toString() ?? ""}
+              onChange={handleInputChange("observaciones")}
+              multiline
+              rows={3}
+              fullWidth
+            />
+
+            <CustomInput
+              label="Motivo de rechazo"
+              placeholder="Obligatorio si el estado es Rechazada"
+              value={form.motivo_rechazo?.toString() ?? ""}
+              onChange={handleInputChange("motivo_rechazo")}
+              error={errors.motivoRechazo}
+              helperText={
+                errors.motivoRechazo
+                  ? "Debes indicar el motivo cuando la cotización está rechazada."
+                  : ""
+              }
+              multiline
+              rows={2}
+              fullWidth
             />
           </div>
         </div>

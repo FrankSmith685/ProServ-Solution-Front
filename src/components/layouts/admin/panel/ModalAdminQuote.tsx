@@ -1,5 +1,5 @@
 import { type FC, useMemo, useState, type ChangeEvent } from "react";
-import { Save, BadgeDollarSign } from "lucide-react";
+import { Save, BadgeDollarSign, CalendarClock } from "lucide-react";
 
 import { CustomModal } from "@/components/ui/overlay/CustomModal";
 import { CustomInput } from "@/components/ui/kit/CustomInput";
@@ -34,6 +34,7 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
 }) => {
   const [touched, setTouched] = useState({
     estado: false,
+    motivo_rechazo: false,
   });
 
   const handleChange =
@@ -45,6 +46,13 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
         ...prev,
         [key]: key === "total" ? (value === "" ? null : Number(value)) : value,
       }));
+
+      if (key === "motivo_rechazo") {
+        setTouched((prev) => ({
+          ...prev,
+          motivo_rechazo: true,
+        }));
+      }
     };
 
   const handleSelectChange =
@@ -64,6 +72,7 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
       setTouched((prev) => ({
         ...prev,
         [key]: true,
+        motivo_rechazo: value === "rechazada" ? true : prev.motivo_rechazo,
       }));
     };
 
@@ -135,6 +144,22 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
         <div className="rounded-2xl border border-border bg-surface-soft p-4 sm:p-5">
           <div className="grid grid-cols-1 gap-4">
             <CustomInput
+              label="Moneda"
+              value={form.moneda?.toString() ?? "PEN"}
+              onChange={handleChange("moneda")}
+              fullWidth
+            />
+
+            <CustomInput
+              label="Fecha de vencimiento"
+              type="date"
+              value={form.fecha_vencimiento?.toString() ?? ""}
+              onChange={handleChange("fecha_vencimiento")}
+              icon={<CalendarClock size={18} style={{ color: "var(--color-text-muted)" }} />}
+              fullWidth
+            />
+
+            <CustomInput
               label="Total"
               type="number"
               value={form?.total?.toString() ?? ""}
@@ -162,6 +187,30 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
               fullWidth
               variant="primary"
               size="lg"
+            />
+
+            <CustomInput
+              label="Observaciones"
+              value={form.observaciones?.toString() ?? ""}
+              onChange={handleChange("observaciones")}
+              multiline
+              rows={3}
+              fullWidth
+            />
+
+            <CustomInput
+              label="Motivo de rechazo"
+              value={form.motivo_rechazo?.toString() ?? ""}
+              onChange={handleChange("motivo_rechazo")}
+              error={errors.motivoRechazo}
+              helperText={
+                errors.motivoRechazo
+                  ? "Debes indicar el motivo cuando la cotización está rechazada."
+                  : ""
+              }
+              multiline
+              rows={2}
+              fullWidth
             />
           </div>
         </div>

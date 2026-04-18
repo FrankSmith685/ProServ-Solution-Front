@@ -7,12 +7,41 @@ export type QuoteStatus =
   | "aprobada"
   | "rechazada";
 
+export interface QuoteItem {
+  id: string;
+  quote_id: string;
+  descripcion: string;
+  cantidad: number;
+  precio_unitario: number;
+  subtotal: number;
+  orden?: number | null;
+}
+
+export interface QuoteEvent {
+  id: string;
+  quote_id: string;
+  tipo_evento: string;
+  metadata?: Record<string, unknown> | null;
+  created_at: string;
+}
+
 export interface Quote {
   id: string;
   contacto_id: string;
+  numero?: string | null;
+  fecha_envio?: string | null;
+  fecha_vencimiento?: string | null;
+  moneda?: string | null;
+  subtotal?: number | string | null;
+  impuestos?: number | string | null;
+  descuento?: number | string | null;
   total: number | string | null;
+  observaciones?: string | null;
+  motivo_rechazo?: string | null;
   estado: QuoteStatus;
   created_at: string;
+  items?: QuoteItem[];
+  events?: QuoteEvent[];
   contact?: Contact | null;
 }
 
@@ -48,4 +77,29 @@ export interface UseQuotes {
     form: Partial<Quote>,
     callback?: BasicCallback
   ) => Promise<void>;
-}
+
+  sendQuote: (id: string, callback?: BasicCallback) => Promise<void>;
+  approveQuote: (id: string, callback?: BasicCallback) => Promise<void>;
+  rejectQuote: (
+    id: string,
+    payload: { motivo_rechazo: string },
+    callback?: BasicCallback
+  ) => Promise<void>;
+
+  addQuoteItem: (
+    id: string,
+    payload: Omit<QuoteItem, "id" | "quote_id" | "subtotal">,
+    callback?: BasicCallback
+  ) => Promise<void>;
+  updateQuoteItem: (
+    id: string,
+    itemId: string,
+    payload: Partial<Omit<QuoteItem, "id" | "quote_id">>,
+    callback?: BasicCallback
+  ) => Promise<void>;
+  deleteQuoteItem: (
+    id: string,
+    itemId: string,
+    callback?: BasicCallback
+  ) => Promise<void>;
+} 
