@@ -103,10 +103,6 @@ export interface UseQuotes {
     id: string,
     callback?: (events: QuoteEvent[]) => void
   ) => Promise<void>;
-  getQuotePdf: (
-    id: string,
-    callback?: (pdfUrl: string | null) => void
-  ) => Promise<void>;
 
   addQuoteItem: (
     id: string,

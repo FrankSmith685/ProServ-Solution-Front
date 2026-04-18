@@ -228,37 +228,6 @@ export const useQuotes = (): UseQuotes => {
     }
   };
 
-  const getQuotePdf = async (
-    id: string,
-    callback?: (pdfUrl: string | null) => void
-  ): Promise<void> => {
-    setLoading(true);
-
-    try {
-      const response = await apiWithAuth.get(`/quotes/${id}/pdf`, {
-        responseType: "blob",
-      });
-
-      const contentType = response.headers["content-type"] || "";
-      const isPdf = contentType.includes("application/pdf");
-
-      if (!isPdf) {
-        callback?.(null);
-        return;
-      }
-
-      const file = new Blob([response.data], { type: "application/pdf" });
-      const pdfUrl = URL.createObjectURL(file);
-      callback?.(pdfUrl);
-    } catch (error) {
-      const handled = handleApiError(error);
-      console.error("Error obteniendo PDF de cotización:", handled.message);
-      callback?.(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const approveQuote = async (id: string, callback?: BasicCallback): Promise<void> => {
     setLoading(true);
 
@@ -405,7 +374,6 @@ export const useQuotes = (): UseQuotes => {
     approveQuote,
     rejectQuote,
     getQuoteEvents,
-    getQuotePdf,
     addQuoteItem,
     updateQuoteItem,
     deleteQuoteItem,
