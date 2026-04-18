@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
+  CheckCircle2,
+  EyeOff,
   Plus,
   Trash2,
   Loader2,
@@ -105,6 +107,17 @@ const ServicesSection = () => {
       .map((service) => Number(service.orden ?? 0))
       .filter((order) => Number.isFinite(order) && order > 0);
   }, [rowsData, editingId]);
+
+  const metrics = useMemo(() => {
+    const active = rowsData.filter((item) => item.activo).length;
+    const withImage = rowsData.filter((item) => Boolean(item.imagen_url)).length;
+
+    return {
+      active,
+      inactive: rowsData.length - active,
+      withImage,
+    };
+  }, [rowsData]);
 
   const resetForm = (): void => {
     setForm(INITIAL_FORM);
@@ -377,6 +390,30 @@ const ServicesSection = () => {
             <p className="mt-1 text-3xl font-black text-primary">
               {rowsData.length}
             </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+              <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-primary">
+                <CheckCircle2 size={14} />
+                Activos
+              </p>
+              <p className="mt-2 text-2xl font-black text-dark">{metrics.active}</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface-soft p-4">
+              <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                <EyeOff size={14} />
+                Inactivos
+              </p>
+              <p className="mt-2 text-2xl font-black text-dark">{metrics.inactive}</p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-border bg-surface-soft p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              Con imagen cargada
+            </p>
+            <p className="mt-2 text-2xl font-black text-dark">{metrics.withImage}</p>
           </div>
 
           <div className="rounded-2xl border border-border bg-surface-soft p-4">

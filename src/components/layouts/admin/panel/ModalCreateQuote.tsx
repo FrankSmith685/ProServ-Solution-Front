@@ -1,5 +1,5 @@
 import { type FC, useMemo, useState, type ChangeEvent } from "react";
-import { Save, User, Mail, BadgeDollarSign } from "lucide-react";
+import { Save, User, Mail, BadgeDollarSign, CalendarClock } from "lucide-react";
 
 import type { Contact } from "@/interfaces/hook/IUseContacts";
 import type { Quote, QuoteStatus } from "@/interfaces/hook/IUseQuotes";
@@ -59,6 +59,8 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
   const [touched, setTouched] = useState({
     estado: false,
     total: false,
+    fecha_vencimiento: false,
+    motivo_rechazo: false,
   });
 
   const handleTotalChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -92,30 +94,92 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
       setTouched((prev) => ({
         ...prev,
         [key]: true,
+        motivo_rechazo: value === "rechazada" ? true : prev.motivo_rechazo,
       }));
+    };
+
+  const handleInputChange =
+    (key: keyof Quote) =>
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      setForm((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+
+      if (key === "motivo_rechazo") {
+        setTouched((prev) => ({
+          ...prev,
+          motivo_rechazo: true,
+        }));
+      }
+
+      if (key === "fecha_vencimiento") {
+        setTouched((prev) => ({
+          ...prev,
+          fecha_vencimiento: true,
+        }));
+      }
     };
 
   const errors = useMemo(() => {
     const totalValue = form.total;
+    const hasTotal =
+      totalValue !== null &&
+      totalValue !== undefined &&
+      totalValue !== "" &&
+      !Number.isNaN(Number(totalValue));
+    const totalNumber = hasTotal ? Number(totalValue) : null;
+    const requiresTotalForStatus =
+      form.estado === "enviada" || form.estado === "aprobada";
 
     return {
       estado: touched.estado && !form.estado,
+      fechaVencimiento:
+        touched.fecha_vencimiento && !String(form.fecha_vencimiento ?? "").trim(),
       total:
         touched.total &&
-        totalValue !== null &&
-        totalValue !== undefined &&
-        totalValue !== "" &&
-        Number(totalValue) < 0,
+        hasTotal &&
+        totalNumber !== null &&
+        totalNumber < 0,
+      totalRequiredByStatus: requiresTotalForStatus && (!hasTotal || Number(totalValue) <= 0),
+      motivoRechazo:
+        form.estado === "rechazada" &&
+        touched.motivo_rechazo &&
+        !String(form.motivo_rechazo ?? "").trim(),
     };
-  }, [form.estado, form.total, touched.estado, touched.total]);
+  }, [form.estado, form.total, form.fecha_vencimiento, form.motivo_rechazo, touched.estado, touched.total, touched.fecha_vencimiento, touched.motivo_rechazo]);
+
+  const hasValidPositiveTotal =
+    form.total !== null &&
+    form.total !== undefined &&
+    form.total !== "" &&
+    !Number.isNaN(Number(form.total)) &&
+    Number(form.total) > 0;
+
+  // const requiresTotalForStatus =
+  //   form.estado === "enviada" || form.estado === "aprobada";
+
+  // const hasValidPositiveTotal =
+  //   form.total !== null &&
+  //   form.total !== undefined &&
+  //   form.total !== "" &&
+  //   !Number.isNaN(Number(form.total)) &&
+  //   Number(form.total) > 0;
+
+  const requiresTotalForStatus =
+    form.estado === "enviada" || form.estado === "aprobada";
 
   const isInvalid =
     !form.estado ||
     !contact?.id ||
+    !String(form.fecha_vencimiento ?? "").trim() ||
+    errors.motivoRechazo ||
     (form.total !== null &&
       form.total !== undefined &&
       form.total !== "" &&
-      Number(form.total) < 0);
+      Number(form.total) < 0) ||
+    (requiresTotalForStatus && !hasValidPositiveTotal);
 
   return (
     <CustomModal
@@ -182,13 +246,77 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
             </div>
 
             <CustomInput
+              label="Número (opcional)"
+              placeholder="COT-2026-000123"
+              value={form.numero?.toString() ?? ""}
+              onChange={handleInputChange("numero")}
+              fullWidth
+            />
+
+            <CustomInput
+              label="Moneda"
+              placeholder="PEN"
+              value={form.moneda?.toString() ?? "PEN"}
+              onChange={handleInputChange("moneda")}
+              fullWidth
+            />
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <CustomInput
+                label="Subtotal"
+                type="number"
+                value={form.subtotal?.toString() ?? "0"}
+                onChange={handleInputChange("subtotal")}
+                fullWidth
+              />
+
+              <CustomInput
+                label="Impuestos"
+                type="number"
+                value={form.impuestos?.toString() ?? "0"}
+                onChange={handleInputChange("impuestos")}
+                fullWidth
+              />
+
+              <CustomInput
+                label="Descuento"
+                type="number"
+                value={form.descuento?.toString() ?? "0"}
+                onChange={handleInputChange("descuento")}
+                fullWidth
+              />
+            </div>
+
+            <CustomInput
+              label="Fecha de vencimiento"
+              value={form.fecha_vencimiento?.toString() ?? ""}
+              onChange={handleInputChange("fecha_vencimiento")}
+              type="date"
+              icon={
+                <CalendarClock
+                  size={18}
+                  style={{ color: "var(--color-text-muted)" }}
+                />
+              }
+              error={errors.fechaVencimiento}
+              helperText={errors.fechaVencimiento ? "La fecha de vencimiento es requerida." : ""}
+              fullWidth
+            />
+
+            <CustomInput
               label="Total"
               placeholder="Ej: 150.00"
               value={form.total?.toString() ?? ""}
               onChange={handleTotalChange}
               type="number"
               error={errors.total}
-              helperText={errors.total ? "El total no puede ser negativo" : ""}
+              helperText={
+                errors.total
+                  ? "El total no puede ser negativo"
+                  : errors.totalRequiredByStatus
+                    ? "Para estados Enviada o Aprobada, el total debe ser mayor a 0."
+                    : ""
+              }
               icon={
                 <BadgeDollarSign
                   size={18}
@@ -209,6 +337,32 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
               fullWidth
               variant="primary"
               size="lg"
+            />
+
+            <CustomInput
+              label="Observaciones"
+              placeholder="Notas visibles o internas de la cotización"
+              value={form.observaciones?.toString() ?? ""}
+              onChange={handleInputChange("observaciones")}
+              multiline
+              rows={3}
+              fullWidth
+            />
+
+            <CustomInput
+              label="Motivo de rechazo"
+              placeholder="Obligatorio si el estado es Rechazada"
+              value={form.motivo_rechazo?.toString() ?? ""}
+              onChange={handleInputChange("motivo_rechazo")}
+              error={errors.motivoRechazo}
+              helperText={
+                errors.motivoRechazo
+                  ? "Debes indicar el motivo cuando la cotización está rechazada."
+                  : ""
+              }
+              multiline
+              rows={2}
+              fullWidth
             />
           </div>
         </div>

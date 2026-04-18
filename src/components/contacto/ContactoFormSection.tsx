@@ -10,6 +10,9 @@ import { motion } from "framer-motion";
 import {
   Building2,
   CheckCircle2,
+  ClipboardList,
+  Clock3,
+  FileText,
   Mail,
   MessageSquare,
   Phone,
@@ -82,6 +85,35 @@ const ContactInfoCard: FC<{
   );
 };
 
+const ProcessStepCard: FC<{
+  step: string;
+  title: string;
+  description: string;
+  icon: ReactNode;
+}> = ({ step, title, description, icon }) => {
+  return (
+    <div className="rounded-[1.5rem] border border-border bg-white p-5 shadow-sm">
+      <div className="flex items-start gap-4">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/20">
+          {icon}
+        </div>
+
+        <div>
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+            Paso {step}
+          </p>
+          <h3 className="mt-1 text-base font-black tracking-tight text-dark">
+            {title}
+          </h3>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {description}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ContactoFormSection: FC = () => {
   const { company, siteConfig, services } = useAppState();
   const { createContact, loading } = useContacts();
@@ -110,6 +142,13 @@ const ContactoFormSection: FC = () => {
       label: safeText(service.titulo),
     }));
   }, [activeServices]);
+
+  const selectedServiceLabel = useMemo(() => {
+    const selected = serviceOptions.find(
+      (option) => option.value === form.servicio_id
+    );
+    return selected?.label ?? "";
+  }, [form.servicio_id, serviceOptions]);
 
   const contactInfo = useMemo(() => {
     const companyName =
@@ -355,6 +394,15 @@ const ContactoFormSection: FC = () => {
                 size="lg"
               />
 
+              {selectedServiceLabel ? (
+                <div className="rounded-[1.2rem] border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-dark">
+                  <span className="font-semibold text-primary">
+                    Servicio seleccionado:
+                  </span>{" "}
+                  <span className="font-bold">{selectedServiceLabel}</span>
+                </div>
+              ) : null}
+
               <CustomInput
                 name="mensaje"
                 label="Mensaje"
@@ -397,6 +445,51 @@ const ContactoFormSection: FC = () => {
             </form>
           </motion.div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.45, delay: 0.1 }}
+          className="mt-8 rounded-4xl border border-border bg-white p-6 shadow-sm md:mt-10 md:p-8"
+        >
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
+            <ClipboardList size={14} />
+            Proceso de cotización
+          </div>
+
+          <h2 className="mt-5 text-2xl font-black tracking-tight text-dark md:text-3xl">
+            Así trabajamos para darte una propuesta profesional
+          </h2>
+
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground md:text-base">
+            Nuestro flujo está pensado para darte claridad desde el primer
+            contacto y ayudarte a tomar una decisión con información concreta.
+          </p>
+
+          <div className="mt-7 grid gap-4 md:grid-cols-3">
+            <ProcessStepCard
+              step="1"
+              title="Levantamiento inicial"
+              description="Revisamos tu necesidad, alcance y contexto para entender exactamente lo que necesitas."
+              icon={<MessageSquare size={18} />}
+            />
+
+            <ProcessStepCard
+              step="2"
+              title="Propuesta y tiempos"
+              description="Te enviamos una respuesta clara con alternativas, plazos estimados y enfoque recomendado."
+              icon={<FileText size={18} />}
+            />
+
+            <ProcessStepCard
+              step="3"
+              title="Acompañamiento"
+              description="Te acompañamos en dudas, ajustes y próximos pasos para que avances con seguridad."
+              icon={<Clock3 size={18} />}
+            />
+          </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -5,7 +5,7 @@ import {
   isValidElement,
 } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles, Wrench } from "lucide-react";
+import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles, Wrench } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 
 import { useAppState } from "@/hooks/useAppState";
@@ -156,7 +156,7 @@ const ServicioDetalleHero: FC = () => {
         <div
           className={
             image
-              ? "grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(380px,540px)] lg:gap-16"
+              ? "grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,540px)] lg:gap-16"
               : "mx-auto max-w-4xl text-center"
           }
         >
@@ -170,7 +170,7 @@ const ServicioDetalleHero: FC = () => {
               Servicio especializado
             </div>
 
-            <h1 className="mt-6 text-4xl font-black leading-[0.98] tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 text-4xl font-black leading-[0.98] tracking-tight text-balance sm:text-5xl lg:text-6xl">
               {safeText(service.titulo)}
             </h1>
 
@@ -180,11 +180,18 @@ const ServicioDetalleHero: FC = () => {
                 "Servicio profesional orientado a brindar resultados con calidad, confianza y atención especializada."}
             </p>
 
-            <div
-              className={`mt-10 flex flex-wrap gap-4 ${
-                image ? "" : "justify-center"
-              }`}
-            >
+            <div className={`mt-7 flex flex-wrap gap-3 ${image ? "" : "justify-center"}`}>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white/90">
+                <BadgeCheck size={14} className="text-primary" />
+                Calidad profesional
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-white/90">
+                <ShieldCheck size={14} className="text-primary" />
+                Atención personalizada
+              </div>
+            </div>
+
+            <div className={`mt-10 flex flex-wrap gap-4 ${image ? "" : "justify-center"}`}>
               <CustomButton
                 text="Solicitar este servicio"
                 component={Link}
@@ -192,7 +199,7 @@ const ServicioDetalleHero: FC = () => {
                 icon={<ArrowRight size={17} />}
                 variant="primary"
                 size="lg"
-                className="px-4! gap-1!"
+                className="w-full px-4! gap-1! sm:w-auto"
               />
 
               <CustomButton
@@ -201,7 +208,7 @@ const ServicioDetalleHero: FC = () => {
                 to="/servicios"
                 variant="secondary"
                 size="lg"
-                className="px-4! gap-1!"
+                className="w-full px-4! gap-1! sm:w-auto"
               />
             </div>
           </motion.div>
@@ -217,13 +224,17 @@ const ServicioDetalleHero: FC = () => {
                 <img
                   src={image}
                   alt={safeText(service.titulo)}
-                  className="h-130 w-full object-cover"
+                  className="h-[420px] w-full object-cover md:h-[520px]"
                 />
 
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.55),transparent_42%)]" />
 
                 <div className="absolute left-5 top-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30">
                   {serviceIcon}
+                </div>
+
+                <div className="absolute right-4 bottom-4 rounded-2xl border border-white/20 bg-black/40 px-4 py-2 text-xs font-semibold tracking-wide text-white/90 backdrop-blur-sm">
+                  Solución a medida
                 </div>
               </div>
             </motion.div>

@@ -11,6 +11,24 @@ import {
 } from "@/shared/design/inputVariants";
 import type { CustomInputProps } from "@/interfaces/ui/kit/ICustomInput";
 
+const SIZE_CONFIG = {
+  sm: { height: 36, padding: 0 },
+  md: { height: 44, padding: 0 },
+  lg: { height: 52, padding: 0 },
+} as const;
+
+const ADORNMENT_SIZE = {
+  sm: 36,
+  md: 44,
+  lg: 52,
+} as const;
+
+const FONT_SIZE_BY_SIZE = {
+  sm: "13px",
+  md: "14px",
+  lg: "15px",
+} as const;
+
 const CustomInputComponent: FC<CustomInputProps> = ({
   name,
   inputRef,
@@ -56,26 +74,7 @@ const CustomInputComponent: FC<CustomInputProps> = ({
     [onChange, isNumber]
   );
 
-  const sizeConfig = {
-    sm: { height: 36, padding: 0 },
-    md: { height: 44, padding: 0 },
-    lg: { height: 52, padding: 0 },
-  };
-
-  const { height, padding } = sizeConfig[size];
-
-  const adornmentSize = {
-    sm: 36,
-    md: 44,
-    lg: 52,
-  };
-
-
-  const fontSizeBySize = {
-    sm: "13px",
-    md: "14px",
-    lg: "15px",
-  };
+  const { height, padding } = SIZE_CONFIG[size];
 
   const sxStyles = useMemo(() => {
 
@@ -135,7 +134,7 @@ const CustomInputComponent: FC<CustomInputProps> = ({
               lineHeight: "1.2",
             }),
 
-        fontSize: fontSize ?? fontSizeBySize[size],
+        fontSize: fontSize ?? FONT_SIZE_BY_SIZE[size],
         "@media (max-width:600px)": {
           fontSize:
             size === "lg"
@@ -161,7 +160,7 @@ const CustomInputComponent: FC<CustomInputProps> = ({
           fontSize: "14px",
         },
         color: "var(--color-text-muted)",
-          left: icon ? ` ${value ? '0px' : '28px'}` : "0px",
+          left: icon ? ` ${value ? "0px" : "28px"}` : "0px",
         
       },
 
@@ -204,12 +203,12 @@ const CustomInputComponent: FC<CustomInputProps> = ({
     height,
     fontSize,
     fontFamily,
+    value,
     multiline,
     variant,
     icon,
     padding,
     error,
-    isSearch,
     size,
     helperText,
     isDate
@@ -222,7 +221,7 @@ const CustomInputComponent: FC<CustomInputProps> = ({
       <InputAdornment
         position="start"
         sx={{
-          width: adornmentSize[size],
+          width: ADORNMENT_SIZE[size],
 
           
           
@@ -249,7 +248,7 @@ const CustomInputComponent: FC<CustomInputProps> = ({
         )}
       </InputAdornment>
     );
-  }, [hasStartAdornment, isSearch, icon]);
+  }, [hasStartAdornment, isSearch, icon, size]);
 
   const [focused, setFocused] = useState<boolean>(false);
   const shouldShrink = isDate || focused || Boolean(value);
