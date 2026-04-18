@@ -77,6 +77,10 @@ const INITIAL_FORM: Partial<Contact> = {
 
 const INITIAL_QUOTE_FORM: Partial<Quote> = {
   contacto_id: "",
+  moneda: "PEN",
+  fecha_vencimiento: null,
+  observaciones: "",
+  motivo_rechazo: "",
   total: null,
   estado: "pendiente",
 };
@@ -170,6 +174,10 @@ const ContactsSection = () => {
     setSelectedContact(contact);
     setQuoteForm({
       contacto_id: contact.id,
+      moneda: "PEN",
+      fecha_vencimiento: null,
+      observaciones: "",
+      motivo_rechazo: "",
       total: null,
       estado: "pendiente",
     });
@@ -233,6 +241,10 @@ const ContactsSection = () => {
     await createQuote(
       {
         contacto_id: selectedContact.id,
+        moneda: quoteForm.moneda || "PEN",
+        fecha_vencimiento: quoteForm.fecha_vencimiento || null,
+        observaciones: quoteForm.observaciones || null,
+        motivo_rechazo: quoteForm.motivo_rechazo || null,
         total:
           quoteForm.total === "" || quoteForm.total === undefined
             ? null
