@@ -22,8 +22,12 @@ export interface QuoteEvent {
   quote_id: string;
   tipo_evento: string;
   metadata?: Record<string, unknown> | null;
+  user_id?: string | null;
+  user_name?: string | null;
   created_at: string;
 }
+
+export type QuoteSendChannel = "email" | "whatsapp" | "manual";
 
 export interface Quote {
   id: string;
@@ -57,6 +61,12 @@ export interface QuotesResponse {
   data: Quote[];
 }
 
+export interface QuoteEventsResponse {
+  success: boolean;
+  message: string;
+  data: QuoteEvent[];
+}
+
 export interface UseQuotes {
   quotes: Quote[];
   loading: boolean;
@@ -78,12 +88,24 @@ export interface UseQuotes {
     callback?: BasicCallback
   ) => Promise<void>;
 
-  sendQuote: (id: string, callback?: BasicCallback) => Promise<void>;
+  sendQuote: (
+    id: string,
+    payload?: { canal?: QuoteSendChannel },
+    callback?: BasicCallback
+  ) => Promise<void>;
   approveQuote: (id: string, callback?: BasicCallback) => Promise<void>;
   rejectQuote: (
     id: string,
     payload: { motivo_rechazo: string },
     callback?: BasicCallback
+  ) => Promise<void>;
+  getQuoteEvents: (
+    id: string,
+    callback?: (events: QuoteEvent[]) => void
+  ) => Promise<void>;
+  getQuotePdf: (
+    id: string,
+    callback?: (pdfUrl: string | null) => void
   ) => Promise<void>;
 
   addQuoteItem: (
