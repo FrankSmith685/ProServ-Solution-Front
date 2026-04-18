@@ -170,7 +170,7 @@ const ProyectoDetalleHero: FC = () => {
         <div
           className={
             image
-              ? "grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(380px,540px)] lg:gap-16"
+              ? "grid items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(360px,540px)] lg:gap-16"
               : "mx-auto max-w-4xl text-center"
           }
         >
@@ -184,7 +184,7 @@ const ProyectoDetalleHero: FC = () => {
               Proyecto destacado
             </div>
 
-            <h1 className="mt-6 text-4xl font-black leading-[0.98] tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 text-4xl font-black leading-[0.98] tracking-tight text-balance sm:text-5xl lg:text-6xl">
               {title}
             </h1>
 
@@ -221,7 +221,7 @@ const ProyectoDetalleHero: FC = () => {
                 icon={<ArrowRight size={17} />}
                 variant="primary"
                 size="lg"
-                className="px-4! gap-1!"
+                className="w-full px-4! gap-1! sm:w-auto"
               />
 
               <CustomButton
@@ -230,7 +230,7 @@ const ProyectoDetalleHero: FC = () => {
                 to="/proyectos"
                 variant="secondary"
                 size="lg"
-                className="px-4! gap-1!"
+                className="w-full px-4! gap-1! sm:w-auto"
               />
             </div>
           </motion.div>
@@ -246,13 +246,17 @@ const ProyectoDetalleHero: FC = () => {
                 <img
                   src={image}
                   alt={title}
-                  className="h-130 w-full object-cover"
+                  className="h-[420px] w-full object-cover md:h-[520px]"
                 />
 
                 <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.55),transparent_42%)]" />
 
                 <div className="absolute left-5 top-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-white shadow-lg shadow-primary/30">
                   <FolderKanban size={22} />
+                </div>
+
+                <div className="absolute right-4 bottom-4 rounded-2xl border border-white/20 bg-black/40 px-4 py-2 text-xs font-semibold tracking-wide text-white/90 backdrop-blur-sm">
+                  Caso de éxito real
                 </div>
               </div>
             </motion.div>
