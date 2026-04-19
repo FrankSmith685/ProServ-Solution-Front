@@ -32,10 +32,22 @@ export type QuoteSendChannel = "email" | "whatsapp" | "manual";
 export interface Quote {
   id: string;
   contacto_id: string;
+  cliente_nombre?: string | null;
+  cliente_empresa?: string | null;
+  cliente_ruc?: string | null;
+  cliente_email?: string | null;
+  cliente_telefono?: string | null;
   numero?: string | null;
+  asunto?: string | null;
+  area?: string | null;
   fecha_envio?: string | null;
   fecha_vencimiento?: string | null;
   moneda?: string | null;
+  descuento_tipo?: "porcentaje" | "monto" | null;
+  descuento_valor?: number | string | null;
+  igv_porcentaje?: number | string | null;
+  aplica_igv?: boolean | null;
+  incluye_igv?: boolean | null;
   subtotal?: number | string | null;
   impuestos?: number | string | null;
   descuento?: number | string | null;
@@ -80,6 +92,10 @@ export interface UseQuotes {
   getQuoteById: (
     id: string,
     callback?: (quote: Quote | null) => void
+  ) => Promise<void>;
+  getQuotesByContact: (
+    contactoId: string,
+    callback?: (quotes: Quote[]) => void
   ) => Promise<void>;
 
   createQuote: (

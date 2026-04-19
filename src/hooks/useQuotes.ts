@@ -24,12 +24,25 @@ export const useQuotes = (): UseQuotes => {
     return Number.isFinite(parsed) ? parsed : 0;
   };
 
+  const normalizeNullableAmount = (value?: number | string | null): number | null => {
+    if (value === "" || value === null || value === undefined) return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+
   const syncQuoteInState = (updatedQuote: Quote): void => {
     setQuotes(
       quotes.some((quote) => quote.id === updatedQuote.id)
         ? quotes.map((quote) => (quote.id === updatedQuote.id ? updatedQuote : quote))
         : [updatedQuote, ...quotes]
     );
+  };
+
+  const syncQuoteFromApi = async (id: string): Promise<void> => {
+    const { data } = await apiWithAuth.get<QuoteResponse>(`/quotes/${id}`);
+    if (data.success && data.data) {
+      syncQuoteInState(data.data);
+    }
   };
 
   const getQuotes = async (callback?: BasicCallback): Promise<void> => {
@@ -83,6 +96,29 @@ export const useQuotes = (): UseQuotes => {
     }
   };
 
+  const getQuotesByContact = async (
+    contactoId: string,
+    callback?: (quotes: Quote[]) => void
+  ): Promise<void> => {
+    setLoading(true);
+
+    try {
+      const { data } = await apiWithAuth.get<QuotesResponse>(`/quotes/contact/${contactoId}`);
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      callback?.(data.data);
+    } catch (error) {
+      const handled = handleApiError(error);
+      console.error("Error obteniendo cotizaciones por contacto:", handled.message);
+      callback?.([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const createQuote = async (
     form: Partial<Quote>,
     callback?: BasicCallback
@@ -92,10 +128,22 @@ export const useQuotes = (): UseQuotes => {
     try {
       const payload = {
         contacto_id: form.contacto_id || "",
+        cliente_nombre: form.cliente_nombre || undefined,
+        cliente_empresa: form.cliente_empresa || undefined,
+        cliente_ruc: form.cliente_ruc || undefined,
+        cliente_email: form.cliente_email || undefined,
+        cliente_telefono: form.cliente_telefono || undefined,
         numero: form.numero || undefined,
+        asunto: form.asunto || undefined,
+        area: form.area || undefined,
         fecha_envio: form.fecha_envio || null,
         fecha_vencimiento: form.fecha_vencimiento || null,
         moneda: form.moneda || "PEN",
+        descuento_tipo: form.descuento_tipo || undefined,
+        descuento_valor: normalizeNullableAmount(form.descuento_valor),
+        igv_porcentaje: normalizeNullableAmount(form.igv_porcentaje),
+        aplica_igv: Boolean(form.aplica_igv),
+        incluye_igv: Boolean(form.incluye_igv),
         subtotal: normalizeAmount(form.subtotal),
         impuestos: normalizeAmount(form.impuestos),
         descuento: normalizeAmount(form.descuento),
@@ -112,6 +160,7 @@ export const useQuotes = (): UseQuotes => {
       }
 
       syncQuoteInState(data.data);
+      await syncQuoteFromApi(data.data.id);
 
       callback?.({
         success: true,
@@ -139,10 +188,22 @@ export const useQuotes = (): UseQuotes => {
     try {
       const payload = {
         ...form,
+        cliente_nombre: form.cliente_nombre || undefined,
+        cliente_empresa: form.cliente_empresa || undefined,
+        cliente_ruc: form.cliente_ruc || undefined,
+        cliente_email: form.cliente_email || undefined,
+        cliente_telefono: form.cliente_telefono || undefined,
         numero: form.numero || undefined,
+        asunto: form.asunto || undefined,
+        area: form.area || undefined,
         fecha_envio: form.fecha_envio || null,
         fecha_vencimiento: form.fecha_vencimiento || null,
         moneda: form.moneda || "PEN",
+        descuento_tipo: form.descuento_tipo || undefined,
+        descuento_valor: normalizeNullableAmount(form.descuento_valor),
+        igv_porcentaje: normalizeNullableAmount(form.igv_porcentaje),
+        aplica_igv: Boolean(form.aplica_igv),
+        incluye_igv: Boolean(form.incluye_igv),
         subtotal: normalizeAmount(form.subtotal),
         impuestos: normalizeAmount(form.impuestos),
         descuento: normalizeAmount(form.descuento),
@@ -158,6 +219,7 @@ export const useQuotes = (): UseQuotes => {
       }
 
       syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
 
       callback?.({
         success: true,
@@ -190,6 +252,7 @@ export const useQuotes = (): UseQuotes => {
       }
 
       syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
 
       callback?.({
         success: true,
@@ -298,6 +361,7 @@ export const useQuotes = (): UseQuotes => {
       }
 
       syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
 
       callback?.({
         success: true,
@@ -329,6 +393,7 @@ export const useQuotes = (): UseQuotes => {
       }
 
       syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
 
       callback?.({
         success: true,
@@ -360,6 +425,7 @@ export const useQuotes = (): UseQuotes => {
       }
 
       syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
 
       callback?.({ success: true, message: data.message });
     } catch (error) {
@@ -389,6 +455,7 @@ export const useQuotes = (): UseQuotes => {
       }
 
       syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
       callback?.({ success: true, message: data.message });
     } catch (error) {
       const handled = handleApiError(error);
@@ -413,6 +480,7 @@ export const useQuotes = (): UseQuotes => {
       }
 
       syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
       callback?.({ success: true, message: data.message });
     } catch (error) {
       const handled = handleApiError(error);
@@ -427,6 +495,7 @@ export const useQuotes = (): UseQuotes => {
     loading,
     getQuotes,
     getQuoteById,
+    getQuotesByContact,
     createQuote,
     updateQuote,
     sendQuote,

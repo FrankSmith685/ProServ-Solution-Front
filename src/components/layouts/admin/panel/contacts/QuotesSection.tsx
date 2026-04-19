@@ -11,6 +11,7 @@ import {
   XCircle,
   History,
   FileDown,
+  Send,
 } from "lucide-react";
 
 import { useQuotes } from "@/hooks/useQuotes";
@@ -185,6 +186,11 @@ const QuotesSection = () => {
   };
 
   const handleApprove = async (quote: Quote): Promise<void> => {
+    if (quote.estado !== "enviada") {
+      showMessage("Solo puedes aprobar cotizaciones enviadas.", "info");
+      return;
+    }
+
     await approveQuote(quote.id, ({ success, message }) => {
       showMessage(
         message || (success ? "Cotización aprobada." : "No se pudo aprobar."),
@@ -194,6 +200,11 @@ const QuotesSection = () => {
   };
 
   const handleReject = async (quote: Quote): Promise<void> => {
+    if (quote.estado !== "enviada") {
+      showMessage("Solo puedes rechazar cotizaciones enviadas.", "info");
+      return;
+    }
+
     const reason =
       (window.prompt("Motivo de rechazo de la cotización:") || "").trim();
 
@@ -235,6 +246,20 @@ const QuotesSection = () => {
     });
 
     setSaving(false);
+  };
+
+  const handleSend = async (quote: Quote): Promise<void> => {
+    if (quote.estado !== "pendiente") {
+      showMessage("Solo puedes enviar cotizaciones pendientes.", "info");
+      return;
+    }
+
+    await sendQuote(quote.id, { canal: "manual" }, ({ success, message }) => {
+      showMessage(
+        message || (success ? "Cotización enviada." : "No se pudo enviar."),
+        success ? "success" : "error"
+      );
+    });
   };
 
   const filteredQuotes = useMemo(() => {
@@ -321,6 +346,17 @@ const QuotesSection = () => {
           <MessageCircle size={15} />
         </button>
 
+        {quote.estado === "pendiente" ? (
+          <button
+            type="button"
+            aria-label="Enviar cotización"
+            onClick={() => void handleSend(quote)}
+            className={actionBtnClass}
+          >
+            <Send size={15} />
+          </button>
+        ) : null}
+
         {quote.estado === "enviada" ? (
           <button
             type="button"
@@ -366,6 +402,7 @@ const QuotesSection = () => {
           aria-label="Editar cotización"
           onClick={() => openEdit(quote)}
           className={actionBtnClass}
+          disabled={quote.estado === "aprobada" || quote.estado === "rechazada"}
         >
           <Edit2 size={15} />
         </button>
