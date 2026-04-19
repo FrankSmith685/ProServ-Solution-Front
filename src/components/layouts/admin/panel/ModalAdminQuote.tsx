@@ -20,7 +20,6 @@ interface ModalAdminQuoteProps {
 const STATUS_OPTIONS: { value: QuoteStatus; label: string }[] = [
   { value: "pendiente", label: "Pendiente" },
   { value: "enviada", label: "Enviada" },
-  { value: "aprobada", label: "Aprobada" },
   { value: "rechazada", label: "Rechazada" },
 ];
 
@@ -107,9 +106,17 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
           form.estado === "rechazada" &&
           touched.motivo_rechazo &&
           !String(form.motivo_rechazo ?? "").trim(),
+        fechaEnvio:
+          form.estado === "enviada" && !String(form.fecha_envio ?? "").trim(),
+        clienteRuc: !/^\d{11}$/.test(String(form.cliente_ruc ?? "").trim() || "00000000000"),
+        igvRange: Number(form.igv_porcentaje ?? 0) < 0 || Number(form.igv_porcentaje ?? 0) > 100,
+        discountValueRange:
+          form.descuento_tipo === "porcentaje" &&
+          (Number(form.descuento_valor ?? 0) < 0 || Number(form.descuento_valor ?? 0) > 100),
+        includesWithoutTax: Boolean(form.incluye_igv && !form.aplica_igv),
       };
     },
-    [form.estado, form.total, form.fecha_vencimiento, form.motivo_rechazo, touched.estado, touched.fecha_vencimiento, touched.motivo_rechazo]
+    [form.estado, form.total, form.fecha_vencimiento, form.motivo_rechazo, form.fecha_envio, form.cliente_ruc, form.igv_porcentaje, form.descuento_tipo, form.descuento_valor, form.incluye_igv, form.aplica_igv, touched.estado, touched.fecha_vencimiento, touched.motivo_rechazo]
   );
 
   const hasValidPositiveTotal =
@@ -148,6 +155,10 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
               !String(form.fecha_vencimiento ?? "").trim() ||
               errors.total ||
               errors.motivoRechazo ||
+              errors.fechaEnvio ||
+              errors.igvRange ||
+              errors.discountValueRange ||
+              errors.includesWithoutTax ||
               (requiresTotalForStatus && !hasValidPositiveTotal)
             }
             className="w-full! gap-2! px-4! sm:w-auto!"
@@ -198,6 +209,25 @@ export const ModalAdminQuote: FC<ModalAdminQuoteProps> = ({
                 fullWidth
               />
             </div>
+
+            <CustomInput
+              label="RUC cliente"
+              value={form.cliente_ruc?.toString() ?? ""}
+              onChange={handleChange("cliente_ruc")}
+              error={errors.clienteRuc}
+              helperText={errors.clienteRuc ? "El RUC debe tener 11 dígitos numéricos." : ""}
+              fullWidth
+            />
+
+            <CustomInput
+              label="Fecha de envío"
+              type="date"
+              value={form.fecha_envio?.toString() ?? ""}
+              onChange={handleChange("fecha_envio")}
+              error={errors.fechaEnvio}
+              helperText={errors.fechaEnvio ? "Si está enviada, requiere fecha de envío." : ""}
+              fullWidth
+            />
 
             <CustomInput
               label="Fecha de vencimiento"

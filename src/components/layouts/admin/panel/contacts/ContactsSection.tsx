@@ -77,7 +77,17 @@ const INITIAL_FORM: Partial<Contact> = {
 
 const INITIAL_QUOTE_FORM: Partial<Quote> = {
   contacto_id: "",
+  cliente_nombre: "",
+  cliente_empresa: "",
+  cliente_ruc: "",
+  cliente_email: "",
+  cliente_telefono: "",
   moneda: "PEN",
+  descuento_tipo: "porcentaje",
+  descuento_valor: 0,
+  igv_porcentaje: 18,
+  aplica_igv: true,
+  incluye_igv: false,
   subtotal: 0,
   impuestos: 0,
   descuento: 0,
@@ -178,7 +188,17 @@ const ContactsSection = () => {
     setSelectedContact(contact);
     setQuoteForm({
       contacto_id: contact.id,
+      cliente_nombre: contact.nombre || "",
+      cliente_empresa: contact.empresa || "",
+      cliente_ruc: "",
+      cliente_email: contact.email || "",
+      cliente_telefono: contact.telefono || "",
       moneda: "PEN",
+      descuento_tipo: "porcentaje",
+      descuento_valor: 0,
+      igv_porcentaje: 18,
+      aplica_igv: true,
+      incluye_igv: false,
       subtotal: 0,
       impuestos: 0,
       descuento: 0,
@@ -249,8 +269,26 @@ const ContactsSection = () => {
     await createQuote(
       {
         contacto_id: selectedContact.id,
+        cliente_nombre: quoteForm.cliente_nombre || selectedContact.nombre,
+        cliente_empresa: quoteForm.cliente_empresa || selectedContact.empresa || undefined,
+        cliente_ruc: quoteForm.cliente_ruc || undefined,
+        cliente_email: quoteForm.cliente_email || selectedContact.email,
+        cliente_telefono: quoteForm.cliente_telefono || selectedContact.telefono || undefined,
         numero: quoteForm.numero || undefined,
+        asunto: quoteForm.asunto || undefined,
+        area: quoteForm.area || undefined,
         moneda: quoteForm.moneda || "PEN",
+        descuento_tipo: quoteForm.descuento_tipo || "porcentaje",
+        descuento_valor:
+          quoteForm.descuento_valor === "" || quoteForm.descuento_valor === undefined
+            ? 0
+            : Number(quoteForm.descuento_valor),
+        igv_porcentaje:
+          quoteForm.igv_porcentaje === "" || quoteForm.igv_porcentaje === undefined
+            ? 18
+            : Number(quoteForm.igv_porcentaje),
+        aplica_igv: Boolean(quoteForm.aplica_igv),
+        incluye_igv: Boolean(quoteForm.incluye_igv),
         subtotal:
           quoteForm.subtotal === "" || quoteForm.subtotal === undefined
             ? 0

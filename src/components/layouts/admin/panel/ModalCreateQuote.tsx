@@ -22,8 +22,12 @@ interface ModalCreateQuoteProps {
 const STATUS_OPTIONS: { value: QuoteStatus; label: string }[] = [
   { value: "pendiente", label: "Pendiente" },
   { value: "enviada", label: "Enviada" },
-  { value: "aprobada", label: "Aprobada" },
   { value: "rechazada", label: "Rechazada" },
+];
+
+const DISCOUNT_TYPE_OPTIONS = [
+  { value: "porcentaje", label: "Porcentaje" },
+  { value: "monto", label: "Monto" },
 ];
 
 interface InfoFieldProps {
@@ -61,6 +65,7 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
     total: false,
     fecha_vencimiento: false,
     motivo_rechazo: false,
+    cliente_ruc: false,
   });
 
   const handleTotalChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -133,6 +138,11 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
     const requiresTotalForStatus =
       form.estado === "enviada" || form.estado === "aprobada";
 
+    const ruc = String(form.cliente_ruc ?? "").trim();
+    const discountType = form.descuento_tipo;
+    const discountValue = Number(form.descuento_valor ?? 0);
+    const igv = Number(form.igv_porcentaje ?? 0);
+
     return {
       estado: touched.estado && !form.estado,
       fechaVencimiento:
@@ -147,8 +157,17 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
         form.estado === "rechazada" &&
         touched.motivo_rechazo &&
         !String(form.motivo_rechazo ?? "").trim(),
+      clienteRuc:
+        touched.cliente_ruc && (!/^\d{11}$/.test(ruc)),
+      fechaEnvio:
+        form.estado === "enviada" && !String(form.fecha_envio ?? "").trim(),
+      discountType: Boolean(discountType && discountType !== "porcentaje" && discountType !== "monto"),
+      discountValueRange:
+        discountType === "porcentaje" && (discountValue < 0 || discountValue > 100),
+      igvRange: igv < 0 || igv > 100,
+      includesWithoutTax: Boolean(form.incluye_igv && !form.aplica_igv),
     };
-  }, [form.estado, form.total, form.fecha_vencimiento, form.motivo_rechazo, touched.estado, touched.total, touched.fecha_vencimiento, touched.motivo_rechazo]);
+  }, [form.estado, form.total, form.fecha_vencimiento, form.motivo_rechazo, form.cliente_ruc, form.fecha_envio, form.descuento_tipo, form.descuento_valor, form.igv_porcentaje, form.incluye_igv, form.aplica_igv, touched.estado, touched.total, touched.fecha_vencimiento, touched.motivo_rechazo, touched.cliente_ruc]);
 
   const hasValidPositiveTotal =
     form.total !== null &&
@@ -175,6 +194,12 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
     !contact?.id ||
     !String(form.fecha_vencimiento ?? "").trim() ||
     errors.motivoRechazo ||
+    errors.clienteRuc ||
+    errors.fechaEnvio ||
+    errors.discountType ||
+    errors.discountValueRange ||
+    errors.igvRange ||
+    errors.includesWithoutTax ||
     (form.total !== null &&
       form.total !== undefined &&
       form.total !== "" &&
@@ -246,6 +271,71 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
             </div>
 
             <CustomInput
+              label="Cliente (nombre)"
+              placeholder="Nombre del cliente"
+              value={form.cliente_nombre?.toString() ?? ""}
+              onChange={handleInputChange("cliente_nombre")}
+              fullWidth
+            />
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <CustomInput
+                label="Empresa"
+                placeholder="Empresa del cliente"
+                value={form.cliente_empresa?.toString() ?? ""}
+                onChange={handleInputChange("cliente_empresa")}
+                fullWidth
+              />
+
+              <CustomInput
+                label="RUC"
+                placeholder="11 dígitos"
+                value={form.cliente_ruc?.toString() ?? ""}
+                onChange={(e) => {
+                  handleInputChange("cliente_ruc")(e);
+                  setTouched((prev) => ({ ...prev, cliente_ruc: true }));
+                }}
+                error={errors.clienteRuc}
+                helperText={errors.clienteRuc ? "RUC inválido: deben ser 11 dígitos numéricos." : ""}
+                fullWidth
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <CustomInput
+                label="Email cliente"
+                placeholder="cliente@correo.com"
+                value={form.cliente_email?.toString() ?? ""}
+                onChange={handleInputChange("cliente_email")}
+                fullWidth
+              />
+
+              <CustomInput
+                label="Teléfono cliente"
+                placeholder="+51..."
+                value={form.cliente_telefono?.toString() ?? ""}
+                onChange={handleInputChange("cliente_telefono")}
+                fullWidth
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <CustomInput
+                label="Asunto"
+                value={form.asunto?.toString() ?? ""}
+                onChange={handleInputChange("asunto")}
+                fullWidth
+              />
+
+              <CustomInput
+                label="Área"
+                value={form.area?.toString() ?? ""}
+                onChange={handleInputChange("area")}
+                fullWidth
+              />
+            </div>
+
+            <CustomInput
               label="Número (opcional)"
               placeholder="COT-2026-000123"
               value={form.numero?.toString() ?? ""}
@@ -262,30 +352,82 @@ export const ModalCreateQuote: FC<ModalCreateQuoteProps> = ({
             />
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <CustomSelected
+                value={form.descuento_tipo || "porcentaje"}
+                onChange={(e) => handleInputChange("descuento_tipo")(e as ChangeEvent<HTMLInputElement>)}
+                options={DISCOUNT_TYPE_OPTIONS}
+                label="Tipo descuento"
+                fullWidth
+                variant="primary"
+                size="md"
+              />
+
               <CustomInput
-                label="Subtotal"
+                label="Valor descuento"
                 type="number"
-                value={form.subtotal?.toString() ?? "0"}
-                onChange={handleInputChange("subtotal")}
+                value={form.descuento_valor?.toString() ?? "0"}
+                onChange={handleInputChange("descuento_valor")}
+                error={errors.discountValueRange}
+                helperText={errors.discountValueRange ? "Si es porcentaje, debe estar entre 0 y 100." : ""}
                 fullWidth
               />
 
               <CustomInput
-                label="Impuestos"
+                label="% IGV"
                 type="number"
-                value={form.impuestos?.toString() ?? "0"}
-                onChange={handleInputChange("impuestos")}
-                fullWidth
-              />
-
-              <CustomInput
-                label="Descuento"
-                type="number"
-                value={form.descuento?.toString() ?? "0"}
-                onChange={handleInputChange("descuento")}
+                value={form.igv_porcentaje?.toString() ?? "18"}
+                onChange={handleInputChange("igv_porcentaje")}
+                error={errors.igvRange}
+                helperText={errors.igvRange ? "El IGV debe estar entre 0 y 100." : ""}
                 fullWidth
               />
             </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <CustomSelected
+                value={String(Boolean(form.aplica_igv))}
+                onChange={(e) => {
+                  const value = String(e.target.value || "false") === "true";
+                  setForm((prev) => ({ ...prev, aplica_igv: value }));
+                }}
+                options={[{ value: "true", label: "Aplica IGV: Sí" }, { value: "false", label: "Aplica IGV: No" }]}
+                label="Regla IGV"
+                fullWidth
+                variant="primary"
+                size="md"
+              />
+
+              <CustomSelected
+                value={String(Boolean(form.incluye_igv))}
+                onChange={(e) => {
+                  const value = String(e.target.value || "false") === "true";
+                  setForm((prev) => ({ ...prev, incluye_igv: value }));
+                }}
+                options={[{ value: "false", label: "Incluye IGV: No" }, { value: "true", label: "Incluye IGV: Sí" }]}
+                label="Incluye IGV"
+                error={errors.includesWithoutTax}
+                helperText={errors.includesWithoutTax ? "No puede incluir IGV si no aplica IGV." : ""}
+                fullWidth
+                variant="primary"
+                size="md"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <CustomInput label="Subtotal" type="number" value={form.subtotal?.toString() ?? "0"} onChange={handleInputChange("subtotal")} fullWidth />
+              <CustomInput label="Impuestos" type="number" value={form.impuestos?.toString() ?? "0"} onChange={handleInputChange("impuestos")} fullWidth />
+              <CustomInput label="Descuento" type="number" value={form.descuento?.toString() ?? "0"} onChange={handleInputChange("descuento")} fullWidth />
+            </div>
+
+            <CustomInput
+              label="Fecha de envío"
+              value={form.fecha_envio?.toString() ?? ""}
+              onChange={handleInputChange("fecha_envio")}
+              type="date"
+              error={errors.fechaEnvio}
+              helperText={errors.fechaEnvio ? "Si está enviada, la fecha de envío es obligatoria." : ""}
+              fullWidth
+            />
 
             <CustomInput
               label="Fecha de vencimiento"
