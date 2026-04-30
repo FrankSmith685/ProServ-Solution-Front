@@ -18,6 +18,7 @@ import AdminPage from "@/page/admin/panel/AdminPage ";
 import AdminMediaPage from "@/page/admin/panel/AdminMediaPage";
 import ContactoPage from "@/page/contact/ContactPage";
 import DejarTestimonioPage from "@/page/testimonios/DejarTestimonioPage";
+import LegalContentPage from "@/page/legal/LegalContentPage";
 
 // =========================
 // Lazy pages
@@ -207,6 +208,14 @@ const AppRouter = () => {
 
         <Route path="/dejar-testimonio" element={<Layout />}>
           <Route index element={<DejarTestimonioPage />} />
+        </Route>
+
+        <Route path="/terminos-condiciones" element={<Layout />}>
+          <Route index element={<LegalContentPage />} />
+        </Route>
+
+        <Route path="/politica-privacidad" element={<Layout />}>
+          <Route index element={<LegalContentPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

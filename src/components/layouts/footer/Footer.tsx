@@ -119,6 +119,8 @@ const navItems: NavItem[] = [
   { label: "Nosotros", path: "/nosotros" },
   { label: "Proyectos", path: "/proyectos" },
   { label: "Contacto", path: "/contacto" },
+  { label: "Términos y condiciones", path: "/terminos-condiciones" },
+  { label: "Política de privacidad", path: "/politica-privacidad" },
 ];
 
 /* ================= SMALL UI ================= */
