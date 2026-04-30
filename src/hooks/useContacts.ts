@@ -17,7 +17,6 @@ export const useContacts = (): UseContacts => {
   const { contacts, setContacts } = useAppState();
   const [loading, setLoading] = useState<boolean>(false);
 
-  /* ================= GET ================= */
   const getContacts = async (callback?: BasicCallback): Promise<void> => {
     setLoading(true);
 
@@ -46,7 +45,6 @@ export const useContacts = (): UseContacts => {
     }
   };
 
-  /* ================= GET BY ID ================= */
   const getContactById = async (
     id: string,
     callback?: (contact: Contact | null) => void
@@ -70,7 +68,6 @@ export const useContacts = (): UseContacts => {
     }
   };
 
-  /* ================= CREATE (PUBLIC) ================= */
   const createContact = async (
     form: Partial<Contact>,
     callback?: BasicCallback
@@ -83,6 +80,9 @@ export const useContacts = (): UseContacts => {
         email: form.email?.trim() || "",
         telefono: form.telefono?.trim() || null,
         empresa: form.empresa?.trim() || null,
+        tipo_cliente: form.tipo_cliente || "persona",
+        tipo_documento: form.tipo_documento || (form.empresa ? "ruc" : "dni"),
+        numero_documento: form.numero_documento?.trim() || null,
         servicio_id: form.servicio_id || null,
         mensaje: form.mensaje?.trim() || "",
       };
@@ -109,7 +109,6 @@ export const useContacts = (): UseContacts => {
     }
   };
 
-  /* ================= UPDATE ================= */
   const updateContact = async (
     id: string,
     form: Partial<Contact>,
@@ -147,7 +146,6 @@ export const useContacts = (): UseContacts => {
     }
   };
 
-  /* ================= DELETE ================= */
   const deleteContact = async (
     id: string,
     callback?: BasicCallback
@@ -182,11 +180,27 @@ export const useContacts = (): UseContacts => {
     }
   };
 
-  /* ================= TOGGLE ARCHIVE ================= */
-  const toggleArchivedContact = async (contact: Contact): Promise<void> => {
-    await updateContact(contact.id, {
-      estado: contact.estado === "archivado" ? "nuevo" : "archivado",
-    });
+  const toggleArchivedContact = async (
+    id: string,
+    callback?: BasicCallback
+  ): Promise<void> => {
+    const contact = contacts.find((item) => item.id === id);
+
+    if (!contact) {
+      callback?.({
+        success: false,
+        message: "Contacto no encontrado",
+      });
+      return;
+    }
+
+    await updateContact(
+      id,
+      {
+        archivado: contact.archivado !== true,
+      },
+      callback
+    );
   };
 
   return {

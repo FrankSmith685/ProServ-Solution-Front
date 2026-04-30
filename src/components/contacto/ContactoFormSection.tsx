@@ -13,6 +13,7 @@ import {
   ClipboardList,
   Clock3,
   FileText,
+  IdCard,
   Mail,
   MessageSquare,
   Phone,
@@ -30,11 +31,17 @@ import { CustomButton } from "@/components/ui/kit/CustomButton";
 import { CustomInput } from "@/components/ui/kit/CustomInput";
 import { CustomSelected } from "@/components/ui/kit/CustomSelected";
 
+type TipoCliente = "persona" | "empresa";
+type TipoDocumento = "dni" | "ruc";
+
 type ContactFormState = {
   nombre: string;
   email: string;
   telefono: string;
   empresa: string;
+  tipo_cliente: TipoCliente;
+  tipo_documento: TipoDocumento;
+  numero_documento: string;
   servicio_id: string;
   mensaje: string;
 };
@@ -44,6 +51,9 @@ const initialForm: ContactFormState = {
   email: "",
   telefono: "",
   empresa: "",
+  tipo_cliente: "persona",
+  tipo_documento: "dni",
+  numero_documento: "",
   servicio_id: "",
   mensaje: "",
 };
@@ -59,6 +69,11 @@ const normalizePhone = (value?: string | null): string =>
 
 const isEmailValid = (value: string): boolean =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+
+const onlyDigits = (value: string): string => value.replace(/\D/g, "");
+
+const isValidDni = (value: string): boolean => /^\d{8}$/.test(value);
+const isValidRuc = (value: string): boolean => /^\d{11}$/.test(value);
 
 const ContactInfoCard: FC<{
   icon: ReactNode;
@@ -143,12 +158,32 @@ const ContactoFormSection: FC = () => {
     }));
   }, [activeServices]);
 
+  const clientTypeOptions = useMemo(
+    () => [
+      { value: "persona", label: "Persona natural" },
+      { value: "empresa", label: "Empresa" },
+    ],
+    []
+  );
+
+  const documentTypeOptions = useMemo(() => {
+    if (form.tipo_cliente === "empresa") {
+      return [{ value: "ruc", label: "RUC" }];
+    }
+
+    return [{ value: "dni", label: "DNI" }];
+  }, [form.tipo_cliente]);
+
   const selectedServiceLabel = useMemo(() => {
     const selected = serviceOptions.find(
       (option) => option.value === form.servicio_id
     );
     return selected?.label ?? "";
   }, [form.servicio_id, serviceOptions]);
+
+  const documentLabel = form.tipo_documento === "ruc" ? "RUC" : "DNI";
+  const documentPlaceholder =
+    form.tipo_documento === "ruc" ? "Ingresa tu RUC" : "Ingresa tu DNI";
 
   const contactInfo = useMemo(() => {
     const companyName =
@@ -175,14 +210,44 @@ const ContactoFormSection: FC = () => {
   }, [company, siteConfig]);
 
   const handleChange = (field: keyof ContactFormState, value: string): void => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    let nextValue = value;
+
+    if (field === "numero_documento" || field === "telefono") {
+      nextValue = onlyDigits(value);
+    }
+
+    setForm((prev) => {
+      const nextForm = {
+        ...prev,
+        [field]: nextValue,
+      };
+
+      if (field === "tipo_cliente") {
+        if (value === "empresa") {
+          nextForm.tipo_cliente = "empresa";
+          nextForm.tipo_documento = "ruc";
+        } else {
+          nextForm.tipo_cliente = "persona";
+          nextForm.tipo_documento = "dni";
+          nextForm.empresa = "";
+        }
+
+        nextForm.numero_documento = "";
+      }
+
+      if (field === "tipo_documento") {
+        nextForm.numero_documento = "";
+      }
+
+      return nextForm;
+    });
 
     setErrors((prev) => ({
       ...prev,
       [field]: "",
+      ...(field === "tipo_cliente" || field === "tipo_documento"
+        ? { numero_documento: "", empresa: "" }
+        : {}),
     }));
   };
 
@@ -197,6 +262,28 @@ const ContactoFormSection: FC = () => {
       nextErrors.email = "Ingresa tu correo.";
     } else if (!isEmailValid(form.email)) {
       nextErrors.email = "Ingresa un correo válido.";
+    }
+
+    if (!form.telefono.trim()) {
+      nextErrors.telefono = "Ingresa tu teléfono.";
+    }
+
+    if (form.tipo_cliente === "empresa" && !form.empresa.trim()) {
+      nextErrors.empresa = "Ingresa el nombre de la empresa.";
+    }
+
+    if (!form.numero_documento.trim()) {
+      nextErrors.numero_documento = `Ingresa tu ${documentLabel}.`;
+    } else if (
+      form.tipo_documento === "dni" &&
+      !isValidDni(form.numero_documento.trim())
+    ) {
+      nextErrors.numero_documento = "El DNI debe tener 8 dígitos.";
+    } else if (
+      form.tipo_documento === "ruc" &&
+      !isValidRuc(form.numero_documento.trim())
+    ) {
+      nextErrors.numero_documento = "El RUC debe tener 11 dígitos.";
     }
 
     if (!form.mensaje.trim()) {
@@ -219,7 +306,11 @@ const ContactoFormSection: FC = () => {
         nombre: form.nombre.trim(),
         email: form.email.trim(),
         telefono: form.telefono.trim() || null,
-        empresa: form.empresa.trim() || null,
+        empresa:
+          form.tipo_cliente === "empresa" ? form.empresa.trim() || null : null,
+        tipo_cliente: form.tipo_cliente,
+        tipo_documento: form.tipo_documento,
+        numero_documento: form.numero_documento.trim() || null,
         servicio_id: form.servicio_id || null,
         mensaje: form.mensaje.trim(),
       },
@@ -366,9 +457,27 @@ const ContactoFormSection: FC = () => {
                     handleChange("telefono", e.target.value)
                   }
                   fullWidth
+                  required
+                  error={Boolean(errors.telefono)}
+                  helperText={errors.telefono ?? ""}
                   icon={<Phone fontSize="small" />}
                 />
 
+                <CustomSelected
+                  value={form.tipo_cliente}
+                  onChange={(event) =>
+                    handleChange("tipo_cliente", String(event.target.value ?? "persona"))
+                  }
+                  options={clientTypeOptions}
+                  label="Tipo de cliente"
+                  placeholder="Selecciona un tipo"
+                  fullWidth
+                  variant="primary"
+                  size="lg"
+                />
+              </div>
+
+              {form.tipo_cliente === "empresa" ? (
                 <CustomInput
                   name="empresa"
                   label="Empresa"
@@ -377,7 +486,53 @@ const ContactoFormSection: FC = () => {
                     handleChange("empresa", e.target.value)
                   }
                   fullWidth
+                  required
+                  error={Boolean(errors.empresa)}
+                  helperText={errors.empresa ?? ""}
                   icon={<Building2 fontSize="small" />}
+                />
+              ) : (
+                <div className="rounded-[1.2rem] border border-border bg-surface px-4 py-3 text-sm text-muted-foreground shadow-sm">
+                  Estás registrando una consulta como <strong>persona natural</strong>.
+                </div>
+              )}
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <CustomSelected
+                  value={form.tipo_documento}
+                  onChange={(event) =>
+                    handleChange(
+                      "tipo_documento",
+                      String(event.target.value ?? form.tipo_documento)
+                    )
+                  }
+                  options={documentTypeOptions}
+                  label="Tipo de documento"
+                  placeholder="Selecciona un documento"
+                  fullWidth
+                  variant="primary"
+                  size="lg"
+                />
+
+                <CustomInput
+                  name="numero_documento"
+                  label={documentLabel}
+                  value={form.numero_documento}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    handleChange("numero_documento", e.target.value)
+                  }
+                  fullWidth
+                  required
+                  error={Boolean(errors.numero_documento)}
+                  helperText={errors.numero_documento ?? ""}
+                  placeholder={documentPlaceholder}
+                  icon={
+                    form.tipo_cliente === "empresa" ? (
+                      <Building2 fontSize="small" />
+                    ) : (
+                      <IdCard fontSize="small" />
+                    )
+                  }
                 />
               </div>
 
@@ -395,11 +550,14 @@ const ContactoFormSection: FC = () => {
               />
 
               {selectedServiceLabel ? (
-                <div className="rounded-[1.2rem] border border-primary/15 bg-primary/5 px-4 py-3 text-sm text-dark">
-                  <span className="font-semibold text-primary">
-                    Servicio seleccionado:
-                  </span>{" "}
-                  <span className="font-bold">{selectedServiceLabel}</span>
+                <div className="rounded-[1.2rem] border border-border bg-surface px-4 py-3 text-sm text-dark shadow-sm transition-colors">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                    <span className="font-semibold text-primary">
+                      Servicio seleccionado:
+                    </span>
+                    <span className="font-bold text-dark">{selectedServiceLabel}</span>
+                  </div>
                 </div>
               ) : null}
 

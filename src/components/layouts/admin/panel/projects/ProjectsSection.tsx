@@ -407,25 +407,25 @@ const ProjectsSection = () => {
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
               Total
             </p>
-            <p className="mt-2 text-2xl font-black text-dark">{rowsData.length}</p>
+            <p className="mt-2 text-2xl font-black text-primary">{rowsData.length}</p>
           </div>
           <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-primary">
               Activos
             </p>
-            <p className="mt-2 text-2xl font-black text-dark">{metrics.active}</p>
+            <p className="mt-2 text-2xl font-black text-primary">{metrics.active}</p>
           </div>
           <div className="rounded-2xl border border-border bg-surface-soft p-4">
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
               Destacados
             </p>
-            <p className="mt-2 text-2xl font-black text-dark">{metrics.featured}</p>
+            <p className="mt-2 text-2xl font-black text-primary">{metrics.featured}</p>
           </div>
           <div className="rounded-2xl border border-border bg-surface-soft p-4">
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
               Con imágenes
             </p>
-            <p className="mt-2 text-2xl font-black text-dark">{metrics.withImages}</p>
+            <p className="mt-2 text-2xl font-black text-primary">{metrics.withImages}</p>
           </div>
         </div>
 

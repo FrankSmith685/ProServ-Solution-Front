@@ -45,7 +45,7 @@ const CustomSelectedComponent = <T extends string | number = string>({
       boxSizing: "border-box",
       height,
       padding: 0,
-      borderRadius: "12px",
+      borderRadius: "5px",
 
       "@media (max-width:390px)": {
         height: 40,
@@ -208,7 +208,7 @@ const CustomSelectedComponent = <T extends string | number = string>({
             PaperProps: {
               sx: {
                 mt: 1,
-                borderRadius: "14px",
+                borderRadius: "5px",
                 border: "1px solid hsl(var(--color-border))",
                 backgroundColor: "var(--color-surface)",
                 color: "var(--color-text)",
@@ -221,7 +221,7 @@ const CustomSelectedComponent = <T extends string | number = string>({
 
                 "& .MuiMenuItem-root": {
                   minHeight: "42px",
-                  borderRadius: "10px",
+                  borderRadius: "5px",
                   fontSize: baseFontSize,
                   fontFamily,
                   color: "var(--color-text)",

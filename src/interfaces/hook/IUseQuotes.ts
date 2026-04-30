@@ -8,8 +8,8 @@ export type QuoteStatus =
   | "rechazada";
 
 export interface QuoteItem {
-  id: string;
-  quote_id: string;
+  id?: string;
+  quote_id?: string;
   descripcion: string;
   cantidad: number;
   precio_unitario: number;
@@ -28,6 +28,14 @@ export interface QuoteEvent {
 }
 
 export type QuoteSendChannel = "email" | "whatsapp" | "manual";
+
+export interface QuoteSendPayload {
+  canal?: QuoteSendChannel;
+  to?: string;
+  phone?: string;
+  message?: string;
+  attachPdf?: boolean;
+}
 
 export interface Quote {
   id: string;
@@ -89,10 +97,12 @@ export interface UseQuotes {
   loading: boolean;
 
   getQuotes: (callback?: BasicCallback) => Promise<void>;
+
   getQuoteById: (
     id: string,
     callback?: (quote: Quote | null) => void
   ) => Promise<void>;
+
   getQuotesByContact: (
     contactoId: string,
     callback?: (quotes: Quote[]) => void
@@ -111,19 +121,23 @@ export interface UseQuotes {
 
   sendQuote: (
     id: string,
-    payload?: { canal?: QuoteSendChannel },
+    payload?: QuoteSendPayload,
     callback?: BasicCallback
   ) => Promise<void>;
+
   approveQuote: (id: string, callback?: BasicCallback) => Promise<void>;
+
   rejectQuote: (
     id: string,
     payload: { motivo_rechazo: string },
     callback?: BasicCallback
   ) => Promise<void>;
+
   getQuoteEvents: (
     id: string,
     callback?: (events: QuoteEvent[]) => void
   ) => Promise<void>;
+
   getQuotePdf: (
     id: string,
     callback?: (result: QuotePdfResult) => void
@@ -134,15 +148,17 @@ export interface UseQuotes {
     payload: Omit<QuoteItem, "id" | "quote_id" | "subtotal">,
     callback?: BasicCallback
   ) => Promise<void>;
+
   updateQuoteItem: (
     id: string,
     itemId: string,
     payload: Partial<Omit<QuoteItem, "id" | "quote_id">>,
     callback?: BasicCallback
   ) => Promise<void>;
+
   deleteQuoteItem: (
     id: string,
     itemId: string,
     callback?: BasicCallback
   ) => Promise<void>;
-} 
+}

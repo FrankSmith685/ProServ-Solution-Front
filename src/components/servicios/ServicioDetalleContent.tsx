@@ -394,28 +394,29 @@ const ServicioDetalleContent: FC = () => {
                   </div>
                 </div>
               </div>
+              <div className="flex gap-2 flex-col">
+                {hasPhone ? (
+                  <CustomButton
+                    text="Llamar ahora"
+                    component="a"
+                    href={`tel:${phoneHref}`}
+                    icon={<Phone size={17} />}
+                    variant="primary"
+                    size="lg"
+                    className="w-full! justify-center gap-1!"
+                  />
+                ) : null}
 
-              {hasPhone ? (
                 <CustomButton
-                  text="Llamar ahora"
-                  component="a"
-                  href={`tel:${phoneHref}`}
-                  icon={<Phone size={17} />}
-                  variant="primary"
+                  text="Solicitar cotización"
+                  component={Link}
+                  to="/contacto"
+                  icon={<ArrowRight size={17} />}
+                  variant="secondary"
                   size="lg"
                   className="w-full! justify-center gap-1!"
                 />
-              ) : null}
-
-              <CustomButton
-                text="Solicitar cotización"
-                component={Link}
-                to="/contacto"
-                icon={<ArrowRight size={17} />}
-                variant="secondary"
-                size="lg"
-                className="w-full! justify-center gap-1!"
-              />
+              </div>
             </div>
           </aside>
         </motion.div>

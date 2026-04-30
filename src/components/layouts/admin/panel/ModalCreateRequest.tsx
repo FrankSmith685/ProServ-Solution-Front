@@ -1,12 +1,31 @@
-import { type FC, useMemo, useState, type ChangeEvent, type ReactNode } from "react";
-import { CalendarDays, Save, User, Mail } from "lucide-react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import {
+  type FC,
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type ReactNode,
+} from "react";
+import {
+  CalendarDays,
+  Save,
+  User,
+  Mail,
+  Phone,
+  Building2,
+  IdCard,
+  MessageSquare,
+  ShieldCheck,
+  BriefcaseBusiness,
+  Info,
+} from "lucide-react";
 
 import type { Contact } from "@/interfaces/hook/IUseContacts";
-import type { RequestItem, RequestStatus } from "@/interfaces/hook/IUseRequests";
+import type { RequestItem } from "@/interfaces/hook/IUseRequests";
 
 import { CustomModal } from "@/components/ui/overlay/CustomModal";
 import { CustomInput } from "@/components/ui/kit/CustomInput";
-import { CustomSelected } from "@/components/ui/kit/CustomSelected";
 import { CustomButton } from "@/components/ui/kit/CustomButton";
 
 interface ModalCreateRequestProps {
@@ -19,19 +38,26 @@ interface ModalCreateRequestProps {
   loading?: boolean;
 }
 
-const STATUS_OPTIONS: { value: RequestStatus; label: string }[] = [
-  { value: "pendiente", label: "Pendiente" },
-  { value: "programada", label: "Programada" },
-  { value: "en_proceso", label: "En proceso" },
-  { value: "finalizada", label: "Finalizada" },
-  { value: "cancelada", label: "Cancelada" },
-];
-
 interface InfoFieldProps {
   label: string;
   value: string;
   icon: ReactNode;
 }
+
+const safeString = (value: unknown): string => {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  return "";
+};
+
+const getTodayDate = (): string => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const day = `${date.getDate()}`.padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
 
 const InfoField: FC<InfoFieldProps> = ({ label, value, icon }) => {
   return (
@@ -58,8 +84,23 @@ export const ModalCreateRequest: FC<ModalCreateRequestProps> = ({
   loading = false,
 }) => {
   const [touched, setTouched] = useState({
-    estado: false,
+    fecha_programada: false,
   });
+
+  useEffect(() => {
+    if (!open) return;
+
+    setTouched({
+      fecha_programada: false,
+    });
+
+    setForm((prev) => ({
+      ...prev,
+      contacto_id: contact?.id || prev.contacto_id || "",
+      fecha_programada: prev.fecha_programada || getTodayDate(),
+      estado: "programada",
+    }));
+  }, [open, contact?.id, setForm]);
 
   const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -67,44 +108,59 @@ export const ModalCreateRequest: FC<ModalCreateRequestProps> = ({
     setForm((prev) => ({
       ...prev,
       fecha_programada: value || null,
+      estado: "programada",
     }));
+
+    setTouched({
+      fecha_programada: true,
+    });
   };
 
-  const handleSelectChange =
-    (key: "estado") =>
-    (
-      e:
-        | ChangeEvent<HTMLInputElement>
-        | (Event & { target: { value: unknown; name: string } })
-    ) => {
-      const value = String(e.target.value ?? "") as RequestStatus;
+  const documentLabel = useMemo(() => {
+    if (contact?.tipo_documento === "ruc") return "RUC";
+    if (contact?.tipo_documento === "dni") return "DNI";
+    return "Documento";
+  }, [contact?.tipo_documento]);
 
-      setForm((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
+  const documentValue = useMemo(() => {
+    return safeString(contact?.numero_documento).trim() || "No registrado";
+  }, [contact?.numero_documento]);
 
-      setTouched((prev) => ({
-        ...prev,
-        [key]: true,
-      }));
-    };
+  const clientTypeLabel = useMemo(() => {
+    if (contact?.tipo_cliente === "empresa") return "Empresa";
+    if (contact?.tipo_cliente === "persona") return "Persona natural";
+    return "No definido";
+  }, [contact?.tipo_cliente]);
+
+  const organizationLabel = useMemo(() => {
+    return contact?.tipo_cliente === "empresa"
+      ? "Empresa"
+      : "Empresa / Organización";
+  }, [contact?.tipo_cliente]);
+
+  const organizationValue = useMemo(() => {
+    return safeString(contact?.empresa).trim() || "No registrada";
+  }, [contact?.empresa]);
 
   const errors = useMemo(
     () => ({
-      estado: touched.estado && !form.estado,
+      fecha_programada:
+        touched.fecha_programada && !String(form.fecha_programada ?? "").trim(),
     }),
-    [form.estado, touched.estado]
+    [form.fecha_programada, touched.fecha_programada]
   );
 
-  const isInvalid = !form.estado || !contact?.id;
+  const isInvalid =
+    !contact?.id ||
+    !String(form.fecha_programada ?? "").trim() ||
+    errors.fecha_programada;
 
   return (
     <CustomModal
       isOpen={open}
       onClose={onClose}
       title="Crear solicitud"
-      width="min(720px, 96vw)"
+      width="min(920px, 96vw)"
       footer={
         <div className="flex w-full flex-col gap-3 border-t border-border pt-3 sm:flex-row sm:justify-end sm:pt-4">
           <CustomButton
@@ -116,7 +172,7 @@ export const ModalCreateRequest: FC<ModalCreateRequestProps> = ({
           />
 
           <CustomButton
-            text={loading ? "Guardando..." : "Guardar solicitud"}
+            text={loading ? "Guardando..." : "Crear solicitud"}
             icon={<Save size={16} />}
             onClick={onSave}
             loading={loading}
@@ -131,10 +187,11 @@ export const ModalCreateRequest: FC<ModalCreateRequestProps> = ({
         <div className="rounded-2xl border border-border bg-surface-soft p-4 sm:p-5">
           <div className="mb-4 space-y-1">
             <h4 className="text-sm font-semibold sm:text-base">
-              Información de la solicitud
+              Información enviada por el contacto
             </h4>
             <p className="text-xs text-muted-foreground sm:text-sm">
-              Programa una atención para el contacto seleccionado.
+              Estos datos son de solo lectura para crear la solicitud sin
+              modificar el contacto original.
             </p>
           </div>
 
@@ -142,7 +199,7 @@ export const ModalCreateRequest: FC<ModalCreateRequestProps> = ({
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <InfoField
                 label="Contacto"
-                value={contact?.nombre || ""}
+                value={safeString(contact?.nombre) || "No registrado"}
                 icon={
                   <User
                     size={16}
@@ -152,8 +209,8 @@ export const ModalCreateRequest: FC<ModalCreateRequestProps> = ({
               />
 
               <InfoField
-                label="Email"
-                value={contact?.email || ""}
+                label="Correo"
+                value={safeString(contact?.email) || "No registrado"}
                 icon={
                   <Mail
                     size={16}
@@ -163,9 +220,96 @@ export const ModalCreateRequest: FC<ModalCreateRequestProps> = ({
               />
             </div>
 
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <InfoField
+                label="Teléfono"
+                value={safeString(contact?.telefono) || "No registrado"}
+                icon={
+                  <Phone
+                    size={16}
+                    style={{ color: "var(--color-text-muted)" }}
+                  />
+                }
+              />
+
+              <InfoField
+                label={organizationLabel}
+                value={organizationValue}
+                icon={
+                  <Building2
+                    size={16}
+                    style={{ color: "var(--color-text-muted)" }}
+                  />
+                }
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <InfoField
+                label="Tipo de cliente"
+                value={clientTypeLabel}
+                icon={
+                  <ShieldCheck
+                    size={16}
+                    style={{ color: "var(--color-text-muted)" }}
+                  />
+                }
+              />
+
+              <InfoField
+                label={documentLabel}
+                value={documentValue}
+                icon={
+                  <IdCard
+                    size={16}
+                    style={{ color: "var(--color-text-muted)" }}
+                  />
+                }
+              />
+            </div>
+
+            <InfoField
+              label="Servicio solicitado"
+              value={safeString(contact?.service?.titulo) || "Sin servicio"}
+              icon={
+                <BriefcaseBusiness
+                  size={16}
+                  style={{ color: "var(--color-text-muted)" }}
+                />
+              }
+            />
+
+            <div className="rounded-2xl border border-border bg-background px-4 py-3 sm:px-5 sm:py-4">
+              <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <MessageSquare
+                  size={16}
+                  style={{ color: "var(--color-text-muted)" }}
+                />
+                <span>Mensaje del contacto</span>
+              </div>
+
+              <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">
+                {safeString(contact?.mensaje) || "Sin mensaje registrado"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-surface-soft p-4 sm:p-5">
+          <div className="mb-4 space-y-1">
+            <h4 className="text-sm font-semibold sm:text-base">
+              Programación de la solicitud
+            </h4>
+            <p className="text-xs text-muted-foreground sm:text-sm">
+              Define cuándo se atenderá. La solicitud iniciará automáticamente
+              como programada.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
             <CustomInput
               label="Fecha programada"
-              value={form.fecha_programada || ""}
+              value={form.fecha_programada?.toString() ?? ""}
               onChange={handleDateChange}
               type="date"
               icon={
@@ -174,21 +318,55 @@ export const ModalCreateRequest: FC<ModalCreateRequestProps> = ({
                   style={{ color: "var(--color-text-muted)" }}
                 />
               }
+              error={errors.fecha_programada}
+              helperText={
+                errors.fecha_programada
+                  ? "La fecha programada es requerida."
+                  : "Se carga por defecto con la fecha de hoy, pero puedes cambiarla."
+              }
               fullWidth
             />
 
-            <CustomSelected
-              value={form.estado || ""}
-              onChange={handleSelectChange("estado")}
-              options={STATUS_OPTIONS}
-              label="Estado"
-              placeholder="Selecciona un estado"
-              error={errors.estado}
-              helperText={errors.estado ? "Requerido" : ""}
-              fullWidth
-              variant="primary"
-              size="lg"
-            />
+            <div className="rounded-2xl border border-border bg-background px-4 py-3 sm:px-5 sm:py-4">
+              <div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Info size={16} style={{ color: "var(--color-text-muted)" }} />
+                <span>Estado inicial</span>
+              </div>
+
+              <div className="inline-flex rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
+                Programada
+              </div>
+
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                El estado ya no se elige manualmente al crear. Luego podrás
+                cambiarlo en el seguimiento de solicitudes.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-primary/10 bg-primary/5 p-4">
+              <div className="flex items-start gap-3">
+                <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Info size={18} />
+                </div>
+
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-(--color-text)">
+                    Qué se guardará
+                  </p>
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    Actualmente la solicitud guarda el contacto, fecha
+                    programada y estado. En este flujo el estado se envía fijo
+                    como programada.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {!contact?.id ? (
+              <p className="text-xs font-medium text-red-500">
+                No se encontró el contacto seleccionado.
+              </p>
+            ) : null}
           </div>
         </div>
       </div>

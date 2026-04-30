@@ -19,24 +19,38 @@ export type ContactStatus =
   | "nuevo"
   | "leido"
   | "respondido"
-  | "archivado"
   | "eliminado";
 
 export interface Contact {
   id: string;
   nombre: string;
   email: string;
-  telefono: string | null;
-  empresa: string | null;
-  servicio_id: string | null;
+  telefono?: string | null;
+  empresa?: string | null;
+
+  tipo_cliente?: "persona" | "empresa" | null;
+  tipo_documento?: "dni" | "ruc" | null;
+  numero_documento?: string | null;
+
+  servicio_id?: string | null;
   mensaje: string;
+
   estado: ContactStatus;
-  notas_admin: string | null;
-  ip: string | null;
+  archivado?: boolean;
+
+  notas_admin?: string | null;
+  ip?: string | null;
   created_at: string;
   updated_at: string;
-  service?: ContactService | null;
+
+  service?: {
+    id: string;
+    titulo: string;
+  } | null;
 }
+
+export type ContactClientType = "persona" | "empresa";
+export type ContactDocumentType = "dni" | "ruc";
 
 export interface ContactResponse {
   success: boolean;
@@ -55,6 +69,7 @@ export interface UseContacts {
   loading: boolean;
 
   getContacts: (callback?: BasicCallback) => Promise<void>;
+
   getContactById: (
     id: string,
     callback?: (contact: Contact | null) => void
@@ -76,5 +91,8 @@ export interface UseContacts {
     callback?: BasicCallback
   ) => Promise<void>;
 
-  toggleArchivedContact: (contact: Contact) => Promise<void>;
+  toggleArchivedContact: (
+    id: string,
+    callback?: BasicCallback
+  ) => Promise<void>;
 }

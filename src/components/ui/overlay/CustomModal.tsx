@@ -124,8 +124,7 @@ const CustomModalComponent: FC<CustomModalProps> = ({
           className="
             sticky bottom-0 z-20
             bg-surface-soft
-            backdrop-blur-xl
-            border-t border-border
+            backdrop-blur-xl border-border
             p-5 flex justify-end gap-3
           "
         >

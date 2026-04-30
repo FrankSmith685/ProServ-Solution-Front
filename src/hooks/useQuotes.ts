@@ -8,38 +8,64 @@ import type {
   QuoteEventsResponse,
   QuotePdfResult,
   QuoteResponse,
-  QuoteSendChannel,
+  QuoteSendPayload,
   QuotesResponse,
   UseQuotes,
 } from "@/interfaces/hook/IUseQuotes";
 import type { BasicCallback } from "@/interfaces/helpers/IBasicCallbacks";
 import { useAppState } from "./useAppState";
 
+type QuoteItemPayload = {
+  descripcion: string;
+  cantidad: number;
+  precio_unitario: number;
+  subtotal?: number;
+  orden?: number | null;
+};
+
 export const useQuotes = (): UseQuotes => {
   const { quotes, setQuotes } = useAppState();
   const [loading, setLoading] = useState<boolean>(false);
 
-  const normalizeAmount = (value?: number | string | null): number => {
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : 0;
-  };
-
-  const normalizeNullableAmount = (value?: number | string | null): number | null => {
+  const normalizeNullableAmount = (
+    value?: number | string | null
+  ): number | null => {
     if (value === "" || value === null || value === undefined) return null;
+
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
+  };
+
+  const normalizeItems = (items?: Quote["items"]): QuoteItemPayload[] => {
+    return (items || [])
+      .filter((item) => String(item.descripcion || "").trim())
+      .map((item, index) => {
+        const cantidad = Number(item.cantidad || 0);
+        const precioUnitario = Number(item.precio_unitario || 0);
+
+        return {
+          descripcion: String(item.descripcion || "").trim(),
+          cantidad,
+          precio_unitario: precioUnitario,
+          subtotal: cantidad * precioUnitario,
+          orden: item.orden || index + 1,
+        };
+      });
   };
 
   const syncQuoteInState = (updatedQuote: Quote): void => {
     setQuotes(
       quotes.some((quote) => quote.id === updatedQuote.id)
-        ? quotes.map((quote) => (quote.id === updatedQuote.id ? updatedQuote : quote))
+        ? quotes.map((quote) =>
+            quote.id === updatedQuote.id ? updatedQuote : quote
+          )
         : [updatedQuote, ...quotes]
     );
   };
 
   const syncQuoteFromApi = async (id: string): Promise<void> => {
     const { data } = await apiWithAuth.get<QuoteResponse>(`/quotes/${id}`);
+
     if (data.success && data.data) {
       syncQuoteInState(data.data);
     }
@@ -103,7 +129,9 @@ export const useQuotes = (): UseQuotes => {
     setLoading(true);
 
     try {
-      const { data } = await apiWithAuth.get<QuotesResponse>(`/quotes/contact/${contactoId}`);
+      const { data } = await apiWithAuth.get<QuotesResponse>(
+        `/quotes/contact/${contactoId}`
+      );
 
       if (!data.success) {
         throw new Error(data.message);
@@ -139,18 +167,15 @@ export const useQuotes = (): UseQuotes => {
         fecha_envio: form.fecha_envio || null,
         fecha_vencimiento: form.fecha_vencimiento || null,
         moneda: form.moneda || "PEN",
-        descuento_tipo: form.descuento_tipo || undefined,
-        descuento_valor: normalizeNullableAmount(form.descuento_valor),
-        igv_porcentaje: normalizeNullableAmount(form.igv_porcentaje),
+        descuento_tipo: form.descuento_tipo || "porcentaje",
+        descuento_valor: normalizeNullableAmount(form.descuento_valor) ?? 0,
+        igv_porcentaje: normalizeNullableAmount(form.igv_porcentaje) ?? 18,
         aplica_igv: Boolean(form.aplica_igv),
         incluye_igv: Boolean(form.incluye_igv),
-        subtotal: normalizeAmount(form.subtotal),
-        impuestos: normalizeAmount(form.impuestos),
-        descuento: normalizeAmount(form.descuento),
-        total: normalizeAmount(form.total),
         observaciones: form.observaciones || null,
         motivo_rechazo: form.motivo_rechazo || null,
         estado: form.estado || "pendiente",
+        items: normalizeItems(form.items),
       };
 
       const { data } = await apiWithAuth.post<QuoteResponse>("/quotes", payload);
@@ -187,7 +212,6 @@ export const useQuotes = (): UseQuotes => {
 
     try {
       const payload = {
-        ...form,
         cliente_nombre: form.cliente_nombre || undefined,
         cliente_empresa: form.cliente_empresa || undefined,
         cliente_ruc: form.cliente_ruc || undefined,
@@ -199,20 +223,19 @@ export const useQuotes = (): UseQuotes => {
         fecha_envio: form.fecha_envio || null,
         fecha_vencimiento: form.fecha_vencimiento || null,
         moneda: form.moneda || "PEN",
-        descuento_tipo: form.descuento_tipo || undefined,
-        descuento_valor: normalizeNullableAmount(form.descuento_valor),
-        igv_porcentaje: normalizeNullableAmount(form.igv_porcentaje),
+        descuento_tipo: form.descuento_tipo || "porcentaje",
+        descuento_valor: normalizeNullableAmount(form.descuento_valor) ?? 0,
+        igv_porcentaje: normalizeNullableAmount(form.igv_porcentaje) ?? 18,
         aplica_igv: Boolean(form.aplica_igv),
         incluye_igv: Boolean(form.incluye_igv),
-        subtotal: normalizeAmount(form.subtotal),
-        impuestos: normalizeAmount(form.impuestos),
-        descuento: normalizeAmount(form.descuento),
-        total: normalizeAmount(form.total),
         observaciones: form.observaciones || null,
         motivo_rechazo: form.motivo_rechazo || null,
       };
 
-      const { data } = await apiWithAuth.put<QuoteResponse>(`/quotes/${id}`, payload);
+      const { data } = await apiWithAuth.put<QuoteResponse>(
+        `/quotes/${id}`,
+        payload
+      );
 
       if (!data.success) {
         throw new Error(data.message);
@@ -239,13 +262,16 @@ export const useQuotes = (): UseQuotes => {
 
   const sendQuote = async (
     id: string,
-    payload?: { canal?: QuoteSendChannel },
+    payload?: QuoteSendPayload,
     callback?: BasicCallback
   ): Promise<void> => {
     setLoading(true);
 
     try {
-      const { data } = await apiWithAuth.post<QuoteResponse>(`/quotes/${id}/send`, payload || {});
+      const { data } = await apiWithAuth.post<QuoteResponse>(
+        `/quotes/${id}/send`,
+        payload || {}
+      );
 
       if (!data.success) {
         throw new Error(data.message);
@@ -260,6 +286,77 @@ export const useQuotes = (): UseQuotes => {
       });
     } catch (error) {
       const handled = handleApiError(error);
+
+      callback?.({
+        success: false,
+        message: handled.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const approveQuote = async (
+    id: string,
+    callback?: BasicCallback
+  ): Promise<void> => {
+    setLoading(true);
+
+    try {
+      const { data } = await apiWithAuth.post<QuoteResponse>(
+        `/quotes/${id}/approve`
+      );
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
+
+      callback?.({
+        success: true,
+        message: data.message,
+      });
+    } catch (error) {
+      const handled = handleApiError(error);
+
+      callback?.({
+        success: false,
+        message: handled.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const rejectQuote = async (
+    id: string,
+    payload: { motivo_rechazo: string },
+    callback?: BasicCallback
+  ): Promise<void> => {
+    setLoading(true);
+
+    try {
+      const { data } = await apiWithAuth.post<QuoteResponse>(
+        `/quotes/${id}/reject`,
+        payload
+      );
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
+
+      callback?.({
+        success: true,
+        message: data.message,
+      });
+    } catch (error) {
+      const handled = handleApiError(error);
+
       callback?.({
         success: false,
         message: handled.message,
@@ -276,7 +373,9 @@ export const useQuotes = (): UseQuotes => {
     setLoading(true);
 
     try {
-      const { data } = await apiWithAuth.get<QuoteEventsResponse>(`/quotes/${id}/events`);
+      const { data } = await apiWithAuth.get<QuoteEventsResponse>(
+        `/quotes/${id}/events`
+      );
 
       if (!data.success) {
         throw new Error(data.message);
@@ -285,7 +384,7 @@ export const useQuotes = (): UseQuotes => {
       callback?.(data.data);
     } catch (error) {
       const handled = handleApiError(error);
-      console.error("Error obteniendo timeline de cotización:", handled.message);
+      console.error("Error obteniendo eventos de cotización:", handled.message);
       callback?.([]);
     } finally {
       setLoading(false);
@@ -315,13 +414,8 @@ export const useQuotes = (): UseQuotes => {
             data?: { pdfUrl?: string; url?: string };
           };
 
-          const maybePdfUrl =
-            parsed.data?.pdfUrl ||
-            parsed.data?.url ||
-            null;
-
           callback?.({
-            pdfUrl: maybePdfUrl,
+            pdfUrl: parsed.data?.pdfUrl || parsed.data?.url || null,
             message:
               parsed.message ||
               "El endpoint respondió sin PDF binario. Verifica si aún está en modo placeholder.",
@@ -329,81 +423,25 @@ export const useQuotes = (): UseQuotes => {
         } catch {
           callback?.({
             pdfUrl: null,
-            message: "El endpoint respondió sin PDF binario y no se pudo interpretar la respuesta.",
+            message:
+              "El endpoint respondió sin PDF binario y no se pudo interpretar la respuesta.",
           });
         }
+
         return;
       }
 
       const file = new Blob([response.data], { type: "application/pdf" });
       const pdfUrl = URL.createObjectURL(file);
+
       callback?.({ pdfUrl });
     } catch (error) {
       const handled = handleApiError(error);
-      console.error("Error obteniendo PDF de cotización:", handled.message);
+
       callback?.({
         pdfUrl: null,
-        message: handled.message || "No se pudo obtener el PDF de la cotización.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const approveQuote = async (id: string, callback?: BasicCallback): Promise<void> => {
-    setLoading(true);
-
-    try {
-      const { data } = await apiWithAuth.post<QuoteResponse>(`/quotes/${id}/approve`);
-
-      if (!data.success) {
-        throw new Error(data.message);
-      }
-
-      syncQuoteInState(data.data);
-      await syncQuoteFromApi(id);
-
-      callback?.({
-        success: true,
-        message: data.message,
-      });
-    } catch (error) {
-      const handled = handleApiError(error);
-      callback?.({
-        success: false,
-        message: handled.message,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const rejectQuote = async (
-    id: string,
-    payload: { motivo_rechazo: string },
-    callback?: BasicCallback
-  ): Promise<void> => {
-    setLoading(true);
-
-    try {
-      const { data } = await apiWithAuth.post<QuoteResponse>(`/quotes/${id}/reject`, payload);
-
-      if (!data.success) {
-        throw new Error(data.message);
-      }
-
-      syncQuoteInState(data.data);
-      await syncQuoteFromApi(id);
-
-      callback?.({
-        success: true,
-        message: data.message,
-      });
-    } catch (error) {
-      const handled = handleApiError(error);
-      callback?.({
-        success: false,
-        message: handled.message,
+        message:
+          handled.message || "No se pudo obtener el PDF de la cotización.",
       });
     } finally {
       setLoading(false);
@@ -412,42 +450,22 @@ export const useQuotes = (): UseQuotes => {
 
   const addQuoteItem = async (
     id: string,
-    payload: { descripcion: string; cantidad: number; precio_unitario: number; orden?: number | null },
+    payload: Omit<QuoteItemPayload, "subtotal">,
     callback?: BasicCallback
   ): Promise<void> => {
     setLoading(true);
 
     try {
-      const { data } = await apiWithAuth.post<QuoteResponse>(`/quotes/${id}/items`, payload);
+      const nextPayload = {
+        descripcion: String(payload.descripcion || "").trim(),
+        cantidad: Number(payload.cantidad || 0),
+        precio_unitario: Number(payload.precio_unitario || 0),
+        orden: payload.orden || null,
+      };
 
-      if (!data.success) {
-        throw new Error(data.message);
-      }
-
-      syncQuoteInState(data.data);
-      await syncQuoteFromApi(id);
-
-      callback?.({ success: true, message: data.message });
-    } catch (error) {
-      const handled = handleApiError(error);
-      callback?.({ success: false, message: handled.message });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateQuoteItem = async (
-    id: string,
-    itemId: string,
-    payload: Partial<{ descripcion: string; cantidad: number; precio_unitario: number; subtotal: number; orden?: number | null }>,
-    callback?: BasicCallback
-  ): Promise<void> => {
-    setLoading(true);
-
-    try {
-      const { data } = await apiWithAuth.put<QuoteResponse>(
-        `/quotes/${id}/items/${itemId}`,
-        payload
+      const { data } = await apiWithAuth.post<QuoteResponse>(
+        `/quotes/${id}/items`,
+        nextPayload
       );
 
       if (!data.success) {
@@ -456,10 +474,69 @@ export const useQuotes = (): UseQuotes => {
 
       syncQuoteInState(data.data);
       await syncQuoteFromApi(id);
-      callback?.({ success: true, message: data.message });
+
+      callback?.({
+        success: true,
+        message: data.message,
+      });
     } catch (error) {
       const handled = handleApiError(error);
-      callback?.({ success: false, message: handled.message });
+
+      callback?.({
+        success: false,
+        message: handled.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateQuoteItem = async (
+    id: string,
+    itemId: string,
+    payload: Partial<QuoteItemPayload>,
+    callback?: BasicCallback
+  ): Promise<void> => {
+    setLoading(true);
+
+    try {
+      const nextPayload = {
+        descripcion:
+          payload.descripcion !== undefined
+            ? String(payload.descripcion || "").trim()
+            : undefined,
+        cantidad:
+          payload.cantidad !== undefined ? Number(payload.cantidad || 0) : undefined,
+        precio_unitario:
+          payload.precio_unitario !== undefined
+            ? Number(payload.precio_unitario || 0)
+            : undefined,
+        orden: payload.orden ?? undefined,
+      };
+
+      const { data } = await apiWithAuth.put<QuoteResponse>(
+        `/quotes/${id}/items/${itemId}`,
+        nextPayload
+      );
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      syncQuoteInState(data.data);
+      await syncQuoteFromApi(id);
+
+      callback?.({
+        success: true,
+        message: data.message,
+      });
+    } catch (error) {
+      const handled = handleApiError(error);
+
+      callback?.({
+        success: false,
+        message: handled.message,
+      });
     } finally {
       setLoading(false);
     }
@@ -473,7 +550,9 @@ export const useQuotes = (): UseQuotes => {
     setLoading(true);
 
     try {
-      const { data } = await apiWithAuth.delete<QuoteResponse>(`/quotes/${id}/items/${itemId}`);
+      const { data } = await apiWithAuth.delete<QuoteResponse>(
+        `/quotes/${id}/items/${itemId}`
+      );
 
       if (!data.success) {
         throw new Error(data.message);
@@ -481,10 +560,18 @@ export const useQuotes = (): UseQuotes => {
 
       syncQuoteInState(data.data);
       await syncQuoteFromApi(id);
-      callback?.({ success: true, message: data.message });
+
+      callback?.({
+        success: true,
+        message: data.message,
+      });
     } catch (error) {
       const handled = handleApiError(error);
-      callback?.({ success: false, message: handled.message });
+
+      callback?.({
+        success: false,
+        message: handled.message,
+      });
     } finally {
       setLoading(false);
     }

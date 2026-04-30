@@ -73,6 +73,8 @@ const AdminConfiguracionPage: FC = () => {
       whatsapp_url: siteConfig?.whatsapp_url ?? "",
       facebook_url: siteConfig?.facebook_url ?? "",
       instagram_url: siteConfig?.instagram_url ?? "",
+      privacy_policy: siteConfig?.privacy_policy ?? "",
+      terms_conditions: siteConfig?.terms_conditions ?? "",
 
       logo_media_id: company?.logo?.id ?? company?.logo_media_id ?? null,
       favicon_media_id:
@@ -236,6 +238,8 @@ const AdminConfiguracionPage: FC = () => {
           whatsapp_url: form.whatsapp_url,
           facebook_url: form.facebook_url,
           instagram_url: form.instagram_url,
+          privacy_policy: form.privacy_policy,
+          terms_conditions: form.terms_conditions,
         },
       },
       logoFile,

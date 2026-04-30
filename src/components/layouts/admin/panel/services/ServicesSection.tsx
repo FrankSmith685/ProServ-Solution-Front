@@ -398,14 +398,14 @@ const ServicesSection = () => {
                 <CheckCircle2 size={14} />
                 Activos
               </p>
-              <p className="mt-2 text-2xl font-black text-dark">{metrics.active}</p>
+              <p className="mt-2 text-2xl font-black text-primary">{metrics.active}</p>
             </div>
             <div className="rounded-2xl border border-border bg-surface-soft p-4">
               <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
                 <EyeOff size={14} />
                 Inactivos
               </p>
-              <p className="mt-2 text-2xl font-black text-dark">{metrics.inactive}</p>
+              <p className="mt-2 text-2xl font-black text-primary">{metrics.inactive}</p>
             </div>
           </div>
 
@@ -413,7 +413,7 @@ const ServicesSection = () => {
             <p className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground">
               Con imagen cargada
             </p>
-            <p className="mt-2 text-2xl font-black text-dark">{metrics.withImage}</p>
+            <p className="mt-2 text-2xl font-black text-primary">{metrics.withImage}</p>
           </div>
 
           <div className="rounded-2xl border border-border bg-surface-soft p-4">
