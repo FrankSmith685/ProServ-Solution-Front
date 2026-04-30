@@ -1,13 +1,16 @@
 import {
   useMemo,
+  useState,
   type FC,
 } from "react";
 import { motion } from "framer-motion";
-import { ArrowRight, FolderKanban } from "lucide-react";
+import { ArrowRight, FolderKanban, Filter } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { useAppState } from "@/hooks/useAppState";
 import { CustomButton } from "@/components/ui/kit/CustomButton";
+import { CustomInput } from "@/components/ui/kit/CustomInput";
+import { CustomSelected } from "@/components/ui/kit/CustomSelected";
 
 type ProjectMediaRef = {
   url?: string | null;
@@ -252,6 +255,8 @@ const ProjectCard: FC<{
 
 const ProyectosGrid: FC = () => {
   const { projects } = useAppState();
+  const [search, setSearch] = useState<string>("");
+  const [serviceFilter, setServiceFilter] = useState<string>("all");
 
   const items = useMemo<ProjectCardItem[]>(() => {
     return (Array.isArray(projects) ? projects : [])
@@ -263,6 +268,36 @@ const ProyectosGrid: FC = () => {
         return a.titulo.localeCompare(b.titulo);
       });
   }, [projects]);
+
+  const serviceOptions = useMemo(() => {
+    const uniqueServices = Array.from(
+      new Set(items.map((item) => item.servicio).filter(Boolean))
+    ).sort((a, b) => a.localeCompare(b));
+
+    return [
+      { value: "all", label: "Todos los servicios" },
+      ...uniqueServices.map((service) => ({ value: service, label: service })),
+    ];
+  }, [items]);
+
+  const filteredItems = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return items.filter((item) => {
+      const matchesService =
+        serviceFilter === "all" ? true : item.servicio === serviceFilter;
+
+      if (!matchesService) return false;
+      if (!normalizedSearch) return true;
+
+      return (
+        item.titulo.toLowerCase().includes(normalizedSearch) ||
+        item.descripcion.toLowerCase().includes(normalizedSearch) ||
+        item.cliente.toLowerCase().includes(normalizedSearch) ||
+        item.categoria.toLowerCase().includes(normalizedSearch)
+      );
+    });
+  }, [items, search, serviceFilter]);
 
   return (
     <section className="relative overflow-hidden bg-surface py-20 md:py-24">
@@ -284,15 +319,58 @@ const ProyectosGrid: FC = () => {
               </p>
             </div>
 
-            <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {items.map((project, index) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  index={index}
-                />
-              ))}
+            <div className="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-3 md:grid-cols-[1fr_280px_auto]">
+              <CustomInput
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por proyecto, cliente o categoría..."
+                fullWidth
+              />
+
+              <CustomSelected
+                value={serviceFilter}
+                onChange={(e) =>
+                  setServiceFilter(String(e.target.value || "all"))
+                }
+                options={serviceOptions}
+                fullWidth
+                variant="primary"
+                size="md"
+              />
+
+              <CustomButton
+                text={`${filteredItems.length} visibles`}
+                variant="secondary"
+                size="md"
+                fontSize="12px"
+                icon={<Filter size={14} />}
+                onClick={() => {
+                  setSearch("");
+                  setServiceFilter("all");
+                }}
+              />
             </div>
+
+            {filteredItems.length === 0 ? (
+              <div className="mt-10 rounded-3xl border border-border bg-white px-6 py-12 text-center">
+                <h3 className="text-xl font-black text-dark">
+                  No hay proyectos que coincidan
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Prueba con otra búsqueda o cambia el filtro de servicio.
+                </p>
+              </div>
+            ) : (
+              <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {filteredItems.map((project, index) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    index={index}
+                  />
+                ))}
+              </div>
+            )}
 
             <div className="mt-12 flex justify-center">
               <CustomButton

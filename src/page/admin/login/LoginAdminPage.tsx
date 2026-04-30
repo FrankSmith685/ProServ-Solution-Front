@@ -1,4 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, type FC } from "react";
 import { motion } from "framer-motion";
 import {
@@ -18,6 +19,7 @@ import { Lock, Mail } from "@mui/icons-material";
 import { CustomInput } from "@/components/ui/kit/CustomInput";
 import { CustomButton } from "@/components/ui/kit/CustomButton";
 import { useAuth } from "@/hooks/useAuth";
+import { useSiteConfig } from "@/hooks/useConfigSite";
 import { getAdminTheme, setAdminTheme, type AdminTheme } from "@/helpers/theme";
 
 import type {
@@ -34,6 +36,7 @@ const initialForm: LoginAdminForm = {
 const LoginAdminPage: FC = () => {
   const navigate = useNavigate();
   const { loginUser } = useAuth();
+  const { company, siteConfig, getSiteConfiguration } = useSiteConfig();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
@@ -42,8 +45,21 @@ const LoginAdminPage: FC = () => {
 
   const isDark = theme === "dark";
 
+  const brandName =
+    company?.nombre?.trim() ||
+    siteConfig?.site_name?.trim() ||
+    "Panel Admin";
+
+  const brandSubtitle =
+    company?.razon_social?.trim() ||
+    siteConfig?.site_description?.trim() ||
+    "Sistema administrativo interno";
+
+  const brandLogoUrl = company?.logo?.url || null;
+
   useEffect(() => {
     setTheme(getAdminTheme());
+    void getSiteConfiguration();
   }, []);
 
   const toggleTheme = (): void => {
@@ -80,6 +96,22 @@ const LoginAdminPage: FC = () => {
       setLoading(false);
       setError("Ocurrió un error inesperado al iniciar sesión");
     }
+  };
+
+  const renderBrandIcon = (size: "sm" | "lg" = "sm") => {
+    const iconSize = size === "lg" ? 26 : 18;
+
+    if (brandLogoUrl) {
+      return (
+        <img
+          src={brandLogoUrl}
+          alt={brandName}
+          className="h-full w-full object-cover"
+        />
+      );
+    }
+
+    return <HardHat size={iconSize} />;
   };
 
   return (
@@ -119,20 +151,20 @@ const LoginAdminPage: FC = () => {
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
             <div className="flex min-w-0 items-center gap-3">
               <div
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-white shadow-lg"
+                className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl text-white shadow-lg"
                 style={{
                   background:
                     "linear-gradient(135deg, hsl(var(--color-primary)), hsl(var(--color-primary) / 0.75))",
                 }}
               >
-                <HardHat size={18} />
+                {renderBrandIcon("sm")}
               </div>
 
               <div className="min-w-0">
                 <p className="truncate font-montserrat text-sm font-black tracking-[0.18em] sm:text-base">
-                  BARBIERI
+                  {brandName.toUpperCase()}
                 </p>
-                <p className="text-[11px] text-muted-foreground sm:text-xs">
+                <p className="truncate text-[11px] text-muted-foreground sm:text-xs">
                   Panel Administrativo
                 </p>
               </div>
@@ -156,21 +188,21 @@ const LoginAdminPage: FC = () => {
             <div>
               <div className="flex items-center gap-4">
                 <div
-                  className="flex h-14 w-14 items-center justify-center rounded-3xl text-white shadow-xl"
+                  className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-3xl text-white shadow-xl"
                   style={{
                     background:
                       "linear-gradient(135deg, hsl(var(--color-primary)), hsl(var(--color-primary) / 0.75))",
                   }}
                 >
-                  <HardHat size={26} />
+                  {renderBrandIcon("lg")}
                 </div>
 
-                <div>
-                  <h1 className="font-montserrat text-xl font-black tracking-[0.22em]">
-                    BARBIERI
+                <div className="min-w-0">
+                  <h1 className="truncate font-montserrat text-xl font-black tracking-[0.22em]">
+                    {brandName.toUpperCase()}
                   </h1>
-                  <p className="text-xs uppercase tracking-[0.30em] text-primary">
-                    Contratistas Generales
+                  <p className="truncate text-xs uppercase tracking-[0.30em] text-primary">
+                    {brandSubtitle}
                   </p>
                 </div>
               </div>
@@ -215,8 +247,8 @@ const LoginAdminPage: FC = () => {
                     </div>
                     <h3 className="text-sm font-bold">Acceso protegido</h3>
                     <p className="mt-1 text-xs leading-6 text-muted-foreground">
-                      Inicio de sesión seguro para administradores y operadores del
-                      sistema.
+                      Inicio de sesión seguro para administradores y operadores
+                      del sistema.
                     </p>
                   </div>
                 </div>
@@ -268,7 +300,7 @@ const LoginAdminPage: FC = () => {
             <div className="mt-10 flex items-center justify-between gap-4 pt-6">
               <div>
                 <p className="text-xs font-medium text-muted-foreground">
-                  © 2026 Barbieri
+                  © 2026 {brandName}
                 </p>
                 <p className="mt-1 text-[11px] text-muted-foreground">
                   Sistema administrativo interno

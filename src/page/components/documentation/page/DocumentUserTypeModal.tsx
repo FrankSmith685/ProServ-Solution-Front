@@ -8,7 +8,7 @@ import type { DocumentUserTypeModalState } from "@/interfaces/ui/documents/IDocu
 
 const DocumentUserTypeModal: FC = () => {
 const [state, setState] = useState<DocumentUserTypeModalState>({
-open: false,
+  open: false,
 });
 
 const props: PropItem[] = [
@@ -28,6 +28,11 @@ return (
         text="Abrir Modal"
         onClick={() => setState({ open: true })}
       />
+      {state.open && (
+        <p className="mt-2 text-sm text-muted-foreground">
+          Demo del modal deshabilitada temporalmente en esta documentación.
+        </p>
+      )}
 
       {/* <UserTypeModal
         isOpen={state.open}

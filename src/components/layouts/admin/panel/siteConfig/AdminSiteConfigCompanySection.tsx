@@ -35,7 +35,11 @@ const AdminSiteConfigCompanySection: FC<AdminSiteConfigCompanySectionProps> = ({
             placeholder={field.placeholder}
             value={String(form[field.key] ?? "")}
             onChange={onChange(field.key)}
-            type={field.type === "textarea" ? "text" : field.type ?? "text"}
+            type={
+              field.type === "textarea" || field.type === "html"
+                ? "text"
+                : field.type ?? "text"
+            }
             multiline={field.type === "textarea"}
             rows={field.type === "textarea" ? 4 : undefined}
             fullWidth

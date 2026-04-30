@@ -20,6 +20,8 @@ export interface SiteConfigFormState {
   whatsapp_url: string;
   facebook_url: string;
   instagram_url: string;
+  privacy_policy: string;
+  terms_conditions: string;
 
   logo_media_id: string | null;
   favicon_media_id: string | null;
@@ -44,7 +46,7 @@ export interface ConfigFieldItem {
   key: keyof SiteConfigFormState;
   label: string;
   placeholder: string;
-  type?: "text" | "email" | "url" | "textarea";
+  type?: "text" | "email" | "url" | "textarea" | "html";
 }
 
 export interface AdminSiteConfigCompanySectionProps {

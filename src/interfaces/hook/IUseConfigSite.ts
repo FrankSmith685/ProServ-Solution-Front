@@ -34,6 +34,8 @@ export interface SiteConfigMap {
   whatsapp_url: string;
   facebook_url: string;
   instagram_url: string;
+  privacy_policy: string;
+  terms_conditions: string;
   [key: string]: string;
 }
 
@@ -56,6 +58,8 @@ export interface SiteConfigUpdatePayload {
   whatsapp_url?: string;
   facebook_url?: string;
   instagram_url?: string;
+  privacy_policy?: string;
+  terms_conditions?: string;
   [key: string]: unknown;
 }
 

@@ -24,6 +24,7 @@ import {
 
 import { useAppState } from "@/hooks/useAppState";
 import { useAuth } from "@/hooks/useAuth";
+import { useSiteConfig } from "@/hooks/useConfigSite";
 import { CustomLink } from "@/components/ui/kit/CustomLink";
 import { getAdminTheme, setAdminTheme, type AdminTheme } from "@/helpers/theme";
 
@@ -48,9 +49,17 @@ const AdminLayout: FC = () => {
 
   const location = useLocation();
   const { user } = useAppState();
+  const { company, siteConfig, getSiteConfiguration } = useSiteConfig();
   const { logout } = useAuth();
 
   const isDark = theme === "dark";
+
+  const brandName =
+    company?.nombre?.trim() ||
+    siteConfig?.site_name?.trim() ||
+    "Mi Empresa";
+
+  const brandLogoUrl = company?.logo?.url || null;
 
   const isActivePath = (path: string): boolean => {
     return (
@@ -69,6 +78,7 @@ const AdminLayout: FC = () => {
 
   useEffect(() => {
     setTheme(getAdminTheme());
+    void getSiteConfiguration();
   }, []);
 
   const handleToggleTheme = (): void => {
@@ -141,8 +151,16 @@ const AdminLayout: FC = () => {
         >
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary shadow-orange">
-                <HardHat size={20} className="text-white" />
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-primary shadow-orange">
+                {brandLogoUrl ? (
+                  <img
+                    src={brandLogoUrl}
+                    alt={brandName}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <HardHat size={20} className="text-white" />
+                )}
               </div>
 
               <div className="min-w-0">
@@ -150,8 +168,9 @@ const AdminLayout: FC = () => {
                   className={`truncate font-montserrat text-sm font-bold tracking-[0.18em] ${
                     isDark ? "text-slate-100" : "text-slate-900"
                   }`}
+                  title={brandName}
                 >
-                  BARBIERI
+                  {brandName.toUpperCase()}
                 </div>
                 <div className="mt-0.5 text-xs font-medium text-primary">
                   Panel Admin
@@ -163,9 +182,7 @@ const AdminLayout: FC = () => {
               <button
                 type="button"
                 onClick={handleToggleTheme}
-                aria-label={
-                  isDark ? "Activar modo claro" : "Activar modo oscuro"
-                }
+                aria-label={isDark ? "Activar modo claro" : "Activar modo oscuro"}
                 className={[
                   "inline-flex h-10 w-10 items-center justify-center rounded-xl border transition lg:hidden",
                   softButtonClass,
@@ -300,8 +317,17 @@ const AdminLayout: FC = () => {
         </div>
       </aside>
 
-      <div className={["flex min-w-0 flex-1 flex-col overflow-hidden", mainWrapperClass].join(" ")}>
-        <header className={["sticky top-0 z-20 border-b backdrop-blur", headerClass].join(" ")}>
+      <div
+        className={[
+          "flex min-w-0 flex-1 flex-col overflow-hidden",
+          mainWrapperClass,
+        ].join(" ")}
+      >
+        <header
+          className={["sticky top-0 z-20 border-b backdrop-blur", headerClass].join(
+            " "
+          )}
+        >
           <div className="flex min-h-16 items-center gap-3 px-3 py-3 sm:min-h-18 sm:px-5 lg:px-6">
             <button
               type="button"
@@ -367,7 +393,13 @@ const AdminLayout: FC = () => {
           </div>
         </header>
 
-        <main className={isDark ? "min-h-0 flex-1 overflow-y-auto bg-[#020617]" : "min-h-0 flex-1 overflow-y-auto bg-slate-50"}>
+        <main
+          className={
+            isDark
+              ? "min-h-0 flex-1 overflow-y-auto bg-[#020617]"
+              : "min-h-0 flex-1 overflow-y-auto bg-slate-50"
+          }
+        >
           <div className="px-3 py-4 sm:px-4 sm:py-5 lg:px-6 lg:py-6">
             <div className="mx-auto w-full max-w-7xl">
               <Outlet />

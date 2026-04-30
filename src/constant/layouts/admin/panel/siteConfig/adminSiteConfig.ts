@@ -26,6 +26,8 @@ export const INITIAL_SITE_CONFIG_FORM: SiteConfigFormState = {
   whatsapp_url: "",
   facebook_url: "",
   instagram_url: "",
+  privacy_policy: "",
+  terms_conditions: "",
 
   logo_media_id: null,
   favicon_media_id: null,
@@ -134,5 +136,17 @@ export const SITE_CONFIG_PUBLIC_FIELDS: ConfigFieldItem[] = [
     label: "URL de Instagram",
     placeholder: "https://instagram.com/tu-cuenta",
     type: "url",
+  },
+  {
+    key: "privacy_policy",
+    label: "Política de privacidad",
+    placeholder: "Contenido HTML de la política de privacidad",
+    type: "html",
+  },
+  {
+    key: "terms_conditions",
+    label: "Términos y condiciones",
+    placeholder: "Contenido HTML de los términos y condiciones",
+    type: "html",
   },
 ];
