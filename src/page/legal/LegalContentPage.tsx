@@ -20,24 +20,8 @@ const getFirstAvailableText = (
   return "";
 };
 
-const renderMultiline = (text: string): React.ReactNode => {
-  return text.split(/\n{2,}/).map((paragraph, index) => {
-    const lines = paragraph.split("\n");
-
-    return (
-      <p
-        key={`paragraph-${index}`}
-        className="text-sm leading-7 text-slate-700 sm:text-base"
-      >
-        {lines.map((line, lineIndex) => (
-          <span key={`line-${index}-${lineIndex}`}>
-            {line}
-            {lineIndex < lines.length - 1 ? <br /> : null}
-          </span>
-        ))}
-      </p>
-    );
-  });
+const hasHtmlTags = (text: string): boolean => {
+  return /<\/?[a-z][\s\S]*>/i.test(text);
 };
 
 const LegalContentPage: FC = () => {
@@ -61,6 +45,7 @@ const LegalContentPage: FC = () => {
           "politica_de_privacidad",
         ]
       : [
+          "terms_conditions",
           "terms_and_conditions",
           "terminos_condiciones",
           "termsConditions",
@@ -83,7 +68,23 @@ const LegalContentPage: FC = () => {
         </h1>
 
         {content ? (
-          <div className="mt-6 space-y-5">{renderMultiline(content)}</div>
+          hasHtmlTags(content) ? (
+            <article
+              className="prose prose-slate mt-6 max-w-none prose-p:text-sm prose-p:leading-7 sm:prose-p:text-base"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          ) : (
+            <article className="mt-6 space-y-5">
+              {content.split(/\n{2,}/).map((paragraph, index) => (
+                <p
+                  key={`paragraph-${index}`}
+                  className="text-sm leading-7 text-slate-700 sm:text-base"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </article>
+          )
         ) : (
           <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-800">
             Aún no se ha configurado el contenido de <strong>{title}</strong>

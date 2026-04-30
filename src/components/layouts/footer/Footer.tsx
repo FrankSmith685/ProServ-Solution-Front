@@ -114,13 +114,11 @@ const getFirstAvailableText = (
 };
 
 /* ================= STATIC FALLBACK ================= */
-const navItems: NavItem[] = [
+const baseNavItems: NavItem[] = [
   { label: "Inicio", path: "/" },
   { label: "Nosotros", path: "/nosotros" },
   { label: "Proyectos", path: "/proyectos" },
   { label: "Contacto", path: "/contacto" },
-  { label: "Términos y condiciones", path: "/terminos-condiciones" },
-  { label: "Política de privacidad", path: "/politica-privacidad" },
 ];
 
 /* ================= SMALL UI ================= */
@@ -278,6 +276,30 @@ export default function Footer(): JSX.Element {
       ]) || "Diseñado con dedicación en Lima, Perú"
     );
   }, [siteConfigSource]);
+
+  const legalLinks = useMemo<NavItem[]>(() => {
+    const privacyPath =
+      getFirstAvailableText(siteConfigSource, [
+        "privacy_policy_url",
+        "politica_privacidad_url",
+      ]) || "/politica-privacidad";
+
+    const termsPath =
+      getFirstAvailableText(siteConfigSource, [
+        "terms_conditions_url",
+        "terms_and_conditions_url",
+        "terminos_condiciones_url",
+      ]) || "/terminos-condiciones";
+
+    return [
+      { label: "Términos y condiciones", path: termsPath },
+      { label: "Política de privacidad", path: privacyPath },
+    ];
+  }, [siteConfigSource]);
+
+  const navItems = useMemo<NavItem[]>(() => {
+    return [...baseNavItems, ...legalLinks];
+  }, [legalLinks]);
 
   const socialLinks = useMemo<SocialLink[]>(() => {
     const facebook = normalizeUrl(
